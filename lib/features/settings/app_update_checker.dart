@@ -22,20 +22,21 @@ class AppUpdateInfo {
 class AppUpdateChecker {
   AppUpdateChecker({
     http.Client? httpClient,
-    String currentVersion = kickAppVersion,
     String apiUrl = kickLatestReleaseApiUrl,
   }) : _http = httpClient ?? http.Client(),
-       _currentVersion = normalizeVersion(currentVersion),
        _apiUrl = apiUrl;
 
   final http.Client _http;
-  final String _currentVersion;
   final String _apiUrl;
 
-  Future<AppUpdateInfo> checkForUpdates() async {
+  Future<AppUpdateInfo> checkForUpdates({required String currentVersion}) async {
+    final normalizedCurrentVersion = normalizeVersion(currentVersion);
     final response = await _http.get(
       Uri.parse(_apiUrl),
-      headers: {'Accept': 'application/vnd.github+json', 'User-Agent': 'KiCk/$_currentVersion'},
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'KiCk/$normalizedCurrentVersion',
+      },
     );
 
     if (response.statusCode >= 400) {
@@ -58,10 +59,10 @@ class AppUpdateChecker {
         : kickLatestReleaseUrl;
 
     return AppUpdateInfo(
-      currentVersion: _currentVersion,
+      currentVersion: normalizedCurrentVersion,
       latestVersion: latestVersion,
       releaseUrl: releaseUrl,
-      hasUpdate: compareVersions(latestVersion, _currentVersion) > 0,
+      hasUpdate: compareVersions(latestVersion, normalizedCurrentVersion) > 0,
     );
   }
 

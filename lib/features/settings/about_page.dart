@@ -18,7 +18,12 @@ class AboutPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final settingsValue = ref.watch(settingsControllerProvider);
+    final appVersionValue = ref.watch(appVersionProvider);
     final updateValue = ref.watch(appUpdateQueryProvider);
+    final versionLabel = appVersionValue.maybeWhen(
+      data: (version) => version,
+      orElse: () => kickBuildAppVersion,
+    );
 
     return settingsValue.when(
       data: (settings) => SingleChildScrollView(
@@ -29,7 +34,7 @@ class AboutPage extends ConsumerWidget {
             const SizedBox(height: 24),
             _AboutHeroCard(
               appTitle: l10n.appTitle,
-              versionLabel: kickAppVersion,
+              versionLabel: versionLabel,
               description: l10n.aboutDescription,
             ),
             const SizedBox(height: 14),

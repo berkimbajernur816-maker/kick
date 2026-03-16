@@ -18,7 +18,6 @@ void main() {
 
   test('detects available update from GitHub release payload', () async {
     final checker = AppUpdateChecker(
-      currentVersion: '0.1.0',
       apiUrl: 'https://example.com/releases/latest',
       httpClient: QueueHttpClient([
         (request) async {
@@ -34,7 +33,7 @@ void main() {
       ]),
     );
 
-    final result = await checker.checkForUpdates();
+    final result = await checker.checkForUpdates(currentVersion: '0.1.0');
 
     expect(result.currentVersion, '0.1.0');
     expect(result.latestVersion, '0.2.0');
@@ -44,7 +43,6 @@ void main() {
 
   test('reports no update when installed version is current', () async {
     final checker = AppUpdateChecker(
-      currentVersion: '0.2.0',
       apiUrl: 'https://example.com/releases/latest',
       httpClient: QueueHttpClient([
         (_) async => http.Response(
@@ -57,7 +55,7 @@ void main() {
       ]),
     );
 
-    final result = await checker.checkForUpdates();
+    final result = await checker.checkForUpdates(currentVersion: '0.2.0');
 
     expect(result.hasUpdate, isFalse);
   });

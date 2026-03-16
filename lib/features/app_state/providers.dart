@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../analytics/kick_analytics.dart';
+import '../../app/app_version_reader.dart';
 import '../../app/bootstrap.dart';
 import '../../core/accounts/account_priority.dart';
 import '../../core/security/proxy_api_key.dart';
@@ -196,14 +197,21 @@ final logsControllerProvider = AsyncNotifierProvider<LogsController, List<AppLog
 
 final logExportServiceProvider = Provider<LogExportService>((ref) => LogExportService());
 
+final appVersionReaderProvider = Provider<AppVersionReader>((ref) => const AppVersionReader());
+
+final appVersionProvider = FutureProvider<String>((ref) {
+  return ref.watch(appVersionReaderProvider).readVersion();
+});
+
 final appUpdateCheckerProvider = Provider<AppUpdateChecker>((ref) {
   final checker = AppUpdateChecker();
   ref.onDispose(checker.dispose);
   return checker;
 });
 
-final appUpdateQueryProvider = FutureProvider.autoDispose<AppUpdateInfo>((ref) {
-  return ref.watch(appUpdateCheckerProvider).checkForUpdates();
+final appUpdateQueryProvider = FutureProvider.autoDispose<AppUpdateInfo>((ref) async {
+  final currentVersion = await ref.watch(appVersionProvider.future);
+  return ref.watch(appUpdateCheckerProvider).checkForUpdates(currentVersion: currentVersion);
 });
 
 class LogsController extends AsyncNotifier<List<AppLogEntry>> {

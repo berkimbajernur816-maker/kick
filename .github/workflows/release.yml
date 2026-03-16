@@ -4,6 +4,17 @@ on:
   push:
     tags:
       - "v*"
+  workflow_run:
+    workflows:
+      - Sync Version Tag
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build, for example v1.0.0
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,19 +27,61 @@ jobs:
   metadata:
     name: Resolve release metadata
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
+      ref: ${{ steps.version.outputs.ref }}
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
 
     steps:
+      - name: Resolve source ref
+        id: ref
+        shell: bash
+        env:
+          DISPATCH_TAG: ${{ inputs.tag }}
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          case "$EVENT_NAME" in
+            push)
+              source_ref="$GITHUB_REF_NAME"
+              ;;
+            workflow_dispatch)
+              source_ref="$DISPATCH_TAG"
+              ;;
+            workflow_run)
+              source_ref="$WORKFLOW_HEAD_SHA"
+              ;;
+            *)
+              echo "Unsupported event: $EVENT_NAME" >&2
+              exit 1
+              ;;
+          esac
+
+          if [ -z "$source_ref" ]; then
+            echo "Could not determine source ref for release workflow." >&2
+            exit 1
+          fi
+
+          echo "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ steps.ref.outputs.source_ref }}
 
-      - name: Validate tag against pubspec version
+      - name: Fetch tags
+        shell: bash
+        run: git fetch --force --tags origin
+
+      - name: Resolve tag and validate pubspec version
         id: version
         shell: bash
+        env:
+          DISPATCH_TAG: ${{ inputs.tag }}
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_TAG: ${{ github.ref_name }}
         run: |
           version=$(sed -n 's/^version: *//p' pubspec.yaml | head -n1 | cut -d+ -f1)
           if [ -z "$version" ]; then
@@ -37,13 +90,34 @@ jobs:
           fi
 
           expected_tag="v$version"
-          if [ "$GITHUB_REF_NAME" != "$expected_tag" ]; then
-            echo "Tag '$GITHUB_REF_NAME' does not match pubspec version '$expected_tag'." >&2
+          case "$EVENT_NAME" in
+            push)
+              actual_tag="$PUSH_TAG"
+              ;;
+            workflow_dispatch)
+              actual_tag="$DISPATCH_TAG"
+              ;;
+            workflow_run)
+              actual_tag="$expected_tag"
+              if ! git rev-parse -q --verify "refs/tags/$actual_tag" >/dev/null; then
+                echo "Expected tag '$actual_tag' was not found after Sync Version Tag completed." >&2
+                exit 1
+              fi
+              ;;
+            *)
+              echo "Unsupported event: $EVENT_NAME" >&2
+              exit 1
+              ;;
+          esac
+
+          if [ "$actual_tag" != "$expected_tag" ]; then
+            echo "Tag '$actual_tag' does not match pubspec version '$expected_tag'." >&2
             exit 1
           fi
 
+          echo "ref=$actual_tag" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "tag=$expected_tag" >> "$GITHUB_OUTPUT"
+          echo "tag=$actual_tag" >> "$GITHUB_OUTPUT"
 
   windows-release:
     name: Build Windows release artifacts
@@ -53,6 +127,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.metadata.outputs.ref }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -110,6 +186,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.metadata.outputs.ref }}
 
       - name: Set up Java
         uses: actions/setup-java@v4

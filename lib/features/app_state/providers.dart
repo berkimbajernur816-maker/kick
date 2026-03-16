@@ -16,6 +16,7 @@ import '../../proxy/gemini/gemini_oauth_service.dart';
 import '../../proxy/gemini/gemini_usage_models.dart';
 import '../../proxy/gemini/gemini_usage_service.dart';
 import '../logs/log_export_service.dart';
+import '../settings/app_update_checker.dart';
 
 final proxyControllerProvider = Provider<KickProxyController>(
   (ref) => ref.watch(appBootstrapProvider).proxyController,
@@ -194,6 +195,16 @@ final logsControllerProvider = AsyncNotifierProvider<LogsController, List<AppLog
 );
 
 final logExportServiceProvider = Provider<LogExportService>((ref) => LogExportService());
+
+final appUpdateCheckerProvider = Provider<AppUpdateChecker>((ref) {
+  final checker = AppUpdateChecker();
+  ref.onDispose(checker.dispose);
+  return checker;
+});
+
+final appUpdateQueryProvider = FutureProvider.autoDispose<AppUpdateInfo>((ref) {
+  return ref.watch(appUpdateCheckerProvider).checkForUpdates();
+});
 
 class LogsController extends AsyncNotifier<List<AppLogEntry>> {
   @override

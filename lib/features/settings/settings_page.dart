@@ -478,7 +478,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         left.useDynamicColor == right.useDynamicColor &&
         left.hasAcknowledgedDisclaimer == right.hasAcknowledgedDisclaimer &&
         left.analyticsConsentEnabled == right.analyticsConsentEnabled &&
-        left.autoCheckUpdatesEnabled == right.autoCheckUpdatesEnabled &&
         left.host == right.host &&
         left.port == right.port &&
         left.allowLan == right.allowLan &&

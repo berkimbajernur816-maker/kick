@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/app_metadata.dart';
 import '../../core/errors/user_facing_error_formatter.dart';
@@ -8,6 +9,7 @@ import '../../core/theme/kick_theme.dart';
 import '../../l10n/kick_localizations.dart';
 import '../app_state/providers.dart';
 import '../shared/kick_surfaces.dart';
+import 'app_update_checker.dart';
 
 class AboutPage extends ConsumerWidget {
   const AboutPage({super.key});
@@ -16,6 +18,7 @@ class AboutPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final settingsValue = ref.watch(settingsControllerProvider);
+    final updateValue = ref.watch(appUpdateQueryProvider);
 
     return settingsValue.when(
       data: (settings) => SingleChildScrollView(
@@ -30,24 +33,9 @@ class AboutPage extends ConsumerWidget {
               description: l10n.aboutDescription,
             ),
             const SizedBox(height: 14),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => _showUpdateUnavailableMessage(context, l10n),
-                icon: const Icon(Icons.system_update_rounded),
-                label: Text(l10n.aboutCheckUpdatesButton),
-              ),
-            ),
-            const SizedBox(height: 14),
-            _AboutSettingToggle(
-              title: l10n.aboutAutoCheckUpdatesTitle,
-              subtitle: l10n.aboutAutoCheckUpdatesSubtitle,
-              value: settings.autoCheckUpdatesEnabled,
-              onChanged: (value) async {
-                await ref
-                    .read(settingsControllerProvider.notifier)
-                    .save(settings.copyWith(autoCheckUpdatesEnabled: value));
-              },
+            _AboutUpdatesCard(
+              updateValue: updateValue,
+              onRetry: () => ref.invalidate(appUpdateQueryProvider),
             ),
             const SizedBox(height: 14),
             _AboutSettingToggle(
@@ -71,11 +59,121 @@ class AboutPage extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
+}
 
-  void _showUpdateUnavailableMessage(BuildContext context, KickLocalizations l10n) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(SnackBar(content: Text(l10n.aboutCheckUpdatesUnavailableMessage)));
+class _AboutUpdatesCard extends StatelessWidget {
+  const _AboutUpdatesCard({required this.updateValue, required this.onRetry});
+
+  final AsyncValue<AppUpdateInfo> updateValue;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return updateValue.when(
+      data: (updateInfo) {
+        if (updateInfo.hasUpdate) {
+          return _AboutActionCard(
+            icon: Icons.system_update_rounded,
+            title: l10n.aboutUpdateAvailableTitle,
+            message: l10n.aboutUpdateAvailableMessage(
+              updateInfo.latestVersion,
+              updateInfo.currentVersion,
+            ),
+            actionLabel: l10n.aboutOpenReleaseButton,
+            emphasis: true,
+            onPressed: () => _openExternalUrl(updateInfo.releaseUrl),
+          );
+        }
+
+        return _AboutActionCard(
+          icon: Icons.verified_rounded,
+          title: l10n.aboutUpToDateTitle,
+          message: l10n.aboutUpToDateMessage(updateInfo.currentVersion),
+          actionLabel: l10n.aboutRetryUpdateCheckButton,
+          onPressed: onRetry,
+        );
+      },
+      error: (error, stackTrace) => _AboutActionCard(
+        icon: Icons.cloud_off_rounded,
+        title: l10n.aboutUpdateCheckFailedTitle,
+        message: l10n.aboutUpdateCheckFailedMessage,
+        actionLabel: l10n.aboutRetryUpdateCheckButton,
+        onPressed: onRetry,
+      ),
+      loading: () => _AboutActionCard(
+        icon: Icons.sync_rounded,
+        title: l10n.aboutUpdatesTitle,
+        message: l10n.aboutUpdatesChecking,
+        actionLabel: l10n.loadingValue,
+      ),
+    );
+  }
+
+  Future<void> _openExternalUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      return;
+    }
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+}
+
+class _AboutActionCard extends StatelessWidget {
+  const _AboutActionCard({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.actionLabel,
+    this.onPressed,
+    this.emphasis = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final String actionLabel;
+  final VoidCallback? onPressed;
+  final bool emphasis;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final tint = emphasis ? scheme.primary : scheme.onSurfaceVariant;
+
+    return KickPanel(
+      tone: emphasis ? KickPanelTone.accent : KickPanelTone.soft,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: tint),
+              const SizedBox(width: 10),
+              Expanded(child: Text(title, style: Theme.of(context).textTheme.titleMedium)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: 14),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: onPressed,
+              icon: Icon(
+                onPressed == null ? Icons.hourglass_top_rounded : Icons.open_in_new_rounded,
+              ),
+              label: Text(actionLabel),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

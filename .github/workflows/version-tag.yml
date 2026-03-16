@@ -1,0 +1,56 @@
+name: Sync Version Tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - pubspec.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-version-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect version change
+        id: version
+        shell: bash
+        run: |
+          current_version=$(sed -n 's/^version: *//p' pubspec.yaml | head -n1 | cut -d+ -f1)
+          if [ -z "$current_version" ]; then
+            echo "Could not determine app version from pubspec.yaml." >&2
+            exit 1
+          fi
+
+          previous_version=""
+          if git rev-parse HEAD^ >/dev/null 2>&1 && git cat-file -e HEAD^:pubspec.yaml 2>/dev/null; then
+            previous_version=$(git show HEAD^:pubspec.yaml | sed -n 's/^version: *//p' | head -n1 | cut -d+ -f1)
+          fi
+
+          echo "current=$current_version" >> "$GITHUB_OUTPUT"
+          echo "previous=$previous_version" >> "$GITHUB_OUTPUT"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$current_version" != "$previous_version" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update version tag
+        if: steps.version.outputs.changed == 'true'
+        shell: bash
+        run: |
+          tag_name="v${{ steps.version.outputs.current }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -fa "$tag_name" -m "Release $tag_name"
+          git push origin "refs/tags/$tag_name" --force

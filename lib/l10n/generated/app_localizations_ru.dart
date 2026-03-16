@@ -232,7 +232,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dynamicThemeTitle => 'Динамическая тема';
 
   @override
-  String get dynamicThemeSubtitle => '';
+  String get dynamicThemeSubtitle => 'Использовать системные динамические цвета';
 
   @override
   String get settingsAppearanceSectionTitle => 'Внешний вид';
@@ -280,13 +280,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get portLabel => 'Порт';
 
   @override
-  String get portHelperText => '';
+  String get portHelperText => 'По умолчанию 3000';
 
   @override
   String get allowLanTitle => 'Доступ из LAN / Docker';
 
   @override
-  String get allowLanSubtitle => '';
+  String get allowLanSubtitle =>
+      'Открывает прокси на 0.0.0.0 и делает его доступным из локальной сети и контейнеров';
 
   @override
   String get androidBackgroundRuntimeTitle => 'Фоновый запуск на Android';
@@ -298,13 +299,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get requestRetriesLabel => 'Повторы запросов к Google';
 
   @override
-  String get requestRetriesHelperText => '';
+  String get requestRetriesHelperText => 'Сколько раз KiCk повторит временно запрос при неудаче';
 
   @override
   String get mark429AsUnhealthyTitle => 'Отключать аккаунт при превышении лимитов (ошибка 429)';
 
   @override
-  String get mark429AsUnhealthySubtitle => '';
+  String get mark429AsUnhealthySubtitle =>
+      'Помечает аккаунт как временно непригодный после ошибок 429, чтобы быстрее переключаться на другие';
 
   @override
   String get loggingLabel => 'Логирование';
@@ -322,7 +324,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unsafeRawLoggingTitle => 'Debug-логи';
 
   @override
-  String get unsafeRawLoggingSubtitle => '';
+  String get unsafeRawLoggingSubtitle => 'Сохраняет сырые запросы. Используйте только для отладки';
 
   @override
   String get customModelsLabel => 'Пользовательские ID моделей';
@@ -344,16 +346,38 @@ class AppLocalizationsRu extends AppLocalizations {
       'Локальный прокси-сервер, совместимый с OpenAI, для Gemini CLI с нативной оболочкой Flutter';
 
   @override
-  String get aboutCheckUpdatesButton => 'Проверить обновление';
+  String get aboutUpdatesTitle => 'Обновления';
 
   @override
-  String get aboutCheckUpdatesUnavailableMessage => 'Проверка обновлений пока недоступна :(';
+  String get aboutUpdatesChecking => 'Проверяем наличие новой версии на GitHub...';
 
   @override
-  String get aboutAutoCheckUpdatesTitle => 'Проверять обновления автоматически';
+  String get aboutUpdateAvailableTitle => 'Доступно обновление';
 
   @override
-  String get aboutAutoCheckUpdatesSubtitle => '';
+  String aboutUpdateAvailableMessage(String latestVersion, String currentVersion) {
+    return 'Найдена версия $latestVersion. Сейчас установлена $currentVersion.';
+  }
+
+  @override
+  String get aboutUpToDateTitle => 'Обновлений нет';
+
+  @override
+  String aboutUpToDateMessage(String currentVersion) {
+    return 'У вас уже установлена актуальная версия $currentVersion.';
+  }
+
+  @override
+  String get aboutUpdateCheckFailedTitle => 'Не удалось проверить обновления';
+
+  @override
+  String get aboutUpdateCheckFailedMessage => 'Что-то пошло не так';
+
+  @override
+  String get aboutOpenReleaseButton => 'Открыть релиз';
+
+  @override
+  String get aboutRetryUpdateCheckButton => 'Проверить снова';
 
   @override
   String get aboutAnalyticsTitle => 'Аналитика';

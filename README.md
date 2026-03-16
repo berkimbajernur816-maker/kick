@@ -9,7 +9,7 @@
       <img src="https://img.shields.io/github/v/release/mxnix/kick?style=flat-square&color=blue" alt="Latest Release">
     </a>
     <a href="https://github.com/mxnix/kick/actions">
-      <img src="https://img.shields.io/github/actions/workflow/status/mxnix/kick/main.yml?style=flat-square" alt="Build Status">
+      <img src="https://img.shields.io/github/actions/workflow/status/mxnix/kick/ci.yml?style=flat-square" alt="Build Status">
     </a>
     <a href="https://flutter.dev/">
       <img src="https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Built with Flutter">
@@ -45,4 +45,4 @@
 
 - UI для просмотра логов, настроек и управления аккаунтами
 
-[Лицензия](LICENSE.md) | [Политика конфиденциальности](PRIVACY.md)
+[Лицензия](LICENSE.md) | [Политика конфиденциальности](PRIVACY.md) | [Contributing](CONTRIBUTING.md)

@@ -7,7 +7,6 @@ void main() {
     final settings = AppSettings.defaults(apiKey: 'kick_test');
 
     expect(settings.analyticsConsentEnabled, isFalse);
-    expect(settings.autoCheckUpdatesEnabled, isTrue);
     expect(settings.hasAcknowledgedDisclaimer, isFalse);
     expect(settings.requestMaxRetries, 10);
     expect(settings.mark429AsUnhealthy, isFalse);
@@ -22,7 +21,6 @@ void main() {
       useDynamicColor: false,
       hasAcknowledgedDisclaimer: true,
       analyticsConsentEnabled: false,
-      autoCheckUpdatesEnabled: false,
       host: '0.0.0.0',
       port: 8080,
       allowLan: true,
@@ -38,7 +36,6 @@ void main() {
 
     expect(restored.hasAcknowledgedDisclaimer, isTrue);
     expect(restored.analyticsConsentEnabled, isFalse);
-    expect(restored.autoCheckUpdatesEnabled, isFalse);
     expect(restored.apiKeyRequired, isFalse);
     expect(restored.themeMode, ThemeMode.dark);
     expect(restored.allowLan, isTrue);

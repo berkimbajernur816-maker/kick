@@ -1,0 +1,65 @@
+name: Bug report
+description: Сообщить о баге или регрессии в KiCk
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Платформа
+      description: Где воспроизводится проблема?
+      options:
+        - Windows
+        - Android
+        - Другое
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Версия KiCk
+      description: Укажи версию из экрана "О программе" или из релиза GitHub.
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги воспроизведения
+      description: Опиши минимальную последовательность действий.
+      placeholder: |
+        1. Открыть ...
+        2. Нажать ...
+        3. Отправить запрос ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ожидаемое поведение
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Фактическое поведение
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Логи или скриншоты
+      description: Если прикладываешь экспорт логов, проверь, что это безопасно для публикации.
+      render: shell
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Дополнительный контекст
+      description: Любая информация, которая может ускорить разбор.

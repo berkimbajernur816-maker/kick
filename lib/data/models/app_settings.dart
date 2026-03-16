@@ -14,7 +14,6 @@ class AppSettings {
     required this.useDynamicColor,
     required this.hasAcknowledgedDisclaimer,
     required this.analyticsConsentEnabled,
-    required this.autoCheckUpdatesEnabled,
     required this.host,
     required this.port,
     required this.allowLan,
@@ -32,7 +31,6 @@ class AppSettings {
   final bool useDynamicColor;
   final bool hasAcknowledgedDisclaimer;
   final bool analyticsConsentEnabled;
-  final bool autoCheckUpdatesEnabled;
   final String host;
   final int port;
   final bool allowLan;
@@ -51,7 +49,6 @@ class AppSettings {
       useDynamicColor: true,
       hasAcknowledgedDisclaimer: false,
       analyticsConsentEnabled: false,
-      autoCheckUpdatesEnabled: true,
       host: '127.0.0.1',
       port: 3000,
       allowLan: false,
@@ -71,7 +68,6 @@ class AppSettings {
     bool? useDynamicColor,
     bool? hasAcknowledgedDisclaimer,
     bool? analyticsConsentEnabled,
-    bool? autoCheckUpdatesEnabled,
     String? host,
     int? port,
     bool? allowLan,
@@ -90,7 +86,6 @@ class AppSettings {
       useDynamicColor: useDynamicColor ?? this.useDynamicColor,
       hasAcknowledgedDisclaimer: hasAcknowledgedDisclaimer ?? this.hasAcknowledgedDisclaimer,
       analyticsConsentEnabled: analyticsConsentEnabled ?? this.analyticsConsentEnabled,
-      autoCheckUpdatesEnabled: autoCheckUpdatesEnabled ?? this.autoCheckUpdatesEnabled,
       host: _normalizeHost(host ?? this.host, allowLan: resolvedAllowLan),
       port: port ?? this.port,
       allowLan: resolvedAllowLan,
@@ -110,7 +105,6 @@ class AppSettings {
       'use_dynamic_color': useDynamicColor.toString(),
       'has_acknowledged_disclaimer': hasAcknowledgedDisclaimer.toString(),
       'analytics_consent_enabled': analyticsConsentEnabled.toString(),
-      'auto_check_updates_enabled': autoCheckUpdatesEnabled.toString(),
       'host': host,
       'port': port.toString(),
       'allow_lan': allowLan.toString(),
@@ -135,7 +129,6 @@ class AppSettings {
       useDynamicColor: values['use_dynamic_color'] != 'false',
       hasAcknowledgedDisclaimer: values['has_acknowledged_disclaimer'] == 'true',
       analyticsConsentEnabled: values['analytics_consent_enabled'] != 'false',
-      autoCheckUpdatesEnabled: values['auto_check_updates_enabled'] != 'false',
       host: _normalizeHost(values['host'], allowLan: allowLan),
       port: int.tryParse(values['port'] ?? '') ?? 3000,
       allowLan: allowLan,

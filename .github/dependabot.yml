@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - github-actions
+
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - flutter
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - android

@@ -503,7 +503,7 @@ abstract class AppLocalizations {
   /// No description provided for @dynamicThemeSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **''**
+  /// **'Использовать системные динамические цвета'**
   String get dynamicThemeSubtitle;
 
   /// No description provided for @settingsAppearanceSectionTitle.
@@ -599,7 +599,7 @@ abstract class AppLocalizations {
   /// No description provided for @portHelperText.
   ///
   /// In ru, this message translates to:
-  /// **''**
+  /// **'По умолчанию 3000'**
   String get portHelperText;
 
   /// No description provided for @allowLanTitle.
@@ -611,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @allowLanSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **''**
+  /// **'Открывает прокси на 0.0.0.0 и делает его доступным из локальной сети и контейнеров'**
   String get allowLanSubtitle;
 
   /// No description provided for @androidBackgroundRuntimeTitle.
@@ -635,7 +635,7 @@ abstract class AppLocalizations {
   /// No description provided for @requestRetriesHelperText.
   ///
   /// In ru, this message translates to:
-  /// **''**
+  /// **'Сколько раз KiCk повторит временно запрос при неудаче'**
   String get requestRetriesHelperText;
 
   /// No description provided for @mark429AsUnhealthyTitle.
@@ -647,7 +647,7 @@ abstract class AppLocalizations {
   /// No description provided for @mark429AsUnhealthySubtitle.
   ///
   /// In ru, this message translates to:
-  /// **''**
+  /// **'Помечает аккаунт как временно непригодный после ошибок 429, чтобы быстрее переключаться на другие'**
   String get mark429AsUnhealthySubtitle;
 
   /// No description provided for @loggingLabel.
@@ -683,7 +683,7 @@ abstract class AppLocalizations {
   /// No description provided for @unsafeRawLoggingSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **''**
+  /// **'Сохраняет сырые запросы. Используйте только для отладки'**
   String get unsafeRawLoggingSubtitle;
 
   /// No description provided for @customModelsLabel.
@@ -722,29 +722,65 @@ abstract class AppLocalizations {
   /// **'Локальный прокси-сервер, совместимый с OpenAI, для Gemini CLI с нативной оболочкой Flutter'**
   String get aboutDescription;
 
-  /// No description provided for @aboutCheckUpdatesButton.
+  /// No description provided for @aboutUpdatesTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Проверить обновление'**
-  String get aboutCheckUpdatesButton;
+  /// **'Обновления'**
+  String get aboutUpdatesTitle;
 
-  /// No description provided for @aboutCheckUpdatesUnavailableMessage.
+  /// No description provided for @aboutUpdatesChecking.
   ///
   /// In ru, this message translates to:
-  /// **'Проверка обновлений пока недоступна :('**
-  String get aboutCheckUpdatesUnavailableMessage;
+  /// **'Проверяем наличие новой версии на GitHub...'**
+  String get aboutUpdatesChecking;
 
-  /// No description provided for @aboutAutoCheckUpdatesTitle.
+  /// No description provided for @aboutUpdateAvailableTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Проверять обновления автоматически'**
-  String get aboutAutoCheckUpdatesTitle;
+  /// **'Доступно обновление'**
+  String get aboutUpdateAvailableTitle;
 
-  /// No description provided for @aboutAutoCheckUpdatesSubtitle.
+  /// No description provided for @aboutUpdateAvailableMessage.
   ///
   /// In ru, this message translates to:
-  /// **''**
-  String get aboutAutoCheckUpdatesSubtitle;
+  /// **'Найдена версия {latestVersion}. Сейчас установлена {currentVersion}.'**
+  String aboutUpdateAvailableMessage(String latestVersion, String currentVersion);
+
+  /// No description provided for @aboutUpToDateTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обновлений нет'**
+  String get aboutUpToDateTitle;
+
+  /// No description provided for @aboutUpToDateMessage.
+  ///
+  /// In ru, this message translates to:
+  /// **'У вас уже установлена актуальная версия {currentVersion}.'**
+  String aboutUpToDateMessage(String currentVersion);
+
+  /// No description provided for @aboutUpdateCheckFailedTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось проверить обновления'**
+  String get aboutUpdateCheckFailedTitle;
+
+  /// No description provided for @aboutUpdateCheckFailedMessage.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что-то пошло не так'**
+  String get aboutUpdateCheckFailedMessage;
+
+  /// No description provided for @aboutOpenReleaseButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть релиз'**
+  String get aboutOpenReleaseButton;
+
+  /// No description provided for @aboutRetryUpdateCheckButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проверить снова'**
+  String get aboutRetryUpdateCheckButton;
 
   /// No description provided for @aboutAnalyticsTitle.
   ///

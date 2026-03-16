@@ -38,7 +38,6 @@ void main() {
       useDynamicColor: true,
       hasAcknowledgedDisclaimer: false,
       analyticsConsentEnabled: false,
-      autoCheckUpdatesEnabled: true,
       host: '127.0.0.1',
       port: 3000,
       allowLan: false,

@@ -133,7 +133,7 @@
   "themeModeLight": "Светлая",
   "themeModeDark": "Тёмная",
   "dynamicThemeTitle": "Динамическая тема",
-  "dynamicThemeSubtitle": "",
+  "dynamicThemeSubtitle": "Использовать системные динамические цвета",
   "settingsAppearanceSectionTitle": "Внешний вид",
   "settingsAppearanceSectionSummary": "Тема, динамические цвета и логирование",
   "settingsNetworkSectionTitle": "Сеть",
@@ -149,31 +149,54 @@
   "hostLabel": "Хост",
   "hostHelperText": "Обычно 127.0.0.1",
   "portLabel": "Порт",
-  "portHelperText": "",
+  "portHelperText": "По умолчанию 3000",
   "allowLanTitle": "Доступ из LAN / Docker",
-  "allowLanSubtitle": "",
+  "allowLanSubtitle": "Открывает прокси на 0.0.0.0 и делает его доступным из локальной сети и контейнеров",
   "androidBackgroundRuntimeTitle": "Фоновый запуск на Android",
   "androidBackgroundRuntimeSubtitle": "Необходимо для непрерывной работы прокси",
   "requestRetriesLabel": "Повторы запросов к Google",
-  "requestRetriesHelperText": "",
+  "requestRetriesHelperText": "Сколько раз KiCk повторит временно запрос при неудаче",
   "mark429AsUnhealthyTitle": "Отключать аккаунт при превышении лимитов (ошибка 429)",
-  "mark429AsUnhealthySubtitle": "",
+  "mark429AsUnhealthySubtitle": "Помечает аккаунт как временно непригодный после ошибок 429, чтобы быстрее переключаться на другие",
   "loggingLabel": "Логирование",
   "loggingQuiet": "Тихое",
   "loggingNormal": "Обычное",
   "loggingVerbose": "Подробное",
   "unsafeRawLoggingTitle": "Debug-логи",
-  "unsafeRawLoggingSubtitle": "",
+  "unsafeRawLoggingSubtitle": "Сохраняет сырые запросы. Используйте только для отладки",
   "customModelsLabel": "Пользовательские ID моделей",
   "customModelsHelperText": "Точный ID модели, по одному на строке",
   "settingsLoadErrorTitle": "Не удалось загрузить настройки",
   "aboutTitle": "О программе",
   "aboutMenuSubtitle": "Информация о программе",
   "aboutDescription": "Локальный прокси-сервер, совместимый с OpenAI, для Gemini CLI с нативной оболочкой Flutter",
-  "aboutCheckUpdatesButton": "Проверить обновление",
-  "aboutCheckUpdatesUnavailableMessage": "Проверка обновлений пока недоступна :(",
-  "aboutAutoCheckUpdatesTitle": "Проверять обновления автоматически",
-  "aboutAutoCheckUpdatesSubtitle": "",
+  "aboutUpdatesTitle": "Обновления",
+  "aboutUpdatesChecking": "Проверяем наличие новой версии на GitHub...",
+  "aboutUpdateAvailableTitle": "Доступно обновление",
+  "aboutUpdateAvailableMessage": "Найдена версия {latestVersion}. Сейчас установлена {currentVersion}.",
+  "@aboutUpdateAvailableMessage": {
+    "placeholders": {
+      "latestVersion": {
+        "type": "String"
+      },
+      "currentVersion": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutUpToDateTitle": "Обновлений нет",
+  "aboutUpToDateMessage": "У вас уже установлена актуальная версия {currentVersion}.",
+  "@aboutUpToDateMessage": {
+    "placeholders": {
+      "currentVersion": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutUpdateCheckFailedTitle": "Не удалось проверить обновления",
+  "aboutUpdateCheckFailedMessage": "Что-то пошло не так",
+  "aboutOpenReleaseButton": "Открыть релиз",
+  "aboutRetryUpdateCheckButton": "Проверить снова",
   "aboutAnalyticsTitle": "Аналитика",
   "aboutAnalyticsSubtitle": "Анонимная статистика использования. Помогает делать KiCk лучше.",
   "copyProxyEndpointTooltip": "Скопировать URL прокси",

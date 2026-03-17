@@ -306,11 +306,10 @@ jobs:
       - android-release
 
     steps:
-      - name: Checkout repository
+      - name: Checkout workflow sources
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: ${{ needs.metadata.outputs.ref }}
 
       - name: Fetch tags
         shell: bash

@@ -45,7 +45,7 @@ String formatUserFacingMessage(KickLocalizations l10n, String rawMessage) {
   if (lower.contains('account not found')) {
     return l10n.errorAccountNotFound;
   }
-  if (lower.contains('address already in use') || lower.contains('only one usage')) {
+  if (_looksLikePortInUseError(lower)) {
     return l10n.errorPortAlreadyInUse;
   }
   if (_looksLikeGoogleAccountVerificationError(lower)) {
@@ -204,6 +204,14 @@ bool _looksLikeNetworkError(String message) {
       message.contains('failed host lookup') ||
       message.contains('timed out') ||
       message.contains('network error while contacting');
+}
+
+bool _looksLikePortInUseError(String message) {
+  return message.contains('address already in use') ||
+      message.contains('only one usage') ||
+      message.contains('shared flag to bind()') ||
+      message.contains('binding multiple times on the same') ||
+      message.contains('failed to create server socket');
 }
 
 String? _unwrapGeminiGatewayException(String message) {

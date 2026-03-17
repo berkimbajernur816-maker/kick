@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -1026,6 +1027,50 @@ void main() {
       OpenAiResponseMapper.currentText(payloads.last),
       'Hello there traveler. It is good to hear your voice and see you awake.',
     );
+  });
+
+  test('cancels upstream Gemini stream when consumer stops listening', () async {
+    final upstreamCanceled = Completer<void>();
+    final upstream = StreamController<List<int>>(
+      onCancel: () {
+        if (!upstreamCanceled.isCompleted) {
+          upstreamCanceled.complete();
+        }
+      },
+    );
+    addTearDown(() async {
+      if (!upstream.isClosed) {
+        await upstream.close();
+      }
+    });
+
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      httpClient: QueueHttpClient([(request) async => http.StreamedResponse(upstream.stream, 200)]),
+    );
+
+    final stream = await client.generateContentStream(
+      account: sampleAccount(),
+      request: sampleRequest(stream: true, maxOutputTokens: 5),
+    );
+    final firstPayload = Completer<Map<String, Object?>>();
+    final subscription = stream.listen((payload) {
+      if (!firstPayload.isCompleted) {
+        firstPayload.complete(payload);
+      }
+    });
+
+    upstream.add(
+      utf8.encode(
+        'data: {"response":{"candidates":[{"content":{"parts":[{"text":"Hello"}]},"finishReason":"MAX_TOKENS"}]}}\n\n',
+      ),
+    );
+
+    final payload = await firstPayload.future.timeout(const Duration(seconds: 1));
+    expect(OpenAiResponseMapper.currentText(payload), 'Hello');
+
+    await subscription.cancel();
+    await upstreamCanceled.future.timeout(const Duration(seconds: 1));
   });
 }
 

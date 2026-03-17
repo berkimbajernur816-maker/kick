@@ -12,12 +12,12 @@ import '../../core/logging/log_sanitizer.dart';
 import '../account_pool/account_pool.dart';
 import '../gemini/gemini_code_assist_client.dart';
 import '../model_catalog.dart';
+import 'proxy_cors.dart';
 import '../openai/openai_request_parser.dart';
 import '../openai/openai_response_mapper.dart';
 import '../openai/sse.dart';
 
 const _maxRequestBodyBytes = 20 * 1024 * 1024;
-const _loopbackHosts = <String>{'localhost', '127.0.0.1', '::1', '[::1]'};
 
 @pragma('vm:entry-point')
 Future<void> proxyIsolateMain(SendPort sendPort) async {
@@ -518,26 +518,34 @@ class _ProxyIsolateHost {
         final stream = () async* {
           var includePrelude = true;
           Map<String, Object?> lastPayload = const <String, Object?>{};
+          var emittedEventCount = 0;
+          var completed = false;
+          var failed = false;
           try {
             await for (final payload in upstream) {
               lastPayload = payload;
               for (final event in mapper(payload, includePrelude)) {
                 includePrelude = false;
+                emittedEventCount += 1;
                 yield utf8.encode(encodeSseEvent(event));
               }
             }
             for (final event in mapper({...lastPayload, 'final_chunk': true}, includePrelude)) {
+              emittedEventCount += 1;
               yield utf8.encode(encodeSseEvent(event));
             }
             final done = doneEvent();
             if (done.isNotEmpty) {
+              emittedEventCount += 1;
               yield utf8.encode(done);
             }
+            completed = true;
             _requestCount += 1;
             _lastError = null;
             _publishStatus();
             _emitRequestSucceededAnalytics(request: request, route: route);
           } on GeminiGatewayException catch (error, stackTrace) {
+            failed = true;
             _registerFailure(account, request.model, error);
             _emitRequestFailedAnalytics(request: request, route: route, error: error);
             await _logFailure(
@@ -550,6 +558,7 @@ class _ProxyIsolateHost {
               yield utf8.encode(event);
             }
           } catch (error, stackTrace) {
+            failed = true;
             final gatewayError = GeminiGatewayException(
               kind: GeminiGatewayFailureKind.unknown,
               message: error.toString(),
@@ -571,7 +580,16 @@ class _ProxyIsolateHost {
               yield utf8.encode(event);
             }
           } finally {
-            if (lastPayload.isNotEmpty) {
+            if (!completed && !failed) {
+              await _logStreamClientAbort(
+                category: request.source,
+                route: route,
+                model: request.model,
+                emittedEventCount: emittedEventCount,
+                payload: lastPayload,
+              );
+            }
+            if ((completed || failed) && lastPayload.isNotEmpty) {
               await _logResponsePreview(
                 category: request.source,
                 route: route,
@@ -792,19 +810,7 @@ class _ProxyIsolateHost {
       return;
     }
 
-    final preview = OpenAiResponseMapper.currentText(payload);
-    final reasoningText = OpenAiResponseMapper.currentReasoningText(payload);
-    final finishReason = _extractPayloadFinishReason(payload);
-    final toolCallCount = OpenAiResponseMapper.currentToolCallCount(payload);
-    final finishReasonEntry = finishReason == null
-        ? const <String, Object?>{}
-        : <String, Object?>{'finish_reason': finishReason};
-    final maskedPayload = jsonEncode({
-      ...finishReasonEntry,
-      if (preview.isNotEmpty) 'output_text_chars': preview.length,
-      if (reasoningText.isNotEmpty) 'reasoning_text_chars': reasoningText.length,
-      if (toolCallCount > 0) 'tool_call_count': toolCallCount,
-    });
+    final maskedPayload = jsonEncode(_responseSummaryPayload(payload));
 
     _sendPort.send({
       'type': 'log',
@@ -821,6 +827,54 @@ class _ProxyIsolateHost {
             : null,
       },
     });
+  }
+
+  Future<void> _logStreamClientAbort({
+    required String category,
+    required String route,
+    required String model,
+    required int emittedEventCount,
+    required Map<String, Object?> payload,
+  }) async {
+    final verbosity = (_settings?['logging_verbosity'] as String?) ?? 'normal';
+    final maskedPayload = jsonEncode({
+      'model': model,
+      'stream_started': payload.isNotEmpty,
+      'events_emitted': emittedEventCount,
+      ..._responseSummaryPayload(payload),
+    });
+    final rawPayload = verbosity == 'verbose' && _unsafeRawLoggingEnabled && payload.isNotEmpty
+        ? jsonEncode(payload)
+        : null;
+    _sendPort.send({
+      'type': 'log',
+      'payload': {
+        'id': _uuid.v4(),
+        'timestamp': DateTime.now().toIso8601String(),
+        'level': 'warning',
+        'category': category,
+        'route': route,
+        'message': 'Streaming response aborted by client',
+        'masked_payload': maskedPayload,
+        'raw_payload': rawPayload,
+      },
+    });
+  }
+
+  Map<String, Object?> _responseSummaryPayload(Map<String, Object?> payload) {
+    final preview = OpenAiResponseMapper.currentText(payload);
+    final reasoningText = OpenAiResponseMapper.currentReasoningText(payload);
+    final finishReason = _extractPayloadFinishReason(payload);
+    final toolCallCount = OpenAiResponseMapper.currentToolCallCount(payload);
+    final finishReasonEntry = finishReason == null
+        ? const <String, Object?>{}
+        : <String, Object?>{'finish_reason': finishReason};
+    return {
+      ...finishReasonEntry,
+      if (preview.isNotEmpty) 'output_text_chars': preview.length,
+      if (reasoningText.isNotEmpty) 'reasoning_text_chars': reasoningText.length,
+      if (toolCallCount > 0) 'tool_call_count': toolCallCount,
+    };
   }
 
   bool get _unsafeRawLoggingEnabled => _settings?['unsafe_raw_logging_enabled'] == true;
@@ -991,72 +1045,23 @@ class _ProxyIsolateHost {
   }
 
   String? resolveCorsOrigin(String? origin) {
-    if (origin == null || origin.trim().isEmpty) {
-      return null;
-    }
-
-    final uri = Uri.tryParse(origin);
-    final host = uri?.host.toLowerCase();
-    if (host == null || host.isEmpty) {
-      return null;
-    }
-
-    if (_isLoopbackHost(host)) {
-      return origin;
-    }
-
-    if (!_allowLan) {
-      return null;
-    }
-
-    if (host == _configuredHost.toLowerCase() || _isPrivateHost(host)) {
-      return origin;
-    }
-
-    return null;
+    return resolveProxyCorsOrigin(
+      origin: origin,
+      allowLan: _allowLan,
+      configuredHost: _configuredHost,
+    );
   }
 
-  Map<String, String> corsHeaders(String? allowedOrigin) {
-    final headers = <String, String>{
-      'access-control-allow-methods': 'GET, POST, OPTIONS',
-      'access-control-allow-headers': 'Authorization, Content-Type',
-    };
-    if (allowedOrigin != null) {
-      headers['access-control-allow-origin'] = allowedOrigin;
-      headers['vary'] = 'Origin';
-    }
-    return headers;
-  }
-
-  bool _isLoopbackHost(String host) {
-    if (_loopbackHosts.contains(host)) {
-      return true;
-    }
-
-    final address = InternetAddress.tryParse(host);
-    return address?.isLoopback ?? false;
-  }
-
-  bool _isPrivateHost(String host) {
-    final address = InternetAddress.tryParse(host);
-    if (address == null) {
-      return false;
-    }
-    if (address.type == InternetAddressType.IPv6) {
-      return address.isLinkLocal || address.isLoopback;
-    }
-
-    final octets = address.rawAddress;
-    if (octets.length != 4) {
-      return false;
-    }
-
-    final first = octets[0];
-    final second = octets[1];
-    return first == 10 ||
-        (first == 172 && second >= 16 && second <= 31) ||
-        (first == 192 && second == 168) ||
-        (first == 169 && second == 254);
+  Map<String, String> corsHeaders(
+    String? allowedOrigin, {
+    String? requestedHeaders,
+    String? requestedPrivateNetwork,
+  }) {
+    return buildProxyCorsHeaders(
+      allowedOrigin: allowedOrigin,
+      requestedHeaders: requestedHeaders,
+      requestedPrivateNetwork: requestedPrivateNetwork,
+    );
   }
 
   String? _extractPayloadFinishReason(Map<String, Object?> payload) {
@@ -1114,6 +1119,8 @@ Middleware _corsMiddleware(_ProxyIsolateHost host) {
   return (innerHandler) {
     return (request) async {
       final allowedOrigin = host.resolveCorsOrigin(request.headers['origin']);
+      final requestedHeaders = request.headers['access-control-request-headers'];
+      final requestedPrivateNetwork = request.headers['access-control-request-private-network'];
       if (request.headers.containsKey('origin') && allowedOrigin == null) {
         return Response.forbidden(
           jsonEncode({
@@ -1128,14 +1135,30 @@ Middleware _corsMiddleware(_ProxyIsolateHost host) {
       }
 
       if (request.method == 'OPTIONS') {
-        return Response.ok('', headers: host.corsHeaders(allowedOrigin));
+        return Response.ok(
+          '',
+          headers: host.corsHeaders(
+            allowedOrigin,
+            requestedHeaders: requestedHeaders,
+            requestedPrivateNetwork: requestedPrivateNetwork,
+          ),
+        );
       }
 
       final response = await innerHandler(request);
       if (allowedOrigin == null) {
         return response;
       }
-      return response.change(headers: {...response.headers, ...host.corsHeaders(allowedOrigin)});
+      return response.change(
+        headers: {
+          ...response.headers,
+          ...host.corsHeaders(
+            allowedOrigin,
+            requestedHeaders: requestedHeaders,
+            requestedPrivateNetwork: requestedPrivateNetwork,
+          ),
+        },
+      );
     };
   };
 }

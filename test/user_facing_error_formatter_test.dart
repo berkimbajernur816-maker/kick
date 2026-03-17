@@ -62,4 +62,13 @@ void main() {
 
     expect(message, l10n.errorReasoningConfigRejected);
   });
+
+  test('formats Android bind conflicts as port already in use', () {
+    final message = formatUserFacingMessage(
+      l10n,
+      'SocketException: Failed to create server socket (OS Error: The shared flag to bind() needs to be `true` if binding multiple times on the same (address, port) combination.), address = 127.0.0.1, port = 3000',
+    );
+
+    expect(message, l10n.errorPortAlreadyInUse);
+  });
 }

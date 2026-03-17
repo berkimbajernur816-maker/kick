@@ -298,15 +298,28 @@ class GeminiCodeAssistClient {
     await _ensureFreshTokens(account);
     final resolvedModel = ModelCatalog.normalizeModel(request.model);
     final baseRequestBody = _buildRequestBody(request, resolvedModel: resolvedModel);
-    final controller = StreamController<Map<String, Object?>>();
+    StreamIterator<Map<String, Object?>>? payloadIterator;
+    var canceled = false;
+    final controller = StreamController<Map<String, Object?>>(
+      onCancel: () async {
+        canceled = true;
+        await payloadIterator?.cancel();
+      },
+    );
     unawaited(
       Future<void>(() async {
         var currentRequestBody = baseRequestBody;
         var accumulatedText = '';
         try {
           for (var pass = 0; pass <= _maxContinuationPasses; pass++) {
+            if (canceled) {
+              break;
+            }
             final accumulatedBeforePass = accumulatedText;
             await _ensureFreshTokens(account);
+            if (canceled) {
+              break;
+            }
             final response = await _executeWithRetry(
               () => _sendStreamRequest(
                 accessToken: account.tokens.accessToken,
@@ -318,16 +331,30 @@ class GeminiCodeAssistClient {
             );
 
             Map<String, Object?>? lastPayload;
-            await for (final rawPayload in _streamResponse(response)) {
-              final generatedText = _extractGeneratedText(rawPayload);
-              final mergedText = pass == 0
-                  ? generatedText
-                  : _appendContinuationText(accumulatedBeforePass, generatedText);
-              final emittedPayload = mergedText == generatedText
-                  ? rawPayload
-                  : _withAccumulatedText(rawPayload, mergedText);
-              lastPayload = emittedPayload;
-              controller.add(emittedPayload);
+            final iterator = StreamIterator<Map<String, Object?>>(_streamResponse(response));
+            payloadIterator = iterator;
+            try {
+              while (!canceled && await iterator.moveNext()) {
+                final rawPayload = iterator.current;
+                final generatedText = _extractGeneratedText(rawPayload);
+                final mergedText = pass == 0
+                    ? generatedText
+                    : _appendContinuationText(accumulatedBeforePass, generatedText);
+                final emittedPayload = mergedText == generatedText
+                    ? rawPayload
+                    : _withAccumulatedText(rawPayload, mergedText);
+                lastPayload = emittedPayload;
+                controller.add(emittedPayload);
+              }
+            } finally {
+              await iterator.cancel();
+              if (identical(payloadIterator, iterator)) {
+                payloadIterator = null;
+              }
+            }
+
+            if (canceled) {
+              break;
             }
 
             if (lastPayload == null) {
@@ -354,9 +381,14 @@ class GeminiCodeAssistClient {
             );
           }
         } catch (error) {
-          controller.addError(_decodeTransportError(error));
+          if (!canceled) {
+            controller.addError(_decodeTransportError(error));
+          }
         } finally {
-          await controller.close();
+          payloadIterator = null;
+          if (!controller.isClosed) {
+            await controller.close();
+          }
         }
       }),
     );
@@ -704,13 +736,20 @@ class GeminiCodeAssistClient {
   }
 
   Stream<Map<String, Object?>> _streamResponse(http.StreamedResponse response) {
-    final controller = StreamController<Map<String, Object?>>();
+    StreamIterator<String>? lineIterator;
+    final controller = StreamController<Map<String, Object?>>(
+      onCancel: () async {
+        await lineIterator?.cancel();
+      },
+    );
     unawaited(
       Future<void>(() async {
         try {
           final lines = response.stream.transform(utf8.decoder).transform(const LineSplitter());
+          lineIterator = StreamIterator<String>(lines);
           final buffer = <String>[];
-          await for (final line in lines) {
+          while (await lineIterator!.moveNext()) {
+            final line = lineIterator!.current;
             if (line.startsWith('data: ')) {
               buffer.add(line.substring(6).trim());
               continue;
@@ -726,7 +765,10 @@ class GeminiCodeAssistClient {
         } catch (error) {
           controller.addError(_decodeTransportError(error));
         } finally {
-          await controller.close();
+          lineIterator = null;
+          if (!controller.isClosed) {
+            await controller.close();
+          }
         }
       }),
     );

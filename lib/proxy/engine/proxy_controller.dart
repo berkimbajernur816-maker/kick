@@ -391,7 +391,7 @@ class KickProxyController {
     if (value.contains('not configured')) {
       return 'not_configured';
     }
-    if (value.contains('address already in use') || value.contains('only one usage')) {
+    if (_looksLikePortInUseError(value)) {
       return 'port_in_use';
     }
     if (value.contains('permission')) {
@@ -399,4 +399,12 @@ class KickProxyController {
     }
     return 'runtime_error';
   }
+}
+
+bool _looksLikePortInUseError(String value) {
+  return value.contains('address already in use') ||
+      value.contains('only one usage') ||
+      value.contains('shared flag to bind()') ||
+      value.contains('binding multiple times on the same') ||
+      value.contains('failed to create server socket');
 }

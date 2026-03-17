@@ -88,8 +88,8 @@ class GeminiOAuthService {
         if (params['state'] != state) {
           await _respondHtml(
             request,
-            title: 'Authorization failed',
-            message: 'State mismatch. You can close this tab.',
+            title: 'Ошибка авторизации',
+            message: 'Несоответствие состояний. Вы можете закрыть эту вкладку.',
             isSuccess: false,
           );
           if (!completer.isCompleted) {
@@ -101,8 +101,8 @@ class GeminiOAuthService {
         if (params.containsKey('error')) {
           await _respondHtml(
             request,
-            title: 'Authorization failed',
-            message: 'Google returned an error. You can close this tab.',
+            title: 'Ошибка авторизации',
+            message: 'Google вернул ошибку. Вы можете закрыть эту вкладку.',
             isSuccess: false,
           );
           if (!completer.isCompleted) {
@@ -120,8 +120,8 @@ class GeminiOAuthService {
         if (code == null || code.isEmpty) {
           await _respondHtml(
             request,
-            title: 'Authorization failed',
-            message: 'No code was received. You can close this tab.',
+            title: 'Ошибка авторизации',
+            message: 'Код не получен. Вы можете закрыть эту вкладку.',
             isSuccess: false,
           );
           if (!completer.isCompleted) {
@@ -132,8 +132,8 @@ class GeminiOAuthService {
 
         await _respondHtml(
           request,
-          title: 'Authorization complete',
-          message: 'KiCk received the login. You can close this tab.',
+          title: 'Успешная авторизация',
+          message: 'Вы можете закрыть вкладку.',
           isSuccess: true,
         );
         if (!completer.isCompleted) {

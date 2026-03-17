@@ -1,3 +1,4 @@
+import 'package:aptabase_flutter/storage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kick/analytics/kick_analytics.dart';
@@ -163,6 +164,82 @@ void main() {
     expect(transport.events.single.properties, containsPair('stream', 1));
     expect(transport.events.single.properties, containsPair('status_code', 400));
   });
+
+  test('analytics swallows transport failures and retries later', () async {
+    final transport = _FlakyAnalyticsTransport(remainingInitializationFailures: 1);
+    final analytics = KickAnalytics(
+      config: const AnalyticsBuildConfig(buildChannel: 'test', appKey: 'A-EU-test'),
+      transport: transport,
+      trackingAllowed: true,
+    );
+
+    await expectLater(analytics.trackAppOpen(), completes);
+    expect(transport.events, isEmpty);
+
+    await expectLater(analytics.trackAppOpen(), completes);
+    expect(transport.initializationAttempts, 2);
+    expect(transport.events, hasLength(1));
+    expect(transport.events.single.name, 'app_open');
+  });
+
+  test('first successful request is retried after transient analytics failure', () async {
+    final transport = _FlakyAnalyticsTransport(remainingInitializationFailures: 1);
+    final analytics = KickAnalytics(
+      config: const AnalyticsBuildConfig(buildChannel: 'test', appKey: 'A-EU-test'),
+      transport: transport,
+      trackingAllowed: true,
+    );
+
+    await expectLater(
+      analytics.trackFirstSuccessfulRequest(
+        route: '/v1/chat/completions',
+        model: 'gemini-3.1-pro-preview',
+        stream: true,
+      ),
+      completes,
+    );
+    expect(transport.events, isEmpty);
+
+    await expectLater(
+      analytics.trackFirstSuccessfulRequest(
+        route: '/v1/chat/completions',
+        model: 'gemini-3.1-pro-preview',
+        stream: true,
+      ),
+      completes,
+    );
+    await expectLater(
+      analytics.trackFirstSuccessfulRequest(
+        route: '/v1/chat/completions',
+        model: 'gemini-3.1-pro-preview',
+        stream: true,
+      ),
+      completes,
+    );
+
+    expect(transport.initializationAttempts, 2);
+    expect(transport.events, hasLength(1));
+    expect(transport.events.single.name, 'first_successful_request');
+  });
+
+  test('aptabase transport retries initialization after transient failure', () async {
+    var initializationAttempts = 0;
+    final transport = AptabaseAnalyticsTransport(
+      storageFactory: () async => _NoOpStorageManager(),
+      initializer: (config, storage) async {
+        initializationAttempts += 1;
+        if (initializationAttempts == 1) {
+          throw StateError('lock failed');
+        }
+      },
+    );
+    const config = AnalyticsBuildConfig(buildChannel: 'test', appKey: 'A-EU-test');
+
+    await expectLater(transport.ensureInitialized(config), throwsStateError);
+    await expectLater(transport.ensureInitialized(config), completes);
+
+    expect(initializationAttempts, 2);
+  });
 }
 
 class _RecordingAnalyticsTransport implements AnalyticsTransport {
@@ -182,4 +259,42 @@ class _RecordedAnalyticsEvent {
 
   final String name;
   final Map<String, Object?> properties;
+}
+
+class _FlakyAnalyticsTransport implements AnalyticsTransport {
+  _FlakyAnalyticsTransport({required this.remainingInitializationFailures});
+
+  final List<_RecordedAnalyticsEvent> events = <_RecordedAnalyticsEvent>[];
+  int remainingInitializationFailures;
+  int initializationAttempts = 0;
+
+  @override
+  Future<void> ensureInitialized(AnalyticsBuildConfig config) async {
+    initializationAttempts += 1;
+    if (remainingInitializationFailures > 0) {
+      remainingInitializationFailures -= 1;
+      throw StateError('lock failed');
+    }
+  }
+
+  @override
+  Future<void> track(String eventName, Map<String, Object?> properties) async {
+    events.add(_RecordedAnalyticsEvent(name: eventName, properties: properties));
+  }
+}
+
+class _NoOpStorageManager implements StorageManager {
+  @override
+  Future<void> add(String item) async {}
+
+  @override
+  Future<void> deleteAllKeys(Iterable<dynamic> keys) async {}
+
+  @override
+  Future<Iterable<MapEntry<dynamic, String>>> getItems(int length) async {
+    return const <MapEntry<dynamic, String>>[];
+  }
+
+  @override
+  Future<void> init() async {}
 }

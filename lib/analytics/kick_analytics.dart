@@ -1,10 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:aptabase_flutter/aptabase_flutter.dart';
+import 'package:aptabase_flutter/storage_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../data/models/app_settings.dart';
 import '../proxy/model_catalog.dart';
+
+const _kickAptabaseBoxName = 'kick_aptabase_events';
+const _kickAptabaseStorageDirectoryName = 'analytics';
 
 bool analyticsTrackingAllowed(AppSettings settings) {
   return settings.hasAcknowledgedDisclaimer && settings.analyticsConsentEnabled;
@@ -70,20 +78,61 @@ class NoOpAnalyticsTransport implements AnalyticsTransport {
   Future<void> track(String eventName, Map<String, Object?> properties) async {}
 }
 
+typedef AnalyticsStorageFactory = Future<StorageManager> Function();
+typedef AnalyticsTransportInitializer =
+    Future<void> Function(AnalyticsBuildConfig config, StorageManager storage);
+
 class AptabaseAnalyticsTransport implements AnalyticsTransport {
+  AptabaseAnalyticsTransport({
+    AnalyticsStorageFactory? storageFactory,
+    AnalyticsTransportInitializer? initializer,
+  }) : _storageFactory = storageFactory ?? _defaultAnalyticsStorageFactory,
+       _initializer = initializer ?? _defaultInitialize;
+
+  final AnalyticsStorageFactory _storageFactory;
+  final AnalyticsTransportInitializer _initializer;
+
   Future<void>? _initialization;
+  bool _initialized = false;
 
   @override
-  Future<void> ensureInitialized(AnalyticsBuildConfig config) {
-    return _initialization ??= _initialize(config);
+  Future<void> ensureInitialized(AnalyticsBuildConfig config) async {
+    if (_initialized) {
+      return;
+    }
+
+    final initialization = _initialization ??= _initialize(config);
+    try {
+      await initialization;
+      if (identical(_initialization, initialization)) {
+        _initialized = true;
+      }
+    } catch (_) {
+      if (identical(_initialization, initialization)) {
+        _initialization = null;
+      }
+      rethrow;
+    }
   }
 
   Future<void> _initialize(AnalyticsBuildConfig config) async {
+    final storage = await _storageFactory();
+    await _initializer(config, storage);
+  }
+
+  static Future<StorageManager> _defaultAnalyticsStorageFactory() async {
+    return _KickHiveStorage();
+  }
+
+  static Future<void> _defaultInitialize(
+    AnalyticsBuildConfig config,
+    StorageManager storage,
+  ) async {
     final host = config.host?.trim();
     final options = host == null || host.isEmpty
         ? InitOptions(printDebugMessages: !kReleaseMode)
         : InitOptions(host: host, printDebugMessages: !kReleaseMode);
-    await Aptabase.init(config.appKey, options);
+    await Aptabase.init(config.appKey, options, storage);
   }
 
   @override
@@ -164,16 +213,19 @@ class KickAnalytics {
     required String route,
     required String model,
     required bool stream,
-  }) {
+  }) async {
     if (_firstSuccessfulRequestTracked) {
-      return Future<void>.value();
+      return;
     }
-    _firstSuccessfulRequestTracked = true;
-    return _track('first_successful_request', {
+
+    final tracked = await _trackEvent('first_successful_request', {
       'route': route,
       'model_family': modelFamily(model),
       'stream': _flag(stream),
     });
+    if (tracked) {
+      _firstSuccessfulRequestTracked = true;
+    }
   }
 
   Future<void> trackProxyRequestFailed({
@@ -294,15 +346,25 @@ class KickAnalytics {
   }
 
   Future<void> _track(String eventName, [Map<String, Object?> properties = const {}]) async {
+    await _trackEvent(eventName, properties);
+  }
+
+  Future<bool> _trackEvent(String eventName, [Map<String, Object?> properties = const {}]) async {
     if (!_trackingAllowed || !_config.isEnabled) {
-      return;
+      return false;
     }
 
-    await _transport.ensureInitialized(_config);
-    await _transport.track(eventName, {
-      'build_channel': _config.buildChannel,
-      ..._sanitizeProperties(properties),
-    });
+    try {
+      await _transport.ensureInitialized(_config);
+      await _transport.track(eventName, {
+        'build_channel': _config.buildChannel,
+        ..._sanitizeProperties(properties),
+      });
+      return true;
+    } catch (error, stackTrace) {
+      _debugAnalyticsFailure(eventName, error, stackTrace);
+      return false;
+    }
   }
 
   static Map<String, Object?> _sanitizeProperties(Map<String, Object?> properties) {
@@ -356,4 +418,60 @@ class KickAnalytics {
     }
     return 'custom';
   }
+}
+
+class _KickHiveStorage implements StorageManager {
+  _KickHiveStorage({Future<Directory> Function()? supportDirectoryProvider})
+    : _supportDirectoryProvider = supportDirectoryProvider ?? getApplicationSupportDirectory;
+
+  final Future<Directory> Function() _supportDirectoryProvider;
+
+  Box<String>? _box;
+
+  @override
+  Future<void> init() async {
+    final existingBox = _box;
+    if (existingBox != null && existingBox.isOpen) {
+      return;
+    }
+
+    final supportDirectory = await _supportDirectoryProvider();
+    final analyticsDirectory = Directory(
+      p.join(supportDirectory.path, _kickAptabaseStorageDirectoryName),
+    );
+    await analyticsDirectory.create(recursive: true);
+    _box = await Hive.openBox<String>(_kickAptabaseBoxName, path: analyticsDirectory.path);
+  }
+
+  @override
+  Future<void> deleteAllKeys(Iterable<dynamic> keys) {
+    return _requireBox().deleteAll(keys);
+  }
+
+  @override
+  Future<Iterable<MapEntry<dynamic, String>>> getItems(int length) async {
+    return _requireBox().toMap().entries.take(length);
+  }
+
+  @override
+  Future<void> add(String item) {
+    return _requireBox().add(item);
+  }
+
+  Box<String> _requireBox() {
+    final box = _box;
+    if (box == null) {
+      throw StateError('Analytics storage accessed before initialization.');
+    }
+    return box;
+  }
+}
+
+void _debugAnalyticsFailure(String eventName, Object error, StackTrace stackTrace) {
+  if (!kDebugMode) {
+    return;
+  }
+
+  debugPrint('[analytics] $eventName failed: $error');
+  debugPrint('$stackTrace');
 }

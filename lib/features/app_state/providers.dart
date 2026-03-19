@@ -72,19 +72,27 @@ final accountUsageQueryProvider = FutureProvider.autoDispose.family<GeminiUsageS
   ref,
   accountId,
 ) async {
-  final accounts = await ref.watch(accountsControllerProvider.future);
-  AccountProfile? account;
-  for (final item in accounts) {
-    if (item.id == accountId) {
-      account = item;
-      break;
+  // Keep the provider alive until the current request completes. Popping the
+  // page while the fetch was still loading could otherwise dispose the
+  // provider mid-flight and surface a Riverpod StateError.
+  final keepAliveLink = ref.keepAlive();
+  try {
+    final accounts = await ref.watch(accountsControllerProvider.future);
+    AccountProfile? account;
+    for (final item in accounts) {
+      if (item.id == accountId) {
+        account = item;
+        break;
+      }
     }
-  }
-  if (account == null) {
-    throw StateError('Account not found.');
-  }
+    if (account == null) {
+      throw StateError('Account not found.');
+    }
 
-  return ref.watch(geminiUsageServiceProvider).fetchUsage(account);
+    return await ref.watch(geminiUsageServiceProvider).fetchUsage(account);
+  } finally {
+    keepAliveLink.close();
+  }
 });
 
 final settingsControllerProvider = AsyncNotifierProvider<SettingsController, AppSettings>(

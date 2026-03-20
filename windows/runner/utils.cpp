@@ -7,6 +7,42 @@
 
 #include <iostream>
 
+const wchar_t kKickWindowTitle[] = L"KiCk";
+const wchar_t kKickSingleInstanceMutexName[] =
+    L"Local\\KiCk.SingleInstanceMutex";
+
+namespace {
+
+constexpr wchar_t kKickActivateWindowMessageName[] =
+    L"KiCk.ActivateWindow";
+constexpr int kExistingWindowLookupAttempts = 20;
+constexpr DWORD kExistingWindowLookupDelayMs = 100;
+
+UINT kKickActivateWindowMessage =
+    ::RegisterWindowMessage(kKickActivateWindowMessageName);
+
+HWND FindKickWindow() {
+  return ::FindWindow(nullptr, kKickWindowTitle);
+}
+
+void ShowAndFocusWindow(HWND window) {
+  if (window == nullptr) {
+    return;
+  }
+
+  auto style = static_cast<DWORD>(::GetWindowLongPtr(window, GWL_STYLE));
+  if ((style & WS_VISIBLE) == 0) {
+    ::SetWindowLongPtr(window, GWL_STYLE, style | WS_VISIBLE);
+  }
+
+  const int show_command = ::IsIconic(window) ? SW_RESTORE : SW_SHOW;
+  ::ShowWindowAsync(window, show_command);
+  ::SetWindowPos(window, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+  ::SetForegroundWindow(window);
+}
+
+}  // namespace
+
 void CreateAndAttachConsole() {
   if (::AllocConsole()) {
     FILE *unused;
@@ -62,4 +98,34 @@ std::string Utf8FromUtf16(const wchar_t* utf16_string) {
     return std::string();
   }
   return utf8_string;
+}
+
+UINT GetKickActivateWindowMessage() {
+  return kKickActivateWindowMessage;
+}
+
+bool NotifyExistingKickInstance() {
+  HWND existing_window = nullptr;
+  for (int attempt = 0; attempt < kExistingWindowLookupAttempts; ++attempt) {
+    existing_window = FindKickWindow();
+    if (existing_window != nullptr) {
+      break;
+    }
+
+    ::Sleep(kExistingWindowLookupDelayMs);
+  }
+
+  if (existing_window == nullptr) {
+    return false;
+  }
+
+  DWORD process_id = 0;
+  ::GetWindowThreadProcessId(existing_window, &process_id);
+  if (process_id != 0) {
+    ::AllowSetForegroundWindow(process_id);
+  }
+
+  ::PostMessage(existing_window, GetKickActivateWindowMessage(), 0, 0);
+  ShowAndFocusWindow(existing_window);
+  return true;
 }

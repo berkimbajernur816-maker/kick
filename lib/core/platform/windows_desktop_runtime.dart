@@ -233,6 +233,32 @@ class WindowsDesktopRuntime with TrayListener, WindowListener {
   }
 
   @override
+  void onWindowEvent(String eventName) {
+    if (!_configured || _exitRequested) {
+      return;
+    }
+
+    switch (eventName) {
+      case 'show':
+        unawaited(_syncVisibleWindowState());
+        return;
+      case 'hide':
+        unawaited(_setTrayContextMenu(windowVisible: false));
+        return;
+      default:
+        return;
+    }
+  }
+
+  Future<void> _syncVisibleWindowState() async {
+    if (await windowManager.isSkipTaskbar()) {
+      await windowManager.setSkipTaskbar(false);
+    }
+
+    await _setTrayContextMenu(windowVisible: true);
+  }
+
+  @override
   void onTrayIconMouseDown() {
     unawaited(_toggleWindowVisibility());
   }

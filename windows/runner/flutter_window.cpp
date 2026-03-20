@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "utils.h"
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -51,6 +52,19 @@ LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
+  if (message == GetKickActivateWindowMessage()) {
+    const auto style = static_cast<DWORD>(GetWindowLongPtr(hwnd, GWL_STYLE));
+    if ((style & WS_VISIBLE) == 0) {
+      SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_VISIBLE);
+    }
+
+    const int show_command = IsIconic(hwnd) ? SW_RESTORE : SW_SHOW;
+    ShowWindowAsync(hwnd, show_command);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    SetForegroundWindow(hwnd);
+    return 0;
+  }
+
   // Give Flutter, including plugins, an opportunity to handle window messages.
   if (flutter_controller_) {
     std::optional<LRESULT> result =

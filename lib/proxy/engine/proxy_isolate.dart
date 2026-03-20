@@ -19,6 +19,40 @@ import '../openai/sse.dart';
 import 'proxy_cors.dart';
 
 const _maxRequestBodyBytes = 20 * 1024 * 1024;
+const _proxyBindRetryDelays = <Duration>[
+  Duration(milliseconds: 100),
+  Duration(milliseconds: 200),
+  Duration(milliseconds: 400),
+];
+
+bool looksLikeProxyPortInUseError(String value) {
+  final normalized = value.toLowerCase();
+  return normalized.contains('address already in use') ||
+      normalized.contains('only one usage') ||
+      normalized.contains('shared flag to bind()') ||
+      normalized.contains('binding multiple times on the same') ||
+      normalized.contains('failed to create server socket');
+}
+
+Future<T> retryProxyPortBind<T>(
+  Future<T> Function() operation, {
+  List<Duration> retryDelays = _proxyBindRetryDelays,
+}) async {
+  for (var attempt = 0; ; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error, stackTrace) {
+      final shouldRetry =
+          error is SocketException &&
+          looksLikeProxyPortInUseError(error.toString()) &&
+          attempt < retryDelays.length;
+      if (!shouldRetry) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      await Future<void>.delayed(retryDelays[attempt]);
+    }
+  }
+}
 
 @pragma('vm:entry-point')
 Future<void> proxyIsolateMain(SendPort sendPort) async {
@@ -137,7 +171,7 @@ class _ProxyIsolateHost {
     final host = _allowLan ? '0.0.0.0' : _configuredHost;
     final port = _settings?['port'] as int? ?? 3000;
     try {
-      _server = await shelf_io.serve(handler, host, port);
+      _server = await retryProxyPortBind(() => shelf_io.serve(handler, host, port));
       _startedAt = DateTime.now();
       _lastRuntimeError = null;
     } catch (error, stackTrace) {

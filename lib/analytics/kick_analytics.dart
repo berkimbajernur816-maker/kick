@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:aptabase_flutter/aptabase_flutter.dart';
@@ -121,7 +122,7 @@ class AptabaseAnalyticsTransport implements AnalyticsTransport {
   }
 
   static Future<StorageManager> _defaultAnalyticsStorageFactory() async {
-    return _KickHiveStorage();
+    return createDefaultAnalyticsStorage(isWindows: Platform.isWindows);
   }
 
   static Future<void> _defaultInitialize(
@@ -139,6 +140,19 @@ class AptabaseAnalyticsTransport implements AnalyticsTransport {
   Future<void> track(String eventName, Map<String, Object?> properties) {
     return Aptabase.instance.trackEvent(eventName, properties);
   }
+}
+
+@visibleForTesting
+StorageManager createDefaultAnalyticsStorage({
+  required bool isWindows,
+  Future<Directory> Function()? supportDirectoryProvider,
+}) {
+  if (isWindows) {
+    // Persisted Hive-backed storage is not reliable on Windows desktop when
+    // multiple KiCk processes overlap briefly during startup/shutdown.
+    return _InMemoryAnalyticsStorage();
+  }
+  return _KickHiveStorage(supportDirectoryProvider: supportDirectoryProvider);
 }
 
 class KickAnalytics {
@@ -510,6 +524,34 @@ class _KickHiveStorage implements StorageManager {
       throw StateError('Analytics storage accessed before initialization.');
     }
     return box;
+  }
+}
+
+class _InMemoryAnalyticsStorage implements StorageManager {
+  final LinkedHashMap<int, String> _items = LinkedHashMap<int, String>();
+  int _nextKey = 0;
+
+  @override
+  Future<void> init() async {}
+
+  @override
+  Future<void> add(String item) async {
+    _items[_nextKey] = item;
+    _nextKey += 1;
+  }
+
+  @override
+  Future<void> deleteAllKeys(Iterable<dynamic> keys) async {
+    for (final key in keys) {
+      if (key is int) {
+        _items.remove(key);
+      }
+    }
+  }
+
+  @override
+  Future<Iterable<MapEntry<dynamic, String>>> getItems(int length) async {
+    return _items.entries.take(length).toList(growable: false);
   }
 }
 

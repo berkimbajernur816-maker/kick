@@ -294,6 +294,30 @@ void main() {
 
     expect(initializationAttempts, 2);
   });
+
+  test('windows analytics storage falls back to in-memory queue', () async {
+    var supportDirectoryRequested = false;
+    final storage = createDefaultAnalyticsStorage(
+      isWindows: true,
+      supportDirectoryProvider: () async {
+        supportDirectoryRequested = true;
+        throw StateError('filesystem should not be used on Windows fallback');
+      },
+    );
+
+    await storage.init();
+    await storage.add('first');
+    await storage.add('second');
+
+    final items = (await storage.getItems(10)).toList(growable: false);
+    expect(supportDirectoryRequested, isFalse);
+    expect(items.map((entry) => entry.value), <String>['first', 'second']);
+
+    await storage.deleteAllKeys(<dynamic>[items.first.key]);
+
+    final remainingItems = (await storage.getItems(10)).toList(growable: false);
+    expect(remainingItems.map((entry) => entry.value), <String>['second']);
+  });
 }
 
 class _RecordingAnalyticsTransport implements AnalyticsTransport {

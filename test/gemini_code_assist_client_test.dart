@@ -157,8 +157,8 @@ void main() {
         : currentAbi.substring(separatorIndex + 1);
     expect(
       capturedHeaders?[HttpHeaders.userAgentHeader],
-      '$geminiCodeAssistUserAgentPrefix/gemini-2.5-pro '
-      '($expectedPlatform; $expectedArchitecture) '
+      '$geminiCodeAssistUserAgentPrefix/$geminiCodeAssistCliVersion/gemini-2.5-pro '
+      '($expectedPlatform; $expectedArchitecture; $geminiCodeAssistUserAgentSurface) '
       '$geminiCodeAssistNodeJsUserAgentSuffix',
     );
     expect(capturedBody?.containsKey('metadata'), isFalse);

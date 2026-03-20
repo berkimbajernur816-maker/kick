@@ -1,6 +1,9 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+val requestedTasks = gradle.startParameter.taskNames.joinToString(" ").lowercase()
+val releaseTaskRequested = requestedTasks.contains("release") || requestedTasks.contains("bundle")
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -55,6 +58,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        if (releaseTaskRequested) {
+            ndk {
+                abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+            }
+        }
     }
 
     signingConfigs {
@@ -80,9 +88,6 @@ android {
 flutter {
     source = "../.."
 }
-
-val requestedTasks = gradle.startParameter.taskNames.joinToString(" ").lowercase()
-val releaseTaskRequested = requestedTasks.contains("release") || requestedTasks.contains("bundle")
 if (releaseTaskRequested) {
     val keyPropertiesFile = rootProject.file("key.properties")
     val hasKeyProperties = keyPropertiesFile.exists()

@@ -307,6 +307,23 @@ jobs:
           fi
           flutter "${flutter_args[@]}"
 
+      - name: Install Sentry CLI
+        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+        shell: bash
+        run: curl -sL https://sentry.io/get-cli/ | bash
+
+      - name: Upload Android debug files to GlitchTip
+        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_URL: https://app.glitchtip.com/
+          SENTRY_ORG: kick
+          SENTRY_PROJECT: kick
+        shell: bash
+        run: |
+          chmod +x scripts/upload-android-debug-files.sh
+          scripts/upload-android-debug-files.sh
+
       - name: Prepare Android release artifacts
         id: android_artifacts
         shell: bash

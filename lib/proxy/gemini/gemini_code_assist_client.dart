@@ -126,6 +126,29 @@ class GeminiRetryEvent {
   final GeminiGatewayException error;
 }
 
+class _GeminiRequestCanceledException implements Exception {
+  const _GeminiRequestCanceledException();
+}
+
+class _RequestCancellation {
+  final Completer<void> _abortCompleter = Completer<void>();
+
+  Future<void> get trigger => _abortCompleter.future;
+  bool get isCanceled => _abortCompleter.isCompleted;
+
+  void cancel() {
+    if (!_abortCompleter.isCompleted) {
+      _abortCompleter.complete();
+    }
+  }
+
+  void throwIfCanceled() {
+    if (isCanceled) {
+      throw const _GeminiRequestCanceledException();
+    }
+  }
+}
+
 const _cloudCodeDomains = <String>{
   'cloudcode-pa.googleapis.com',
   'staging-cloudcode-pa.googleapis.com',
@@ -418,9 +441,11 @@ class GeminiCodeAssistClient {
     final sessionState = _createSessionState(baseRequestBody);
     StreamIterator<Map<String, Object?>>? payloadIterator;
     var canceled = false;
+    final cancellation = _RequestCancellation();
     final controller = StreamController<Map<String, Object?>>(
       onCancel: () async {
         canceled = true;
+        cancellation.cancel();
         await payloadIterator?.cancel();
       },
     );
@@ -445,8 +470,10 @@ class GeminiCodeAssistClient {
                 projectId: account.projectId,
                 requestBody: currentRequestBody,
                 sessionState: sessionState,
+                cancellation: cancellation,
               ),
               onRetry: onRetry,
+              cancellation: cancellation,
             );
 
             Map<String, Object?>? lastPayload;
@@ -500,7 +527,7 @@ class GeminiCodeAssistClient {
             );
           }
         } catch (error) {
-          if (!canceled) {
+          if (!canceled && error is! _GeminiRequestCanceledException) {
             controller.addError(_decodeTransportError(error));
           }
         } finally {
@@ -915,12 +942,14 @@ class GeminiCodeAssistClient {
     required String projectId,
     required Map<String, Object?> requestBody,
     required _CodeAssistSessionState sessionState,
+    _RequestCancellation? cancellation,
   }) async {
     final headers = await _headers(accessToken, model: model);
     final httpRequest =
-        http.Request(
+        http.AbortableRequest(
             'POST',
             _methodUri('streamGenerateContent').replace(queryParameters: {'alt': 'sse'}),
+            abortTrigger: cancellation?.trigger,
           )
           ..headers.addAll(<String, String>{...headers, HttpHeaders.acceptHeader: '*/*'})
           ..body = jsonEncode(
@@ -998,18 +1027,25 @@ class GeminiCodeAssistClient {
   Future<T> _executeWithRetry<T>(
     Future<T> Function() operation, {
     void Function(GeminiRetryEvent event)? onRetry,
+    _RequestCancellation? cancellation,
   }) async {
     GeminiGatewayException? lastError;
     for (var attempt = 0; attempt <= _retryPolicy.maxRetries; attempt++) {
       try {
+        cancellation?.throwIfCanceled();
         return await operation();
       } catch (error) {
+        if (error is _GeminiRequestCanceledException || error is http.RequestAbortedException) {
+          throw const _GeminiRequestCanceledException();
+        }
+        cancellation?.throwIfCanceled();
         final gatewayError = _decodeTransportError(error);
         lastError = gatewayError;
         if (!_shouldRetryRequest(gatewayError, attempt)) {
           throw gatewayError;
         }
         final delay = _retryDelayFor(gatewayError, attempt);
+        cancellation?.throwIfCanceled();
         onRetry?.call(
           GeminiRetryEvent(
             attempt: attempt + 1,
@@ -1018,7 +1054,7 @@ class GeminiCodeAssistClient {
             error: gatewayError,
           ),
         );
-        await _wait(delay);
+        await _waitForRetryDelay(delay, cancellation: cancellation);
       }
     }
 
@@ -1028,6 +1064,16 @@ class GeminiCodeAssistClient {
           message: 'Gemini request failed after retries.',
           statusCode: 500,
         );
+  }
+
+  Future<void> _waitForRetryDelay(Duration delay, {_RequestCancellation? cancellation}) async {
+    if (cancellation == null) {
+      await _wait(delay);
+      return;
+    }
+
+    await Future.any<void>(<Future<void>>[_wait(delay), cancellation.trigger]);
+    cancellation.throwIfCanceled();
   }
 
   bool _shouldRetryRequest(GeminiGatewayException error, int attempt) {

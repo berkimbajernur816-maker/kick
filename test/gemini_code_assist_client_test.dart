@@ -1897,6 +1897,107 @@ void main() {
     await subscription.cancel();
     await upstreamCanceled.future.timeout(const Duration(seconds: 1));
   });
+
+  test('stops retrying Gemini stream when consumer cancels during retry backoff', () async {
+    final waits = <Duration>[];
+    final firstAttempt = Completer<void>();
+    var attempts = 0;
+
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      wait: (delay) async {
+        waits.add(delay);
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      },
+      httpClient: QueueHttpClient([
+        (request) async {
+          attempts += 1;
+          if (!firstAttempt.isCompleted) {
+            firstAttempt.complete();
+          }
+          return http.Response(
+            jsonEncode({
+              'error': {
+                'message':
+                    'You have exhausted your capacity on this model. Your quota will reset after 30s.',
+              },
+            }),
+            429,
+          );
+        },
+        (request) async {
+          attempts += 1;
+          return http.Response(
+            jsonEncode({
+              'response': {
+                'candidates': [
+                  {
+                    'content': {
+                      'parts': [
+                        {'text': 'late retry'},
+                      ],
+                    },
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        },
+      ]),
+    );
+
+    final stream = await client.generateContentStream(
+      account: sampleAccount(),
+      request: sampleRequest(stream: true),
+    );
+    final subscription = stream.listen((_) {});
+
+    await firstAttempt.future.timeout(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    await subscription.cancel();
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+
+    expect(attempts, 1);
+    expect(waits, [const Duration(seconds: 30)]);
+  });
+
+  test('aborts in-flight Gemini stream request when consumer cancels before first chunk', () async {
+    final requestStarted = Completer<void>();
+    final requestAborted = Completer<void>();
+
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      httpClient: QueueHttpClient([
+        (request) {
+          if (!requestStarted.isCompleted) {
+            requestStarted.complete();
+          }
+          if (request is http.Abortable && request.abortTrigger != null) {
+            unawaited(
+              request.abortTrigger!.then((_) {
+                if (!requestAborted.isCompleted) {
+                  requestAborted.complete();
+                }
+              }),
+            );
+          }
+          return Completer<http.BaseResponse>().future;
+        },
+      ]),
+    );
+
+    final stream = await client.generateContentStream(
+      account: sampleAccount(),
+      request: sampleRequest(stream: true),
+    );
+    final subscription = stream.listen((_) {});
+
+    await requestStarted.future.timeout(const Duration(seconds: 1));
+    await subscription.cancel();
+
+    await requestAborted.future.timeout(const Duration(seconds: 1));
+  });
 }
 
 class QueueHttpClient extends http.BaseClient {
@@ -1910,7 +2011,21 @@ class QueueHttpClient extends http.BaseClient {
       throw StateError('No queued HTTP responses left.');
     }
 
-    final response = await _handlers.removeAt(0)(request);
+    final responseFuture = _handlers
+        .removeAt(0)(request)
+        .then((response) => _toStreamedResponse(response, request));
+    if (request is http.Abortable && request.abortTrigger != null) {
+      return Future.any<http.StreamedResponse>([
+        responseFuture,
+        request.abortTrigger!.then<http.StreamedResponse>(
+          (_) => throw http.RequestAbortedException(request.url),
+        ),
+      ]);
+    }
+    return responseFuture;
+  }
+
+  http.StreamedResponse _toStreamedResponse(http.BaseResponse response, http.BaseRequest request) {
     if (response is http.StreamedResponse) {
       return response;
     }

@@ -12,6 +12,8 @@ void main() {
     expect(settings.retry429DelaySeconds, 30);
     expect(settings.mark429AsUnhealthy, isFalse);
     expect(settings.apiKeyRequired, isTrue);
+    expect(settings.defaultGoogleWebSearchEnabled, isFalse);
+    expect(settings.renderGoogleGroundingInMessage, isFalse);
   });
 
   test('round-trips disclaimer fields through storage map', () {
@@ -30,6 +32,8 @@ void main() {
       requestMaxRetries: 7,
       retry429DelaySeconds: 45,
       mark429AsUnhealthy: true,
+      defaultGoogleWebSearchEnabled: true,
+      renderGoogleGroundingInMessage: true,
       loggingVerbosity: KickLogVerbosity.verbose,
       unsafeRawLoggingEnabled: true,
       customModels: ['gemini-2.5-flash'],
@@ -45,6 +49,8 @@ void main() {
     expect(restored.requestMaxRetries, 7);
     expect(restored.retry429DelaySeconds, 45);
     expect(restored.mark429AsUnhealthy, isTrue);
+    expect(restored.defaultGoogleWebSearchEnabled, isTrue);
+    expect(restored.renderGoogleGroundingInMessage, isTrue);
     expect(restored.windowsLaunchAtStartup, isTrue);
     expect(restored.unsafeRawLoggingEnabled, isTrue);
     expect(restored.customModels, ['gemini-2.5-flash']);

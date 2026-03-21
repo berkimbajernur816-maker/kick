@@ -24,6 +24,8 @@ class AppSettings {
     'request_max_retries',
     'retry_429_delay_seconds',
     'mark_429_as_unhealthy',
+    'default_google_web_search_enabled',
+    'render_google_grounding_in_message',
     'logging_verbosity',
     'unsafe_raw_logging_enabled',
     'custom_models',
@@ -44,6 +46,8 @@ class AppSettings {
     required this.requestMaxRetries,
     required this.retry429DelaySeconds,
     required this.mark429AsUnhealthy,
+    this.defaultGoogleWebSearchEnabled = false,
+    this.renderGoogleGroundingInMessage = false,
     required this.loggingVerbosity,
     required this.unsafeRawLoggingEnabled,
     required this.customModels,
@@ -63,6 +67,8 @@ class AppSettings {
   final int requestMaxRetries;
   final int retry429DelaySeconds;
   final bool mark429AsUnhealthy;
+  final bool defaultGoogleWebSearchEnabled;
+  final bool renderGoogleGroundingInMessage;
   final KickLogVerbosity loggingVerbosity;
   final bool unsafeRawLoggingEnabled;
   final List<String> customModels;
@@ -83,6 +89,8 @@ class AppSettings {
       requestMaxRetries: _defaultRequestMaxRetries,
       retry429DelaySeconds: _defaultRetry429DelaySeconds,
       mark429AsUnhealthy: false,
+      defaultGoogleWebSearchEnabled: false,
+      renderGoogleGroundingInMessage: false,
       loggingVerbosity: KickLogVerbosity.normal,
       unsafeRawLoggingEnabled: false,
       customModels: const [],
@@ -104,6 +112,8 @@ class AppSettings {
     int? requestMaxRetries,
     int? retry429DelaySeconds,
     bool? mark429AsUnhealthy,
+    bool? defaultGoogleWebSearchEnabled,
+    bool? renderGoogleGroundingInMessage,
     KickLogVerbosity? loggingVerbosity,
     bool? unsafeRawLoggingEnabled,
     List<String>? customModels,
@@ -126,6 +136,10 @@ class AppSettings {
         retry429DelaySeconds ?? this.retry429DelaySeconds,
       ),
       mark429AsUnhealthy: mark429AsUnhealthy ?? this.mark429AsUnhealthy,
+      defaultGoogleWebSearchEnabled:
+          defaultGoogleWebSearchEnabled ?? this.defaultGoogleWebSearchEnabled,
+      renderGoogleGroundingInMessage:
+          renderGoogleGroundingInMessage ?? this.renderGoogleGroundingInMessage,
       loggingVerbosity: loggingVerbosity ?? this.loggingVerbosity,
       unsafeRawLoggingEnabled: unsafeRawLoggingEnabled ?? this.unsafeRawLoggingEnabled,
       customModels: customModels ?? this.customModels,
@@ -147,6 +161,8 @@ class AppSettings {
       'request_max_retries': requestMaxRetries.toString(),
       'retry_429_delay_seconds': retry429DelaySeconds.toString(),
       'mark_429_as_unhealthy': mark429AsUnhealthy.toString(),
+      'default_google_web_search_enabled': defaultGoogleWebSearchEnabled.toString(),
+      'render_google_grounding_in_message': renderGoogleGroundingInMessage.toString(),
       'logging_verbosity': loggingVerbosity.name,
       'unsafe_raw_logging_enabled': unsafeRawLoggingEnabled.toString(),
       'custom_models': customModels.join('\n'),
@@ -177,6 +193,8 @@ class AppSettings {
         int.tryParse(values['retry_429_delay_seconds'] ?? ''),
       ),
       mark429AsUnhealthy: values['mark_429_as_unhealthy'] == 'true',
+      defaultGoogleWebSearchEnabled: values['default_google_web_search_enabled'] == 'true',
+      renderGoogleGroundingInMessage: values['render_google_grounding_in_message'] == 'true',
       loggingVerbosity: KickLogVerbosity.values.firstWhere(
         (value) => value.name == values['logging_verbosity'],
         orElse: () => KickLogVerbosity.normal,

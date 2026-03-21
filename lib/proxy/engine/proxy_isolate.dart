@@ -54,6 +54,99 @@ Future<T> retryProxyPortBind<T>(
   }
 }
 
+Map<String, Object?> normalizeOpenAiCompatRequest({
+  required Map<String, Object?> body,
+  required Map<String, String> headers,
+  bool defaultGoogleWebSearchEnabled = false,
+}) {
+  final normalized = Map<String, Object?>.from(body);
+  final bodyFlag = _readGoogleWebSearchFlagFromJson(normalized);
+  final headerFlag = _readGoogleWebSearchFlagFromHeaders(headers);
+  final explicitFlag = bodyFlag ?? headerFlag;
+  final effectiveFlag =
+      explicitFlag ??
+      (defaultGoogleWebSearchEnabled && !_requestDeclaresTools(normalized) ? true : null);
+  if (effectiveFlag == null) {
+    return normalized;
+  }
+
+  final extraBody =
+      (normalized['extra_body'] as Map?)?.cast<String, Object?>() ??
+      <String, Object?>{};
+  final google =
+      (extraBody['google'] as Map?)?.cast<String, Object?>() ?? <String, Object?>{};
+  google.putIfAbsent('web_search', () => effectiveFlag);
+  extraBody['google'] = google;
+  normalized['extra_body'] = extraBody;
+  return normalized;
+}
+
+bool _requestDeclaresTools(Map<String, Object?> body) {
+  final tools = body['tools'];
+  return tools is List && tools.isNotEmpty;
+}
+
+bool? _readGoogleWebSearchFlagFromJson(Map<String, Object?> body) {
+  final extraBody = (body['extra_body'] as Map?)?.cast<String, Object?>();
+  final google = (extraBody?['google'] as Map?)?.cast<String, Object?>();
+  final directGoogle = (body['google'] as Map?)?.cast<String, Object?>();
+  return _parseBooleanFlag(google?['web_search']) ??
+      _parseBooleanFlag(google?['webSearch']) ??
+      _parseBooleanFlag(extraBody?['web_search']) ??
+      _parseBooleanFlag(extraBody?['webSearch']) ??
+      _parseBooleanFlag(directGoogle?['web_search']) ??
+      _parseBooleanFlag(directGoogle?['webSearch']) ??
+      _parseBooleanFlag(body['web_search']) ??
+      _parseBooleanFlag(body['webSearch']);
+}
+
+bool? _readGoogleWebSearchFlagFromHeaders(Map<String, String> headers) {
+  final normalizedHeaders = <String, String>{
+    for (final entry in headers.entries) entry.key.toLowerCase(): entry.value,
+  };
+  const candidateNames = <String>[
+    'x-kick-google-web-search',
+    'x-kick-web-search',
+    'x-google-web-search',
+    'web_search',
+    'web-search',
+  ];
+  for (final headerName in candidateNames) {
+    final parsed = _parseBooleanFlag(normalizedHeaders[headerName]);
+    if (parsed != null) {
+      return parsed;
+    }
+  }
+  return null;
+}
+
+bool? _parseBooleanFlag(Object? raw) {
+  if (raw is bool) {
+    return raw;
+  }
+  if (raw is num) {
+    return raw != 0;
+  }
+  if (raw is! String) {
+    return null;
+  }
+
+  switch (raw.trim().toLowerCase()) {
+    case '1':
+    case 'true':
+    case 'yes':
+    case 'on':
+      return true;
+    case '0':
+    case 'false':
+    case 'no':
+    case 'off':
+      return false;
+    default:
+      return null;
+  }
+}
+
 @pragma('vm:entry-point')
 Future<void> proxyIsolateMain(SendPort sendPort) async {
   final commands = ReceivePort();
@@ -103,6 +196,10 @@ class _ProxyIsolateHost {
 
   bool get _allowLan => _settings?['allow_lan'] == true;
   String get _configuredHost => _settings?['host'] as String? ?? '127.0.0.1';
+  bool get _defaultGoogleWebSearchEnabled =>
+      _settings?['default_google_web_search_enabled'] == true;
+  bool get _renderGoogleGroundingInMessage =>
+      _settings?['render_google_grounding_in_message'] == true;
 
   Future<bool> handle(Map<String, Object?> message) async {
     switch (message['type']) {
@@ -229,10 +326,15 @@ class _ProxyIsolateHost {
     }
 
     final route = request.requestedUri.path;
-    final body = await _readJson(request);
-    if (body == null) {
+    final rawBody = await _readJson(request);
+    if (rawBody == null) {
       return _errorResponse(400, 'invalid_request_error', 'Request body must be valid JSON.');
     }
+    final body = normalizeOpenAiCompatRequest(
+      body: rawBody,
+      headers: request.headers,
+      defaultGoogleWebSearchEnabled: _defaultGoogleWebSearchEnabled,
+    );
     final requestId = _uuid.v4().replaceAll('-', '');
     UnifiedPromptRequest? prompt;
     _RequestRetryTracker? retryTracker;
@@ -272,6 +374,7 @@ class _ProxyIsolateHost {
               requestId: resolvedPrompt.requestId,
               model: resolvedPrompt.model,
               payload: payload,
+              renderGoogleGroundingInMessage: _renderGoogleGroundingInMessage,
               includeRole: includePrelude,
               previousText: previousText,
               previousReasoningText: previousReasoningText,
@@ -304,6 +407,7 @@ class _ProxyIsolateHost {
         requestId: resolvedPrompt.requestId,
         model: resolvedPrompt.model,
         payload: payload,
+        renderGoogleGroundingInMessage: _renderGoogleGroundingInMessage,
       );
       await _logTrace(
         category: 'chat.completions',
@@ -418,10 +522,15 @@ class _ProxyIsolateHost {
     }
 
     final route = request.requestedUri.path;
-    final body = await _readJson(request);
-    if (body == null) {
+    final rawBody = await _readJson(request);
+    if (rawBody == null) {
       return _errorResponse(400, 'invalid_request_error', 'Request body must be valid JSON.');
     }
+    final body = normalizeOpenAiCompatRequest(
+      body: rawBody,
+      headers: request.headers,
+      defaultGoogleWebSearchEnabled: _defaultGoogleWebSearchEnabled,
+    );
     final requestId = _uuid.v4().replaceAll('-', '');
     UnifiedPromptRequest? prompt;
     _RequestRetryTracker? retryTracker;
@@ -462,6 +571,7 @@ class _ProxyIsolateHost {
               requestId: resolvedPrompt.requestId,
               model: resolvedPrompt.model,
               payload: payload,
+              renderGoogleGroundingInMessage: _renderGoogleGroundingInMessage,
               includePrelude: includePrelude,
               previousText: previousText,
               previousReasoningText: previousReasoningText,
@@ -504,6 +614,7 @@ class _ProxyIsolateHost {
           requestId: resolvedPrompt.requestId,
           model: resolvedPrompt.model,
           payload: payload,
+          renderGoogleGroundingInMessage: _renderGoogleGroundingInMessage,
         ),
       );
     } on _RequestBodyTooLargeException catch (error, stackTrace) {
@@ -1053,7 +1164,8 @@ class _ProxyIsolateHost {
         'masked_payload': jsonEncode({
           ..._requestContextPayload(prompt: prompt),
           'turns': prompt.turns.length,
-          'tools': prompt.tools.length,
+          'function_tools': prompt.tools.length,
+          'google_web_search': prompt.googleWebSearchEnabled,
           'has_system_instruction': prompt.systemInstruction != null,
           'requested_max_output_tokens': prompt.maxOutputTokens,
           'effective_max_output_tokens': prompt.maxOutputTokens ?? defaultGeminiMaxOutputTokens,
@@ -1235,7 +1347,12 @@ class _ProxyIsolateHost {
       return const <String, Object?>{};
     }
 
-    return {'request_id': prompt.requestId, 'model': prompt.model, 'stream': prompt.stream};
+    return {
+      'request_id': prompt.requestId,
+      'model': prompt.model,
+      'stream': prompt.stream,
+      'google_web_search': prompt.googleWebSearchEnabled,
+    };
   }
 
   Map<String, Object?> _failureContextPayload({

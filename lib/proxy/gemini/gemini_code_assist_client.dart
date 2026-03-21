@@ -710,20 +710,18 @@ class GeminiCodeAssistClient {
       generationConfig['responseModalities'] = responseModalities;
     }
 
-    final tools = request.tools.isEmpty
-        ? null
-        : [
-            {
-              'functionDeclarations': [
-                for (final tool in request.tools)
-                  {
-                    'name': tool.name,
-                    'description': tool.description,
-                    'parameters': tool.parameters,
-                  },
-              ],
-            },
-          ];
+    final tools = <Map<String, Object?>>[];
+    if (request.tools.isNotEmpty) {
+      tools.add({
+        'functionDeclarations': [
+          for (final tool in request.tools)
+            {'name': tool.name, 'description': tool.description, 'parameters': tool.parameters},
+        ],
+      });
+    }
+    if (request.googleWebSearchEnabled) {
+      tools.add({'googleSearch': const <String, Object?>{}});
+    }
 
     return {
       'contents': contents,
@@ -734,10 +732,8 @@ class GeminiCodeAssistClient {
             {'text': request.systemInstruction},
           ],
         },
-      if (tools case final resolvedTools?) ...{
-        'tools': resolvedTools,
-        'toolConfig': _buildToolConfig(request.toolChoice),
-      },
+      if (tools.isNotEmpty) 'tools': tools,
+      if (request.tools.isNotEmpty) ...{'toolConfig': _buildToolConfig(request.toolChoice)},
       if (generationConfig.isNotEmpty) 'generationConfig': generationConfig,
       'safetySettings': _defaultSafetySettings,
       'session_id': sessionId,

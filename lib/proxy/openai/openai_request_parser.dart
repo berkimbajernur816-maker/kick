@@ -16,6 +16,7 @@ class UnifiedPromptRequest {
     required this.stopSequences,
     required this.reasoningEffort,
     required this.googleThinkingConfig,
+    required this.googleWebSearchEnabled,
     required this.responseModalities,
     required this.jsonMode,
     required this.responseSchema,
@@ -35,6 +36,7 @@ class UnifiedPromptRequest {
   final List<String>? stopSequences;
   final String? reasoningEffort;
   final Map<String, Object?>? googleThinkingConfig;
+  final bool googleWebSearchEnabled;
   final List<String>? responseModalities;
   final bool jsonMode;
   final Map<String, Object?>? responseSchema;
@@ -224,6 +226,12 @@ class OpenAiRequestParser {
     }
 
     final responseFormat = (json['response_format'] as Map?)?.cast<String, Object?>();
+    final googleWebSearchEnabled = _parseGoogleWebSearchEnabled(json);
+    if (toolDeclarations.isNotEmpty && googleWebSearchEnabled) {
+      throw const FormatException(
+        '`google web search` cannot be used together with `tools` yet.',
+      );
+    }
     final mergedSystemInstruction = systemParts.join('\n\n').trim();
     var systemInstruction = mergedSystemInstruction.isEmpty ? null : mergedSystemInstruction;
     if (turns.isEmpty && systemInstruction != null) {
@@ -247,6 +255,7 @@ class OpenAiRequestParser {
       stopSequences: _parseStopSequences(json['stop']),
       reasoningEffort: _parseReasoningEffort(json),
       googleThinkingConfig: _parseGoogleThinkingConfig(json),
+      googleWebSearchEnabled: googleWebSearchEnabled,
       responseModalities: _parseModalities(json['modalities']),
       jsonMode:
           responseFormat?['type'] == 'json_object' || responseFormat?['type'] == 'json_schema',
@@ -322,6 +331,12 @@ class OpenAiRequestParser {
     }
 
     final tools = _parseTools(json['tools']);
+    final googleWebSearchEnabled = _parseGoogleWebSearchEnabled(json);
+    if (tools.isNotEmpty && googleWebSearchEnabled) {
+      throw const FormatException(
+        '`google web search` cannot be used together with `tools` yet.',
+      );
+    }
     final textConfig = (json['text'] as Map?)?.cast<String, Object?>();
     final responseFormat = (textConfig?['format'] as Map?)?.cast<String, Object?>();
 
@@ -342,6 +357,7 @@ class OpenAiRequestParser {
       stopSequences: _parseStopSequences(json['stop']),
       reasoningEffort: _parseReasoningEffort(json),
       googleThinkingConfig: _parseGoogleThinkingConfig(json),
+      googleWebSearchEnabled: googleWebSearchEnabled,
       responseModalities: _parseModalities(json['modalities']),
       jsonMode:
           responseFormat?['type'] == 'json_schema' || responseFormat?['type'] == 'json_object',
@@ -658,6 +674,48 @@ class OpenAiRequestParser {
       return null;
     }
     return config;
+  }
+
+  static bool _parseGoogleWebSearchEnabled(Map<String, Object?> json) {
+    final extraBody = (json['extra_body'] as Map?)?.cast<String, Object?>();
+    final google = (extraBody?['google'] as Map?)?.cast<String, Object?>();
+    final directGoogle = (json['google'] as Map?)?.cast<String, Object?>();
+    return _readBooleanFlag(google?['web_search']) ??
+            _readBooleanFlag(google?['webSearch']) ??
+            _readBooleanFlag(extraBody?['web_search']) ??
+            _readBooleanFlag(extraBody?['webSearch']) ??
+            _readBooleanFlag(directGoogle?['web_search']) ??
+            _readBooleanFlag(directGoogle?['webSearch']) ??
+            _readBooleanFlag(json['web_search']) ??
+            _readBooleanFlag(json['webSearch']) ??
+            false;
+  }
+
+  static bool? _readBooleanFlag(Object? raw) {
+    if (raw is bool) {
+      return raw;
+    }
+    if (raw is num) {
+      return raw != 0;
+    }
+    if (raw is! String) {
+      return null;
+    }
+
+    switch (raw.trim().toLowerCase()) {
+      case '1':
+      case 'true':
+      case 'yes':
+      case 'on':
+        return true;
+      case '0':
+      case 'false':
+      case 'no':
+      case 'off':
+        return false;
+      default:
+        return null;
+    }
   }
 
   static List<String>? _parseModalities(Object? rawModalities) {

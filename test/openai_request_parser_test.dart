@@ -79,6 +79,7 @@ void main() {
     expect(request.reasoningEffort, 'high');
     expect(request.responseModalities, ['text']);
     expect(request.googleThinkingConfig?['thinkingBudget'], 512);
+    expect(request.googleWebSearchEnabled, isFalse);
     expect(request.turns, hasLength(3));
     expect(request.turns.first.role, 'user');
     expect(request.turns.first.parts[0].type, UnifiedPartType.text);
@@ -143,6 +144,7 @@ void main() {
     expect(request.systemInstruction, 'Stay in character.');
     expect(request.maxOutputTokens, 512);
     expect(request.reasoningEffort, 'medium');
+    expect(request.googleWebSearchEnabled, isFalse);
     expect(request.turns, hasLength(4));
     expect(request.turns.first.parts.first.text, 'Tell me a joke');
     expect(request.turns.first.parts[1].type, UnifiedPartType.inlineData);
@@ -188,5 +190,55 @@ void main() {
     expect(request.turns, hasLength(1));
     expect(request.turns.single.role, 'user');
     expect(request.turns.single.parts.single.text, 'Rules only.');
+  });
+
+  test('parses google web search opt-in from extra_body', () {
+    final request = OpenAiRequestParser.parseChatRequest({
+      'model': 'gemini-3-flash-preview',
+      'messages': [
+        {'role': 'user', 'content': 'Find fresh Flutter news'},
+      ],
+      'extra_body': {
+        'google': {'web_search': true},
+      },
+    }, requestId: 'req_search');
+
+    expect(request.googleWebSearchEnabled, isTrue);
+  });
+
+  test('parses google web search opt-in from top-level compatibility flag', () {
+    final request = OpenAiRequestParser.parseChatRequest({
+      'model': 'gemini-3-flash-preview',
+      'messages': [
+        {'role': 'user', 'content': 'Find fresh Flutter news'},
+      ],
+      'web_search': 'true',
+    }, requestId: 'req_search_top_level');
+
+    expect(request.googleWebSearchEnabled, isTrue);
+  });
+
+  test('rejects mixing google web search with function tools', () {
+    expect(
+      () => OpenAiRequestParser.parseChatRequest({
+        'model': 'gemini-3-flash-preview',
+        'messages': [
+          {'role': 'user', 'content': 'Find fresh Flutter news'},
+        ],
+        'tools': [
+          {
+            'type': 'function',
+            'function': {
+              'name': 'lookupWeather',
+              'parameters': {'type': 'object'},
+            },
+          },
+        ],
+        'extra_body': {
+          'google': {'web_search': true},
+        },
+      }, requestId: 'req_search_tools'),
+      throwsFormatException,
+    );
   });
 }

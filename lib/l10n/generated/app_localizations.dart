@@ -758,6 +758,18 @@ abstract class AppLocalizations {
   /// **'Пользовательские ID моделей'**
   String get settingsModelsSectionSummary;
 
+  /// No description provided for @settingsGoogleSectionTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поиск Google'**
+  String get settingsGoogleSectionTitle;
+
+  /// No description provided for @settingsGoogleSectionSummary.
+  ///
+  /// In ru, this message translates to:
+  /// **'Веб-поиск в Google и настройка источников'**
+  String get settingsGoogleSectionSummary;
+
   /// No description provided for @hostLabel.
   ///
   /// In ru, this message translates to:
@@ -913,6 +925,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Сохраняет содержимое запросов и ответов. Включайте только для отладки!'**
   String get unsafeRawLoggingSubtitle;
+
+  /// No description provided for @defaultGoogleWebSearchTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Включать веб-поиск по умолчанию'**
+  String get defaultGoogleWebSearchTitle;
+
+  /// No description provided for @defaultGoogleWebSearchSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'KiCk будет автоматически использовать Google Поиск, если клиент не передал явное переопределение параметров, а в запросе нет вызовов функций'**
+  String get defaultGoogleWebSearchSubtitle;
+
+  /// No description provided for @renderGoogleGroundingInMessageTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать цитаты и источники в ответе'**
+  String get renderGoogleGroundingInMessageTitle;
+
+  /// No description provided for @renderGoogleGroundingInMessageSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Если отключить, ссылки на источники останутся в метаданных и не будут добавляться в сам текст ответа'**
+  String get renderGoogleGroundingInMessageSubtitle;
 
   /// No description provided for @customModelsLabel.
   ///

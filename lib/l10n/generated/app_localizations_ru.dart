@@ -378,6 +378,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsModelsSectionSummary => 'Пользовательские ID моделей';
 
   @override
+  String get settingsGoogleSectionTitle => 'Поиск Google';
+
+  @override
+  String get settingsGoogleSectionSummary => 'Веб-поиск в Google и настройка источников';
+
+  @override
   String get hostLabel => 'Хост';
 
   @override
@@ -460,6 +466,20 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get unsafeRawLoggingSubtitle =>
       'Сохраняет содержимое запросов и ответов. Включайте только для отладки!';
+
+  @override
+  String get defaultGoogleWebSearchTitle => 'Включать веб-поиск по умолчанию';
+
+  @override
+  String get defaultGoogleWebSearchSubtitle =>
+      'KiCk будет автоматически использовать Google Поиск, если клиент не передал явное переопределение параметров, а в запросе нет вызовов функций';
+
+  @override
+  String get renderGoogleGroundingInMessageTitle => 'Показывать цитаты и источники в ответе';
+
+  @override
+  String get renderGoogleGroundingInMessageSubtitle =>
+      'Если отключить, ссылки на источники останутся в метаданных и не будут добавляться в сам текст ответа';
 
   @override
   String get customModelsLabel => 'Пользовательские ID моделей';

@@ -99,6 +99,7 @@ void main() {
       stopSequences: stopSequences,
       reasoningEffort: reasoningEffort,
       googleThinkingConfig: googleThinkingConfig,
+      googleWebSearchEnabled: false,
       responseModalities: responseModalities,
       jsonMode: false,
       responseSchema: null,
@@ -849,6 +850,7 @@ void main() {
         stopSequences: null,
         reasoningEffort: null,
         googleThinkingConfig: null,
+        googleWebSearchEnabled: false,
         responseModalities: null,
         jsonMode: false,
         responseSchema: null,
@@ -1278,6 +1280,70 @@ void main() {
 
     expect(generationConfig.containsKey('responseModalities'), isFalse);
     expect(generationConfig.containsKey('thinkingConfig'), isFalse);
+  });
+
+  test('adds googleSearch built-in tool without function calling config', () async {
+    Map<String, Object?>? capturedBody;
+
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      httpClient: QueueHttpClient([
+        (request) async {
+          capturedBody =
+              jsonDecode(await request.finalize().bytesToString()) as Map<String, Object?>;
+          return http.Response(
+            jsonEncode({
+              'response': {
+                'candidates': [
+                  {
+                    'content': {
+                      'parts': [
+                        {'text': 'ok'},
+                      ],
+                    },
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        },
+      ]),
+    );
+
+    await client.generateContent(
+      account: sampleAccount(),
+      request: UnifiedPromptRequest(
+        requestId: 'req_search',
+        model: 'gemini-3-flash',
+        stream: false,
+        source: 'chat.completions',
+        turns: const [
+          UnifiedTurn(role: 'user', parts: [UnifiedPart.text('Find fresh Flutter news')]),
+        ],
+        tools: const [],
+        systemInstruction: null,
+        toolChoice: null,
+        temperature: null,
+        topP: null,
+        maxOutputTokens: 256,
+        stopSequences: null,
+        reasoningEffort: null,
+        googleThinkingConfig: null,
+        googleWebSearchEnabled: true,
+        responseModalities: null,
+        jsonMode: false,
+        responseSchema: null,
+      ),
+    );
+
+    final requestMap = (capturedBody?['request'] as Map).cast<String, Object?>();
+    final tools = (requestMap['tools'] as List).cast<Map>();
+
+    expect(tools, [
+      {'googleSearch': <String, Object?>{}},
+    ]);
+    expect(requestMap.containsKey('toolConfig'), isFalse);
   });
 
   test('does not disable thinking by default for multimodal Gemini 2.5 requests', () async {

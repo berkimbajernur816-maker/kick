@@ -40,12 +40,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _androidBackgroundRuntime = true;
   bool _windowsLaunchAtStartup = false;
   bool _unsafeRawLoggingEnabled = false;
+  bool _defaultGoogleWebSearchEnabled = false;
+  bool _renderGoogleGroundingInMessage = false;
   bool _initialized = false;
   bool _appearanceExpanded = false;
   bool _networkExpanded = false;
   bool _reliabilityExpanded = false;
   bool _accessExpanded = false;
   bool _modelsExpanded = false;
+  bool _googleExpanded = false;
   bool _isHydrating = false;
   bool _saveInFlight = false;
   bool _mark429AsUnhealthy = false;
@@ -376,6 +379,38 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 14),
+              _SettingsSection(
+                title: l10n.settingsGoogleSectionTitle,
+                subtitle: l10n.settingsGoogleSectionSummary,
+                expanded: _googleExpanded,
+                onToggle: () {
+                  setState(() => _googleExpanded = !_googleExpanded);
+                },
+                child: Column(
+                  children: [
+                    _SettingToggle(
+                      title: l10n.defaultGoogleWebSearchTitle,
+                      subtitle: l10n.defaultGoogleWebSearchSubtitle,
+                      value: _defaultGoogleWebSearchEnabled,
+                      onChanged: (value) {
+                        setState(() => _defaultGoogleWebSearchEnabled = value);
+                        _saveImmediately();
+                      },
+                    ),
+                    const SizedBox(height: 18),
+                    _SettingToggle(
+                      title: l10n.renderGoogleGroundingInMessageTitle,
+                      subtitle: l10n.renderGoogleGroundingInMessageSubtitle,
+                      value: _renderGoogleGroundingInMessage,
+                      onChanged: (value) {
+                        setState(() => _renderGoogleGroundingInMessage = value);
+                        _saveImmediately();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
               _SettingsNavigationTile(
                 title: l10n.aboutTitle,
                 subtitle: l10n.aboutMenuSubtitle,
@@ -412,6 +447,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _windowsLaunchAtStartup = settings.windowsLaunchAtStartup;
     _mark429AsUnhealthy = settings.mark429AsUnhealthy;
     _unsafeRawLoggingEnabled = settings.unsafeRawLoggingEnabled;
+    _defaultGoogleWebSearchEnabled = settings.defaultGoogleWebSearchEnabled;
+    _renderGoogleGroundingInMessage = settings.renderGoogleGroundingInMessage;
     _saveState = _SettingsSaveState.saved;
     _saveErrorMessage = null;
     _showSaveStatus = false;
@@ -468,6 +505,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       requestMaxRetries: int.parse(_requestRetriesController.text.trim()),
       retry429DelaySeconds: int.parse(_retry429DelayController.text.trim()),
       mark429AsUnhealthy: _mark429AsUnhealthy,
+      defaultGoogleWebSearchEnabled: _defaultGoogleWebSearchEnabled,
+      renderGoogleGroundingInMessage: _renderGoogleGroundingInMessage,
       loggingVerbosity: _verbosity,
       unsafeRawLoggingEnabled: _unsafeRawLoggingEnabled,
       apiKeyRequired: _apiKeyRequired,
@@ -645,6 +684,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         left.requestMaxRetries == right.requestMaxRetries &&
         left.retry429DelaySeconds == right.retry429DelaySeconds &&
         left.mark429AsUnhealthy == right.mark429AsUnhealthy &&
+        left.defaultGoogleWebSearchEnabled == right.defaultGoogleWebSearchEnabled &&
+        left.renderGoogleGroundingInMessage == right.renderGoogleGroundingInMessage &&
         left.loggingVerbosity == right.loggingVerbosity &&
         left.unsafeRawLoggingEnabled == right.unsafeRawLoggingEnabled &&
         listEquals(left.customModels, right.customModels);

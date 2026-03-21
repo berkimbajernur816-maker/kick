@@ -240,6 +240,8 @@ class KickProxyController {
         'request_max_retries': settings.requestMaxRetries,
         'retry_429_delay_seconds': settings.retry429DelaySeconds,
         'mark_429_as_unhealthy': settings.mark429AsUnhealthy,
+        'default_google_web_search_enabled': settings.defaultGoogleWebSearchEnabled,
+        'render_google_grounding_in_message': settings.renderGoogleGroundingInMessage,
       },
       'accounts': runtimeAccounts,
     };

@@ -260,6 +260,105 @@ void main() {
     );
   });
 
+  test('chat completion injects grounding citations and sources into content', () {
+    final payload = <String, Object?>{
+      'response': {
+        'candidates': [
+          {
+            'content': {
+              'parts': [
+                {'text': 'Alpha beta'},
+              ],
+            },
+            'groundingMetadata': {
+              'groundingChunks': [
+                {
+                  'web': {'uri': 'https://one.example', 'title': 'Source One'},
+                },
+                {
+                  'web': {'uri': 'https://two.example', 'title': 'Source Two'},
+                },
+              ],
+              'groundingSupports': [
+                {
+                  'segment': {'startIndex': 0, 'endIndex': 5, 'text': 'Alpha'},
+                  'groundingChunkIndices': [0],
+                },
+                {
+                  'segment': {'startIndex': 6, 'endIndex': 10, 'text': 'beta'},
+                  'groundingChunkIndices': [1],
+                },
+              ],
+            },
+            'finishReason': 'STOP',
+          },
+        ],
+      },
+    };
+
+    final response = OpenAiResponseMapper.toChatCompletion(
+      requestId: 'req_grounding',
+      model: 'gemini-3-flash-preview',
+      payload: payload,
+    );
+
+    final choice = ((response['choices'] as List).single as Map).cast<String, Object?>();
+    final message = (choice['message'] as Map).cast<String, Object?>();
+
+    expect(
+      message['content'],
+      'Alpha[1] beta[2]\n\nSources:\n'
+      '[1] Source One (https://one.example)\n'
+      '[2] Source Two (https://two.example)',
+    );
+  });
+
+  test('chat completion can keep grounding in metadata without rendering sources in content', () {
+    final payload = <String, Object?>{
+      'response': {
+        'candidates': [
+          {
+            'content': {
+              'parts': [
+                {'text': 'Alpha beta'},
+              ],
+            },
+            'groundingMetadata': {
+              'groundingChunks': [
+                {
+                  'web': {'uri': 'https://one.example', 'title': 'Source One'},
+                },
+              ],
+              'groundingSupports': [
+                {
+                  'segment': {'startIndex': 0, 'endIndex': 5, 'text': 'Alpha'},
+                  'groundingChunkIndices': [0],
+                },
+              ],
+            },
+            'finishReason': 'STOP',
+          },
+        ],
+      },
+    };
+
+    final response = OpenAiResponseMapper.toChatCompletion(
+      requestId: 'req_grounding_hidden',
+      model: 'gemini-3-flash-preview',
+      payload: payload,
+      renderGoogleGroundingInMessage: false,
+    );
+
+    final choice = ((response['choices'] as List).single as Map).cast<String, Object?>();
+    final message = (choice['message'] as Map).cast<String, Object?>();
+    final grounding = (message['google_grounding'] as Map).cast<String, Object?>();
+    final sources = (grounding['sources'] as List).cast<Map>();
+
+    expect(message['content'], 'Alpha beta');
+    expect(sources.single['title'], 'Source One');
+    expect(sources.single['uri'], 'https://one.example');
+  });
+
   test('responses object keeps Google thought signatures for round-tripping', () {
     final payload = <String, Object?>{
       'response': {
@@ -523,6 +622,119 @@ void main() {
     final completedResponse = (finalEvents[2]['response'] as Map).cast<String, Object?>();
     final output = (completedResponse['output'] as List).cast<Map>();
     expect(output.first['type'], 'function_call');
+  });
+
+  test('chat stream appends visible sources on final grounded chunk', () {
+    final firstPayload = <String, Object?>{
+      'response': {
+        'candidates': [
+          {
+            'content': {
+              'parts': [
+                {'text': 'Alpha'},
+              ],
+            },
+          },
+        ],
+      },
+    };
+
+    final finalPayload = <String, Object?>{
+      'response': {
+        'candidates': [
+          {
+            'content': {
+              'parts': [
+                {'text': 'Alpha beta'},
+              ],
+            },
+            'groundingMetadata': {
+              'groundingChunks': [
+                {
+                  'web': {'uri': 'https://one.example', 'title': 'Source One'},
+                },
+              ],
+              'groundingSupports': [
+                {
+                  'segment': {'startIndex': 6, 'endIndex': 10, 'text': 'beta'},
+                  'groundingChunkIndices': [0],
+                },
+              ],
+            },
+            'finishReason': 'STOP',
+          },
+        ],
+      },
+      'final_chunk': true,
+    };
+
+    final events = OpenAiResponseMapper.toChatStreamDeltas(
+      requestId: 'req_grounding_stream',
+      model: 'gemini-3-flash-preview',
+      payload: finalPayload,
+      includeRole: false,
+      previousText: OpenAiResponseMapper.currentText(firstPayload),
+      previousReasoningText: '',
+      previousToolCallCount: 0,
+    );
+
+    expect(((events[0]['choices'] as List).single as Map)['delta'], {'content': ' beta'});
+    expect(((events[1]['choices'] as List).single as Map)['delta'], {
+      'content': '\n\nSources:\n[1] Source One (https://one.example)',
+    });
+    expect(((events[2]['choices'] as List).single as Map)['finish_reason'], 'stop');
+  });
+
+  test('responses stream final done event uses grounded text with citations', () {
+    final payload = <String, Object?>{
+      'response': {
+        'candidates': [
+          {
+            'content': {
+              'parts': [
+                {'text': 'Alpha beta'},
+              ],
+            },
+            'groundingMetadata': {
+              'groundingChunks': [
+                {
+                  'web': {'uri': 'https://one.example', 'title': 'Source One'},
+                },
+              ],
+              'groundingSupports': [
+                {
+                  'segment': {'startIndex': 5, 'endIndex': 10, 'text': ' beta'},
+                  'groundingChunkIndices': [0],
+                },
+              ],
+            },
+            'finishReason': 'STOP',
+          },
+        ],
+      },
+      'final_chunk': true,
+    };
+
+    final events = OpenAiResponseMapper.toResponsesStreamEvents(
+      requestId: 'resp_grounding',
+      model: 'gemini-3-flash-preview',
+      payload: payload,
+      includePrelude: true,
+      previousText: '',
+      previousReasoningText: '',
+      previousToolCallCount: 0,
+      previousToolCallArguments: const [],
+    );
+
+    final doneEvent = events.singleWhere((event) => event['type'] == 'response.output_text.done');
+    final completedEvent = events.lastWhere((event) => event['type'] == 'response.completed');
+    final completedResponse = (completedEvent['response'] as Map).cast<String, Object?>();
+    final output = (completedResponse['output'] as List).cast<Map>();
+    final message = output.last.cast<String, Object?>();
+    final content = ((message['content'] as List).single as Map).cast<String, Object?>();
+
+    expect(doneEvent['text'], 'Alpha beta[1]\n\nSources:\n[1] Source One (https://one.example)');
+    expect(content['text'], 'Alpha beta[1]\n\nSources:\n[1] Source One (https://one.example)');
   });
 
   test('responses stream emits incremental tool argument deltas across chunks', () {

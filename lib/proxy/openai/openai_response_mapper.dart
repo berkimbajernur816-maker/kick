@@ -21,8 +21,12 @@ class OpenAiResponseMapper {
     required String requestId,
     required String model,
     required Map<String, Object?> payload,
+    bool renderGoogleGroundingInMessage = true,
   }) {
-    final extracted = _extractResponsePayload(payload);
+    final extracted = _extractResponsePayload(
+      payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
 
     return {
       'id': 'chatcmpl_$requestId',
@@ -44,6 +48,8 @@ class OpenAiResponseMapper {
                 'reasoning_signature': extracted.choices[index].reasoningSignature,
               if (extracted.choices[index].googleThoughts.isNotEmpty)
                 'google_thoughts': extracted.choices[index].googleThoughts,
+              if (extracted.choices[index].googleGrounding.isNotEmpty)
+                'google_grounding': extracted.choices[index].googleGrounding,
               if (extracted.choices[index].toolCalls.isNotEmpty)
                 'tool_calls': extracted.choices[index].toolCalls,
             },
@@ -60,13 +66,20 @@ class OpenAiResponseMapper {
     required String requestId,
     required String model,
     required Map<String, Object?> payload,
+    bool renderGoogleGroundingInMessage = true,
     required bool includeRole,
     required String previousText,
     required String previousReasoningText,
     required int previousToolCallCount,
   }) {
-    final extracted = _extractPrimaryChoice(payload);
-    final textDelta = _textDelta(previousText, extracted.text);
+    final extracted = _extractPrimaryChoice(
+      payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
+    final streamText = payload['final_chunk'] == true && previousText.isEmpty
+        ? extracted.text
+        : extracted.rawText;
+    final textDelta = _textDelta(previousText, streamText);
     final reasoningDelta = _textDelta(previousReasoningText, extracted.reasoningText);
     final toolCalls = extracted.toolCalls.length > previousToolCallCount
         ? extracted.toolCalls.sublist(previousToolCallCount)
@@ -137,6 +150,24 @@ class OpenAiResponseMapper {
       });
     }
 
+    if (payload['final_chunk'] == true &&
+        previousText.isNotEmpty &&
+        extracted.sourcesText.isNotEmpty) {
+      events.add({
+        'id': 'chatcmpl_$requestId',
+        'object': 'chat.completion.chunk',
+        'created': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        'model': model,
+        'choices': [
+          {
+            'index': 0,
+            'delta': {'content': extracted.sourcesText},
+            'finish_reason': null,
+          },
+        ],
+      });
+    }
+
     if (payload['final_chunk'] == true) {
       events.add({
         'id': 'chatcmpl_$requestId',
@@ -150,7 +181,11 @@ class OpenAiResponseMapper {
             'finish_reason': extracted.toolCalls.isNotEmpty ? 'tool_calls' : extracted.finishReason,
           },
         ],
-        'usage': _extractResponsePayload(payload).usage,
+        'usage':
+            _extractResponsePayload(
+              payload,
+              renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+            ).usage,
       });
     }
 
@@ -161,9 +196,16 @@ class OpenAiResponseMapper {
     required String requestId,
     required String model,
     required Map<String, Object?> payload,
+    bool renderGoogleGroundingInMessage = true,
   }) {
-    final extractedResponse = _extractResponsePayload(payload);
-    final extracted = _extractPrimaryChoice(payload);
+    final extractedResponse = _extractResponsePayload(
+      payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
+    final extracted = _extractPrimaryChoice(
+      payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
     final output = <Map<String, Object?>>[];
 
     if (extracted.reasoningText.isNotEmpty || extracted.googleThoughts.isNotEmpty) {
@@ -196,14 +238,15 @@ class OpenAiResponseMapper {
       );
     }
 
-    output.add({
-      'id': 'msg_$requestId',
-      'type': 'message',
-      'role': 'assistant',
-      'status': 'completed',
-      'content': [
-        {
-          'type': 'output_text',
+      output.add({
+        'id': 'msg_$requestId',
+        'type': 'message',
+        'role': 'assistant',
+        'status': 'completed',
+        if (extracted.googleGrounding.isNotEmpty) 'google_grounding': extracted.googleGrounding,
+        'content': [
+          {
+            'type': 'output_text',
           'text': extracted.text,
           'annotations': const [],
           'logprobs': const [],
@@ -243,17 +286,29 @@ class OpenAiResponseMapper {
     required String requestId,
     required String model,
     required Map<String, Object?> payload,
+    bool renderGoogleGroundingInMessage = true,
     required bool includePrelude,
     required String previousText,
     required String previousReasoningText,
     required int previousToolCallCount,
     required List<String> previousToolCallArguments,
   }) {
-    final extracted = _extractPrimaryChoice(payload);
-    final responseObject = toResponsesObject(requestId: requestId, model: model, payload: payload);
-    final textDelta = _textDelta(previousText, extracted.text);
+    final extracted = _extractPrimaryChoice(
+      payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
+    final responseObject = toResponsesObject(
+      requestId: requestId,
+      model: model,
+      payload: payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
+    final streamText = payload['final_chunk'] == true && previousText.isEmpty
+        ? extracted.text
+        : extracted.rawText;
+    final textDelta = _textDelta(previousText, streamText);
     final reasoningDelta = _textDelta(previousReasoningText, extracted.reasoningText);
-    final firstTextChunk = previousText.isEmpty && extracted.text.isNotEmpty;
+    final firstTextChunk = previousText.isEmpty && streamText.isNotEmpty;
     final responseId = 'resp_$requestId';
     final messageId = 'msg_$requestId';
     final reasoningId = 'rs_$requestId';
@@ -352,6 +407,17 @@ class OpenAiResponseMapper {
     }
 
     if (payload['final_chunk'] == true) {
+      if (previousText.isNotEmpty && extracted.sourcesText.isNotEmpty) {
+        events.add({
+          'type': 'response.output_text.delta',
+          'item_id': messageId,
+          'output_index': messageOutputIndex,
+          'content_index': 0,
+          'delta': extracted.sourcesText,
+          'logprobs': const [],
+        });
+      }
+
       for (var index = 0; index < extracted.toolCalls.length; index += 1) {
         final toolCall = extracted.toolCalls[index];
         final function = (toolCall['function'] as Map?)?.cast<String, Object?>() ?? const {};
@@ -405,6 +471,8 @@ class OpenAiResponseMapper {
             'type': 'message',
             'role': 'assistant',
             'status': 'completed',
+            if (extracted.googleGrounding.isNotEmpty)
+              'google_grounding': extracted.googleGrounding,
             'content': [
               {
                 'type': 'output_text',
@@ -423,7 +491,7 @@ class OpenAiResponseMapper {
   }
 
   static String currentText(Map<String, Object?> payload) {
-    return _extractPrimaryChoice(payload).text;
+    return _extractPrimaryChoice(payload).rawText;
   }
 
   static String currentReasoningText(Map<String, Object?> payload) {
@@ -476,7 +544,10 @@ class OpenAiResponseMapper {
     return _extractPrimaryChoice(payload).toolCalls.map(_toolCallArguments).toList(growable: false);
   }
 
-  static _ExtractedResponse _extractResponsePayload(Map<String, Object?> payload) {
+  static _ExtractedResponse _extractResponsePayload(
+    Map<String, Object?> payload, {
+    bool renderGoogleGroundingInMessage = true,
+  }) {
     final response = (payload['response'] as Map?)?.cast<String, Object?>() ?? payload;
     final candidates = (response['candidates'] as List?) ?? const [];
     final extractedChoices = <_ExtractedChoice>[];
@@ -485,7 +556,12 @@ class OpenAiResponseMapper {
       if (rawCandidate is! Map) {
         continue;
       }
-      extractedChoices.add(_extractChoice(rawCandidate.cast<String, Object?>()));
+      extractedChoices.add(
+        _extractChoice(
+          rawCandidate.cast<String, Object?>(),
+          renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+        ),
+      );
     }
 
     final usageMetadata =
@@ -513,6 +589,9 @@ class OpenAiResponseMapper {
       if (blockReasonMessage != null && blockReasonMessage.isNotEmpty) {
         return _ExtractedChoice(
           text: '[$_promptBlockedFallbackText $blockReasonMessage]',
+          rawText: '[$_promptBlockedFallbackText $blockReasonMessage]',
+          sourcesText: '',
+          googleGrounding: const <String, Object?>{},
           reasoningText: '',
           googleThoughts: const <Map<String, Object?>>[],
           toolCalls: const <Map<String, Object?>>[],
@@ -521,6 +600,9 @@ class OpenAiResponseMapper {
       }
       return const _ExtractedChoice(
         text: '[$_promptBlockedFallbackText]',
+        rawText: '[$_promptBlockedFallbackText]',
+        sourcesText: '',
+        googleGrounding: <String, Object?>{},
         reasoningText: '',
         googleThoughts: <Map<String, Object?>>[],
         toolCalls: <Map<String, Object?>>[],
@@ -530,6 +612,9 @@ class OpenAiResponseMapper {
 
     return const _ExtractedChoice(
       text: '[Upstream returned an empty response. Please retry.]',
+      rawText: '[Upstream returned an empty response. Please retry.]',
+      sourcesText: '',
+      googleGrounding: <String, Object?>{},
       reasoningText: '',
       googleThoughts: <Map<String, Object?>>[],
       toolCalls: <Map<String, Object?>>[],
@@ -537,8 +622,14 @@ class OpenAiResponseMapper {
     );
   }
 
-  static _ExtractedChoice _extractPrimaryChoice(Map<String, Object?> payload) {
-    return _extractResponsePayload(payload).choices.first;
+  static _ExtractedChoice _extractPrimaryChoice(
+    Map<String, Object?> payload, {
+    bool renderGoogleGroundingInMessage = true,
+  }) {
+    return _extractResponsePayload(
+      payload,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    ).choices.first;
   }
 
   static Map<String, Object?> _rawResponseMap(Map<String, Object?> payload) {
@@ -572,7 +663,10 @@ class OpenAiResponseMapper {
     };
   }
 
-  static _ExtractedChoice _extractChoice(Map<String, Object?> candidate) {
+  static _ExtractedChoice _extractChoice(
+    Map<String, Object?> candidate, {
+    bool renderGoogleGroundingInMessage = true,
+  }) {
     final content =
         (candidate['content'] as Map?)?.cast<String, Object?>() ?? const <String, Object?>{};
     final parts = (content['parts'] as List?) ?? const [];
@@ -623,22 +717,34 @@ class OpenAiResponseMapper {
       }
     }
 
-    var text = textBuffer.toString();
+    var rawText = textBuffer.toString();
     final reasoningText = reasoningBuffer.toString();
     final rawFinishReason = candidate['finishReason'] as String?;
     final finishReason = _mapFinishReason(rawFinishReason);
     if (rawFinishReason != null &&
-        text.trim().isEmpty &&
+        rawText.trim().isEmpty &&
         reasoningText.trim().isEmpty &&
         toolCalls.isEmpty) {
-      text = _emptyResponseFallbackText(
+      rawText = _emptyResponseFallbackText(
         finishReason,
         finishMessage: (candidate['finishMessage'] as String?)?.trim(),
       );
     }
+    final grounding = _extractGrounding(candidate);
+    final googleGrounding = _groundingToJson(grounding);
+    final sourcesText = renderGoogleGroundingInMessage ? _formatGroundingSources(grounding) : '';
+    final text = _formatGroundedText(
+      rawText,
+      grounding,
+      sourcesText: sourcesText,
+      renderGoogleGroundingInMessage: renderGoogleGroundingInMessage,
+    );
 
     return _ExtractedChoice(
       text: text,
+      rawText: rawText,
+      sourcesText: sourcesText,
+      googleGrounding: googleGrounding,
       reasoningText: reasoningText,
       googleThoughts: googleThoughts,
       toolCalls: toolCalls,
@@ -687,6 +793,153 @@ class OpenAiResponseMapper {
   static String _toolCallArguments(Map<String, Object?> toolCall) {
     final function = (toolCall['function'] as Map?)?.cast<String, Object?>();
     return (function?['arguments'] as String?) ?? '';
+  }
+
+  static _ExtractedGrounding? _extractGrounding(Map<String, Object?> candidate) {
+    final groundingMetadata =
+        (candidate['groundingMetadata'] as Map?)?.cast<String, Object?>() ??
+        const <String, Object?>{};
+    if (groundingMetadata.isEmpty) {
+      return null;
+    }
+
+    final chunks = <_GroundingChunk>[];
+    for (final rawChunk in (groundingMetadata['groundingChunks'] as List?) ?? const []) {
+      if (rawChunk is! Map) {
+        continue;
+      }
+      final chunk = rawChunk.cast<String, Object?>();
+      final web = (chunk['web'] as Map?)?.cast<String, Object?>() ?? const <String, Object?>{};
+      final title = (web['title'] as String?)?.trim() ?? '';
+      final uri = (web['uri'] as String?)?.trim() ?? '';
+      if (title.isEmpty && uri.isEmpty) {
+        continue;
+      }
+      chunks.add(_GroundingChunk(title: title, uri: uri));
+    }
+
+    final supports = <_GroundingSupport>[];
+    for (final rawSupport in (groundingMetadata['groundingSupports'] as List?) ?? const []) {
+      if (rawSupport is! Map) {
+        continue;
+      }
+      final support = rawSupport.cast<String, Object?>();
+      final segment =
+          (support['segment'] as Map?)?.cast<String, Object?>() ?? const <String, Object?>{};
+      final endIndex = _parseInt(segment['endIndex']);
+      if (endIndex == null) {
+        continue;
+      }
+      final groundingChunkIndices = ((support['groundingChunkIndices'] as List?) ?? const [])
+          .map(_parseInt)
+          .whereType<int>()
+          .toList(growable: false);
+      if (groundingChunkIndices.isEmpty) {
+        continue;
+      }
+      supports.add(
+        _GroundingSupport(endIndex: endIndex, groundingChunkIndices: groundingChunkIndices),
+      );
+    }
+
+    if (chunks.isEmpty && supports.isEmpty) {
+      return null;
+    }
+    return _ExtractedGrounding(chunks: chunks, supports: supports);
+  }
+
+  static String _formatGroundedText(
+    String text,
+    _ExtractedGrounding? grounding, {
+    required String sourcesText,
+    required bool renderGoogleGroundingInMessage,
+  }) {
+    if (text.isEmpty || grounding == null || !renderGoogleGroundingInMessage) {
+      return text;
+    }
+    final withCitations = _insertGroundingCitations(text, grounding);
+    return sourcesText.isEmpty ? withCitations : '$withCitations$sourcesText';
+  }
+
+  static Map<String, Object?> _groundingToJson(_ExtractedGrounding? grounding) {
+    if (grounding == null || grounding.chunks.isEmpty) {
+      return const <String, Object?>{};
+    }
+
+    return {
+      'sources': [
+        for (var index = 0; index < grounding.chunks.length; index += 1)
+          {
+            'index': index + 1,
+            'title': grounding.chunks[index].title.isEmpty ? 'Untitled' : grounding.chunks[index].title,
+            'uri': grounding.chunks[index].uri,
+          },
+      ],
+      if (grounding.supports.isNotEmpty)
+        'supports': [
+          for (final support in grounding.supports)
+            {
+              'end_index': support.endIndex,
+              'source_indices': support.groundingChunkIndices
+                  .map((index) => index + 1)
+                  .toList(growable: false),
+            },
+        ],
+    };
+  }
+
+  static String _insertGroundingCitations(String text, _ExtractedGrounding grounding) {
+    if (grounding.supports.isEmpty) {
+      return text;
+    }
+
+    final insertions =
+        grounding.supports
+            .map(
+              (support) => _GroundingInsertion(
+                index: support.endIndex,
+                marker: support.groundingChunkIndices.map((index) => '[${index + 1}]').join(),
+              ),
+            )
+            .where((insertion) => insertion.marker.isNotEmpty)
+            .toList(growable: false)
+          ..sort((a, b) => b.index.compareTo(a.index));
+
+    if (insertions.isEmpty) {
+      return text;
+    }
+
+    final textBytes = utf8.encode(text);
+    final parts = <List<int>>[];
+    var lastIndex = textBytes.length;
+    for (final insertion in insertions) {
+      final position = min(max(insertion.index, 0), lastIndex);
+      parts.insert(0, textBytes.sublist(position, lastIndex));
+      parts.insert(0, utf8.encode(insertion.marker));
+      lastIndex = position;
+    }
+    parts.insert(0, textBytes.sublist(0, lastIndex));
+
+    final outputBytes = <int>[];
+    for (final part in parts) {
+      outputBytes.addAll(part);
+    }
+    return utf8.decode(outputBytes);
+  }
+
+  static String _formatGroundingSources(_ExtractedGrounding? grounding) {
+    if (grounding == null || grounding.chunks.isEmpty) {
+      return '';
+    }
+
+    final sourceLines = <String>[];
+    for (var index = 0; index < grounding.chunks.length; index += 1) {
+      final chunk = grounding.chunks[index];
+      final title = chunk.title.isEmpty ? 'Untitled' : chunk.title;
+      final uri = chunk.uri.isEmpty ? 'No URI' : chunk.uri;
+      sourceLines.add('[${index + 1}] $title ($uri)');
+    }
+    return '\n\nSources:\n${sourceLines.join('\n')}';
   }
 
   static String _toolArgumentsDelta(String previousArguments, String currentArguments) {
@@ -759,6 +1012,9 @@ class _ExtractedResponse {
 class _ExtractedChoice {
   const _ExtractedChoice({
     required this.text,
+    required this.rawText,
+    required this.sourcesText,
+    required this.googleGrounding,
     required this.reasoningText,
     required this.googleThoughts,
     required this.toolCalls,
@@ -766,6 +1022,9 @@ class _ExtractedChoice {
   });
 
   final String text;
+  final String rawText;
+  final String sourcesText;
+  final Map<String, Object?> googleGrounding;
   final String reasoningText;
   final List<Map<String, Object?>> googleThoughts;
   final List<Map<String, Object?>> toolCalls;
@@ -777,4 +1036,32 @@ class _ExtractedChoice {
     }
     return googleThoughts.single['signature'] as String?;
   }
+}
+
+class _ExtractedGrounding {
+  const _ExtractedGrounding({required this.chunks, required this.supports});
+
+  final List<_GroundingChunk> chunks;
+  final List<_GroundingSupport> supports;
+}
+
+class _GroundingChunk {
+  const _GroundingChunk({required this.title, required this.uri});
+
+  final String title;
+  final String uri;
+}
+
+class _GroundingSupport {
+  const _GroundingSupport({required this.endIndex, required this.groundingChunkIndices});
+
+  final int endIndex;
+  final List<int> groundingChunkIndices;
+}
+
+class _GroundingInsertion {
+  const _GroundingInsertion({required this.index, required this.marker});
+
+  final int index;
+  final String marker;
 }

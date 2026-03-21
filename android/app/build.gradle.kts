@@ -3,6 +3,13 @@ import java.util.Properties
 
 val requestedTasks = gradle.startParameter.taskNames.joinToString(" ").lowercase()
 val releaseTaskRequested = requestedTasks.contains("release") || requestedTasks.contains("bundle")
+val releaseTargetPlatforms =
+    providers.gradleProperty("target-platform")
+        .orNull
+        ?.split(",")
+        ?.map(String::trim)
+        ?.filter(String::isNotEmpty)
+        ?: emptyList()
 
 plugins {
     id("com.android.application")
@@ -65,6 +72,12 @@ android {
         }
     }
 
+    packaging {
+        jniLibs {
+            excludes += "**/x86_64/*.so"
+        }
+    }
+
     signingConfigs {
         if (hasReleaseSigning) {
             create("release") {
@@ -100,6 +113,11 @@ if (releaseTaskRequested) {
     if (!hasKeyProperties && !hasEnvironmentSigning) {
         throw GradleException(
             "Release signing is not configured. Provide android/key.properties or KICK_ANDROID_KEYSTORE_* environment variables."
+        )
+    }
+    if (releaseTargetPlatforms.contains("android-x64")) {
+        throw GradleException(
+            "Release builds must exclude android-x64. Use --target-platform android-arm,android-arm64."
         )
     }
 }

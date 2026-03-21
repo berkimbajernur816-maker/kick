@@ -267,7 +267,7 @@ jobs:
           KICK_GLITCHTIP_TRACES_SAMPLE_RATE: ${{ secrets.KICK_GLITCHTIP_TRACES_SAMPLE_RATE }}
         shell: bash
         run: |
-          flutter_args=(build apk --release)
+          flutter_args=(build apk --release --target-platform android-arm,android-arm64)
           if [ -n "${KICK_APTABASE_APP_KEY_RELEASE:-}" ]; then
             flutter_args+=("--dart-define=KICK_APTABASE_APP_KEY_RELEASE=$KICK_APTABASE_APP_KEY_RELEASE")
           fi
@@ -291,7 +291,7 @@ jobs:
           KICK_GLITCHTIP_TRACES_SAMPLE_RATE: ${{ secrets.KICK_GLITCHTIP_TRACES_SAMPLE_RATE }}
         shell: bash
         run: |
-          flutter_args=(build appbundle --release)
+          flutter_args=(build appbundle --release --target-platform android-arm,android-arm64)
           if [ -n "${KICK_APTABASE_APP_KEY_RELEASE:-}" ]; then
             flutter_args+=("--dart-define=KICK_APTABASE_APP_KEY_RELEASE=$KICK_APTABASE_APP_KEY_RELEASE")
           fi

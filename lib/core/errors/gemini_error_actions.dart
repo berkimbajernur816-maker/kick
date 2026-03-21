@@ -31,6 +31,7 @@ GeminiErrorAction? primaryActionForError(Object error) {
     GeminiGatewayFailureDetail.projectIdMissing ||
     GeminiGatewayFailureDetail.quotaExhausted ||
     GeminiGatewayFailureDetail.rateLimited ||
+    GeminiGatewayFailureDetail.noHealthyAccountAvailable ||
     GeminiGatewayFailureDetail.reasoningConfigUnsupported ||
     null => null,
   };

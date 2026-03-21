@@ -167,6 +167,7 @@ void main() {
       transport.events.any(
         (event) =>
             event.name == 'proxy_request_failed' &&
+            event.properties['error_source'] == 'upstream' &&
             event.properties['error_detail'] == 'projectConfiguration' &&
             event.properties['retry_after_ms'] == 45000,
       ),
@@ -273,6 +274,7 @@ Future<void> _analyticsSessionIsolate(SendPort sendPort) async {
             'model': 'my-private-model-id',
             'stream': true,
             'error_kind': 'unsupportedModel',
+            'error_source': 'upstream',
             'status_code': 400,
             'error_detail': 'projectConfiguration',
             'upstream_reason': 'SERVICE_DISABLED',
@@ -289,6 +291,7 @@ Future<void> _analyticsSessionIsolate(SendPort sendPort) async {
             'model': 'my-private-model-id',
             'stream': true,
             'error_kind': 'unsupportedModel',
+            'error_source': 'upstream',
             'status_code': 400,
             'error_detail': 'projectIdMissing',
             'upstream_reason': 'CONSUMER_INVALID',
@@ -307,6 +310,7 @@ Future<void> _analyticsSessionIsolate(SendPort sendPort) async {
             'retry_count': 2,
             'upstream_retry_count': 1,
             'account_failover_count': 1,
+            'error_source': 'upstream',
             'error_detail': 'projectConfiguration',
             'upstream_reason': 'SERVICE_DISABLED',
             'retry_after_ms': 45000,

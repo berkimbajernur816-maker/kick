@@ -363,7 +363,7 @@ void main() {
       client.generateContent(account: sampleAccount(), request: sampleRequest()),
       throwsA(
         isA<GeminiGatewayException>()
-            .having((error) => error.kind, 'kind', GeminiGatewayFailureKind.capacity)
+            .having((error) => error.kind, 'kind', GeminiGatewayFailureKind.serviceUnavailable)
             .having((error) => error.statusCode, 'statusCode', 503)
             .having(
               (error) => error.message,
@@ -487,7 +487,7 @@ void main() {
 
     final client = GeminiCodeAssistClient(
       onTokensUpdated: (account, tokens) async {},
-      retryPolicy: const GeminiRetryPolicy(maxRetries: 1),
+      retryPolicy: const GeminiRetryPolicy(maxRetries: 1, default429Delay: Duration(seconds: 17)),
       wait: (delay) async {
         waits.add(delay);
       },
@@ -523,7 +523,7 @@ void main() {
     );
 
     expect(attempts, 2);
-    expect(waits, [const Duration(seconds: 1)]);
+    expect(waits, [const Duration(seconds: 17)]);
   });
 
   test('retries 429 no-capacity failures up to the configured retry limit', () async {

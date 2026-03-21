@@ -247,6 +247,7 @@ class KickAnalytics {
     required String model,
     required bool stream,
     required String errorKind,
+    String? errorSource,
     int? statusCode,
     String? errorDetail,
     String? upstreamReason,
@@ -259,6 +260,7 @@ class KickAnalytics {
       'stream': _flag(stream),
       'error_kind': errorKind,
     };
+    _putIfNotBlank(properties, 'error_source', errorSource);
     if (statusCode != null) {
       properties['status_code'] = statusCode;
     }
@@ -280,6 +282,7 @@ class KickAnalytics {
     String? retryKinds,
     int? retryDelayMs,
     int? statusCode,
+    String? errorSource,
     String? errorDetail,
     String? upstreamReason,
     int? retryAfterMs,
@@ -303,6 +306,7 @@ class KickAnalytics {
     if (statusCode != null) {
       properties['status_code'] = statusCode;
     }
+    _putIfNotBlank(properties, 'error_source', errorSource);
     _putIfNotBlank(properties, 'error_detail', errorDetail);
     _putIfNotBlank(properties, 'upstream_reason', upstreamReason);
     _putIfPositive(properties, 'retry_after_ms', retryAfterMs);
@@ -344,6 +348,7 @@ class KickAnalytics {
     required String model,
     required bool stream,
     String? errorKind,
+    String? errorSource,
     int? statusCode,
     String? errorDetail,
     String? upstreamReason,
@@ -359,6 +364,7 @@ class KickAnalytics {
     if (errorKind != null && errorKind.trim().isNotEmpty) {
       properties['error_kind'] = errorKind;
     }
+    _putIfNotBlank(properties, 'error_source', errorSource);
     if (statusCode != null) {
       properties['status_code'] = statusCode;
     }

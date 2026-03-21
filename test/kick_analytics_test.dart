@@ -45,6 +45,7 @@ void main() {
       androidBackgroundRuntime: true,
       windowsLaunchAtStartup: false,
       requestMaxRetries: 10,
+      retry429DelaySeconds: 30,
       mark429AsUnhealthy: false,
       loggingVerbosity: KickLogVerbosity.normal,
       unsafeRawLoggingEnabled: false,
@@ -133,6 +134,7 @@ void main() {
       model: 'gemini-2.5-flash',
       stream: true,
       errorKind: 'invalidRequest',
+      errorSource: 'upstream',
       statusCode: 403,
       errorDetail: 'projectConfiguration',
       upstreamReason: 'SERVICE_DISABLED',
@@ -150,6 +152,7 @@ void main() {
       transport.events.single.properties,
       containsPair('error_detail', 'projectConfiguration'),
     );
+    expect(transport.events.single.properties, containsPair('error_source', 'upstream'));
     expect(transport.events.single.properties, containsPair('upstream_reason', 'SERVICE_DISABLED'));
     expect(transport.events.single.properties, containsPair('retry_after_ms', 60000));
     expect(transport.events.single.properties, containsPair('has_action_url', 1));

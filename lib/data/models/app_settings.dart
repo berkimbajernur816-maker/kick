@@ -5,6 +5,9 @@ enum KickLogVerbosity { quiet, normal, verbose }
 const _defaultRequestMaxRetries = 10;
 const _minRequestMaxRetries = 0;
 const _maxRequestMaxRetries = 20;
+const _defaultRetry429DelaySeconds = 30;
+const _minRetry429DelaySeconds = 1;
+const _maxRetry429DelaySeconds = 3600;
 
 class AppSettings {
   static const Set<String> storageKeys = {
@@ -19,6 +22,7 @@ class AppSettings {
     'android_background_runtime',
     'windows_launch_at_startup',
     'request_max_retries',
+    'retry_429_delay_seconds',
     'mark_429_as_unhealthy',
     'logging_verbosity',
     'unsafe_raw_logging_enabled',
@@ -38,6 +42,7 @@ class AppSettings {
     required this.androidBackgroundRuntime,
     required this.windowsLaunchAtStartup,
     required this.requestMaxRetries,
+    required this.retry429DelaySeconds,
     required this.mark429AsUnhealthy,
     required this.loggingVerbosity,
     required this.unsafeRawLoggingEnabled,
@@ -56,6 +61,7 @@ class AppSettings {
   final bool androidBackgroundRuntime;
   final bool windowsLaunchAtStartup;
   final int requestMaxRetries;
+  final int retry429DelaySeconds;
   final bool mark429AsUnhealthy;
   final KickLogVerbosity loggingVerbosity;
   final bool unsafeRawLoggingEnabled;
@@ -75,6 +81,7 @@ class AppSettings {
       androidBackgroundRuntime: true,
       windowsLaunchAtStartup: false,
       requestMaxRetries: _defaultRequestMaxRetries,
+      retry429DelaySeconds: _defaultRetry429DelaySeconds,
       mark429AsUnhealthy: false,
       loggingVerbosity: KickLogVerbosity.normal,
       unsafeRawLoggingEnabled: false,
@@ -95,6 +102,7 @@ class AppSettings {
     bool? androidBackgroundRuntime,
     bool? windowsLaunchAtStartup,
     int? requestMaxRetries,
+    int? retry429DelaySeconds,
     bool? mark429AsUnhealthy,
     KickLogVerbosity? loggingVerbosity,
     bool? unsafeRawLoggingEnabled,
@@ -114,6 +122,9 @@ class AppSettings {
       androidBackgroundRuntime: androidBackgroundRuntime ?? this.androidBackgroundRuntime,
       windowsLaunchAtStartup: windowsLaunchAtStartup ?? this.windowsLaunchAtStartup,
       requestMaxRetries: _normalizeRequestMaxRetries(requestMaxRetries ?? this.requestMaxRetries),
+      retry429DelaySeconds: _normalizeRetry429DelaySeconds(
+        retry429DelaySeconds ?? this.retry429DelaySeconds,
+      ),
       mark429AsUnhealthy: mark429AsUnhealthy ?? this.mark429AsUnhealthy,
       loggingVerbosity: loggingVerbosity ?? this.loggingVerbosity,
       unsafeRawLoggingEnabled: unsafeRawLoggingEnabled ?? this.unsafeRawLoggingEnabled,
@@ -134,6 +145,7 @@ class AppSettings {
       'android_background_runtime': androidBackgroundRuntime.toString(),
       'windows_launch_at_startup': windowsLaunchAtStartup.toString(),
       'request_max_retries': requestMaxRetries.toString(),
+      'retry_429_delay_seconds': retry429DelaySeconds.toString(),
       'mark_429_as_unhealthy': mark429AsUnhealthy.toString(),
       'logging_verbosity': loggingVerbosity.name,
       'unsafe_raw_logging_enabled': unsafeRawLoggingEnabled.toString(),
@@ -160,6 +172,9 @@ class AppSettings {
       windowsLaunchAtStartup: values['windows_launch_at_startup'] == 'true',
       requestMaxRetries: _normalizeRequestMaxRetries(
         int.tryParse(values['request_max_retries'] ?? ''),
+      ),
+      retry429DelaySeconds: _normalizeRetry429DelaySeconds(
+        int.tryParse(values['retry_429_delay_seconds'] ?? ''),
       ),
       mark429AsUnhealthy: values['mark_429_as_unhealthy'] == 'true',
       loggingVerbosity: KickLogVerbosity.values.firstWhere(
@@ -196,6 +211,19 @@ int _normalizeRequestMaxRetries(int? value) {
   }
   if (value > _maxRequestMaxRetries) {
     return _maxRequestMaxRetries;
+  }
+  return value;
+}
+
+int _normalizeRetry429DelaySeconds(int? value) {
+  if (value == null) {
+    return _defaultRetry429DelaySeconds;
+  }
+  if (value < _minRetry429DelaySeconds) {
+    return _minRetry429DelaySeconds;
+  }
+  if (value > _maxRetry429DelaySeconds) {
+    return _maxRetry429DelaySeconds;
   }
   return value;
 }

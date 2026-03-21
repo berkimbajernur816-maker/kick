@@ -118,4 +118,19 @@ void main() {
 
     expect(message, l10n.errorNetworkUnavailable);
   });
+
+  test('formats generic service unavailable errors distinctly from capacity', () {
+    final message = formatUserFacingError(
+      l10n,
+      GeminiGatewayException(
+        kind: GeminiGatewayFailureKind.serviceUnavailable,
+        detail: GeminiGatewayFailureDetail.noHealthyAccountAvailable,
+        message: 'No healthy account is available for `gemini-3.1-pro-preview`.',
+        statusCode: 503,
+        source: GeminiGatewayFailureSource.accountPool,
+      ),
+    );
+
+    expect(message, l10n.errorGoogleServiceUnavailable);
+  });
 }

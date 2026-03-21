@@ -848,6 +848,24 @@ abstract class AppLocalizations {
   /// **'Укажите число от 0 до 20'**
   String get requestRetriesInvalidError;
 
+  /// No description provided for @retry429DelayLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Интервал повтора для 429'**
+  String get retry429DelayLabel;
+
+  /// No description provided for @retry429DelayHelperText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Интервал, с которым прокси повторяет запрос при ошибке 429'**
+  String get retry429DelayHelperText;
+
+  /// No description provided for @retry429DelayInvalidError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите число от 1 до 3600'**
+  String get retry429DelayInvalidError;
+
   /// No description provided for @mark429AsUnhealthyTitle.
   ///
   /// In ru, this message translates to:

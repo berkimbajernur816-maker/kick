@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
+import '../../core/logging/log_sanitizer.dart';
 import '../../data/models/oauth_tokens.dart';
 import '../account_pool/account_pool.dart';
 import '../model_catalog.dart';
@@ -14,7 +15,15 @@ import 'gemini_auth_constants.dart';
 import 'gemini_client_fingerprint.dart';
 import 'gemini_installation_identity.dart';
 
-enum GeminiGatewayFailureKind { auth, quota, capacity, unsupportedModel, invalidRequest, unknown }
+enum GeminiGatewayFailureKind {
+  auth,
+  quota,
+  capacity,
+  serviceUnavailable,
+  unsupportedModel,
+  invalidRequest,
+  unknown,
+}
 
 enum GeminiGatewayFailureDetail {
   accountVerificationRequired,
@@ -23,6 +32,23 @@ enum GeminiGatewayFailureDetail {
   quotaExhausted,
   rateLimited,
   reasoningConfigUnsupported,
+  noHealthyAccountAvailable,
+}
+
+enum GeminiGatewayFailureSource { upstream, transport, accountPool, proxy }
+
+Object? _sanitizeGatewayResponseBody(String body) {
+  final trimmed = body.trim();
+  if (trimmed.isEmpty) {
+    return null;
+  }
+
+  try {
+    return LogSanitizer.sanitizeJsonValue(jsonDecode(trimmed));
+  } catch (_) {
+    final sanitized = LogSanitizer.sanitizeText(trimmed);
+    return sanitized.isEmpty ? null : sanitized;
+  }
 }
 
 class GeminiGatewayException implements Exception {
@@ -35,6 +61,9 @@ class GeminiGatewayException implements Exception {
     this.detail,
     this.actionUrl,
     this.upstreamReason,
+    this.source = GeminiGatewayFailureSource.upstream,
+    this.sanitizedResponseBody,
+    this.rawResponseBody,
   });
 
   final GeminiGatewayFailureKind kind;
@@ -45,16 +74,24 @@ class GeminiGatewayException implements Exception {
   final GeminiGatewayFailureDetail? detail;
   final String? actionUrl;
   final String? upstreamReason;
+  final GeminiGatewayFailureSource source;
+  final Object? sanitizedResponseBody;
+  final String? rawResponseBody;
 
   @override
   String toString() => 'GeminiGatewayException($statusCode, $kind, $message)';
 }
 
 class GeminiRetryPolicy {
-  const GeminiRetryPolicy({this.maxRetries = 10, this.baseDelay = const Duration(seconds: 1)});
+  const GeminiRetryPolicy({
+    this.maxRetries = 10,
+    this.baseDelay = const Duration(seconds: 1),
+    this.default429Delay = const Duration(seconds: 30),
+  });
 
   final int maxRetries;
   final Duration baseDelay;
+  final Duration default429Delay;
 
   GeminiRetryPolicy normalized() {
     final normalizedMaxRetries = switch (maxRetries) {
@@ -62,9 +99,15 @@ class GeminiRetryPolicy {
       > 20 => 20,
       _ => maxRetries,
     };
+    final normalized429Delay = switch (default429Delay.inSeconds) {
+      <= 0 => const Duration(seconds: 30),
+      > 3600 => const Duration(hours: 1),
+      _ => Duration(seconds: default429Delay.inSeconds),
+    };
     return GeminiRetryPolicy(
       maxRetries: normalizedMaxRetries,
       baseDelay: baseDelay > Duration.zero ? baseDelay : const Duration(seconds: 1),
+      default429Delay: normalized429Delay,
     );
   }
 }
@@ -111,6 +154,8 @@ const _defaultSafetySettings = [
 GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
   final decoded = _tryDecodeJsonMap(body);
   final error = ((decoded['error'] as Map?) ?? decoded).cast<String, Object?>();
+  final sanitizedResponseBody = _sanitizeGatewayResponseBody(body);
+  final rawResponseBody = body.trim().isEmpty ? null : body;
   final message = (error['message'] as String?)?.trim().isNotEmpty == true
       ? (error['message'] as String).trim()
       : body;
@@ -139,6 +184,8 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
       kind: GeminiGatewayFailureKind.unsupportedModel,
       message: message,
       statusCode: statusCode,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
@@ -170,6 +217,8 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
           : null,
       retryAfter: isAccountVerificationRequired ? const Duration(minutes: 5) : null,
       actionUrl: actionUrl,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
@@ -183,6 +232,8 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
           ? GeminiGatewayFailureDetail.projectIdMissing
           : GeminiGatewayFailureDetail.projectConfiguration,
       actionUrl: actionUrl,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
@@ -221,7 +272,9 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
       kind: GeminiGatewayFailureKind.capacity,
       message: message,
       statusCode: statusCode,
-      retryAfter: retryAfter ?? const Duration(seconds: 30),
+      retryAfter: retryAfter,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
@@ -240,20 +293,31 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
       detail: isQuotaExhausted
           ? GeminiGatewayFailureDetail.quotaExhausted
           : GeminiGatewayFailureDetail.rateLimited,
-      retryAfter: retryAfter ?? (hasShortQuota ? const Duration(minutes: 1) : null),
+      retryAfter: retryAfter,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
-  if (statusCode == 503 ||
-      statusCode >= 500 ||
-      hasCapacityPressure ||
-      lower.contains('capacity') ||
-      lower.contains('unavailable')) {
+  if (hasCapacityPressure || lower.contains('capacity')) {
     return GeminiGatewayException(
       kind: GeminiGatewayFailureKind.capacity,
       message: message,
       statusCode: statusCode == 0 ? 503 : statusCode,
       retryAfter: retryAfter,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
+    );
+  }
+
+  if (statusCode == 503 || statusCode >= 500 || lower.contains('unavailable')) {
+    return GeminiGatewayException(
+      kind: GeminiGatewayFailureKind.serviceUnavailable,
+      message: message,
+      statusCode: statusCode == 0 ? 503 : statusCode,
+      retryAfter: retryAfter,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
@@ -271,6 +335,8 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
       actionUrl: _looksLikeProjectConfigurationError(statusCode, lower, errorReason, errorMetadata)
           ? actionUrl
           : null,
+      sanitizedResponseBody: sanitizedResponseBody,
+      rawResponseBody: rawResponseBody,
     );
   }
 
@@ -280,6 +346,8 @@ GeminiGatewayException decodeGeminiGatewayError(int statusCode, String body) {
     statusCode: statusCode,
     retryAfter: retryAfter,
     upstreamReason: errorReason,
+    sanitizedResponseBody: sanitizedResponseBody,
+    rawResponseBody: rawResponseBody,
   );
 }
 
@@ -975,6 +1043,7 @@ class GeminiCodeAssistClient {
     switch (error.kind) {
       case GeminiGatewayFailureKind.quota:
       case GeminiGatewayFailureKind.capacity:
+      case GeminiGatewayFailureKind.serviceUnavailable:
         return true;
       case GeminiGatewayFailureKind.unknown:
         return error.statusCode >= 500;
@@ -990,6 +1059,9 @@ class GeminiCodeAssistClient {
     if (hintedDelay != null && hintedDelay > Duration.zero) {
       return hintedDelay;
     }
+    if (error.statusCode == 429) {
+      return _retryPolicy.default429Delay;
+    }
 
     final multiplier = 1 << attempt;
     return Duration(milliseconds: _retryPolicy.baseDelay.inMilliseconds * multiplier);
@@ -1003,6 +1075,8 @@ class GeminiCodeAssistClient {
         return _isNoCapacityFailure(error)
             ? _retryPolicy.maxRetries
             : min(_retryPolicy.maxRetries, _maxTransientRequestRetries);
+      case GeminiGatewayFailureKind.serviceUnavailable:
+        return min(_retryPolicy.maxRetries, _maxTransientRequestRetries);
       case GeminiGatewayFailureKind.unknown:
         return error.statusCode >= 500
             ? min(_retryPolicy.maxRetries, _maxTransientRequestRetries)
@@ -1042,33 +1116,37 @@ class GeminiCodeAssistClient {
           ? error.message!.toString().trim()
           : 'Timed out while contacting Gemini Code Assist.';
       return GeminiGatewayException(
-        kind: GeminiGatewayFailureKind.capacity,
+        kind: GeminiGatewayFailureKind.serviceUnavailable,
         message: message,
         statusCode: 503,
+        source: GeminiGatewayFailureSource.transport,
       );
     }
 
     if (error is SocketException) {
       return GeminiGatewayException(
-        kind: GeminiGatewayFailureKind.capacity,
+        kind: GeminiGatewayFailureKind.serviceUnavailable,
         message: 'Network error while contacting Gemini Code Assist: ${error.message}',
         statusCode: 503,
+        source: GeminiGatewayFailureSource.transport,
       );
     }
 
     if (error is http.ClientException) {
       return GeminiGatewayException(
-        kind: GeminiGatewayFailureKind.capacity,
+        kind: GeminiGatewayFailureKind.serviceUnavailable,
         message: 'HTTP client error while contacting Gemini Code Assist: ${error.message}',
         statusCode: 503,
+        source: GeminiGatewayFailureSource.transport,
       );
     }
 
     if (error is HttpException) {
       return GeminiGatewayException(
-        kind: GeminiGatewayFailureKind.capacity,
+        kind: GeminiGatewayFailureKind.serviceUnavailable,
         message: 'HTTP error while contacting Gemini Code Assist: ${error.message}',
         statusCode: 503,
+        source: GeminiGatewayFailureSource.transport,
       );
     }
 
@@ -1076,6 +1154,7 @@ class GeminiCodeAssistClient {
       kind: GeminiGatewayFailureKind.unknown,
       message: error.toString(),
       statusCode: 500,
+      source: GeminiGatewayFailureSource.proxy,
     );
   }
 

@@ -123,6 +123,7 @@ class _ProxyIsolateHost {
         _client.updateRetryPolicy(
           GeminiRetryPolicy(
             maxRetries: _settings?['request_max_retries'] as int? ?? defaultGeminiRequestMaxRetries,
+            default429Delay: Duration(seconds: _settings?['retry_429_delay_seconds'] as int? ?? 30),
           ),
         );
         await _publishAccounts();
@@ -371,6 +372,7 @@ class _ProxyIsolateHost {
         message: error.message,
         stackTrace: stackTrace,
         details: _failureContextPayload(prompt: prompt, error: error),
+        rawPayload: error.rawResponseBody,
       );
       return _gatewayErrorResponse(error);
     } catch (error, stackTrace) {
@@ -378,6 +380,7 @@ class _ProxyIsolateHost {
         kind: GeminiGatewayFailureKind.unknown,
         message: error.toString(),
         statusCode: 500,
+        source: GeminiGatewayFailureSource.proxy,
       );
       if (prompt != null) {
         _emitRequestFailedAnalytics(request: prompt, route: route, error: gatewayError);
@@ -544,6 +547,7 @@ class _ProxyIsolateHost {
         message: error.message,
         stackTrace: stackTrace,
         details: _failureContextPayload(prompt: prompt, error: error),
+        rawPayload: error.rawResponseBody,
       );
       return _gatewayErrorResponse(error);
     } catch (error, stackTrace) {
@@ -551,6 +555,7 @@ class _ProxyIsolateHost {
         kind: GeminiGatewayFailureKind.unknown,
         message: error.toString(),
         statusCode: 500,
+        source: GeminiGatewayFailureSource.proxy,
       );
       if (prompt != null) {
         _emitRequestFailedAnalytics(request: prompt, route: route, error: gatewayError);
@@ -593,9 +598,11 @@ class _ProxyIsolateHost {
       if (account == null) {
         throw lastError ??
             GeminiGatewayException(
-              kind: GeminiGatewayFailureKind.unknown,
+              kind: GeminiGatewayFailureKind.serviceUnavailable,
               message: 'No healthy account is available for `${request.model}`.',
               statusCode: 503,
+              detail: GeminiGatewayFailureDetail.noHealthyAccountAvailable,
+              source: GeminiGatewayFailureSource.accountPool,
             );
       }
 
@@ -680,9 +687,11 @@ class _ProxyIsolateHost {
       if (account == null) {
         throw lastError ??
             GeminiGatewayException(
-              kind: GeminiGatewayFailureKind.unknown,
+              kind: GeminiGatewayFailureKind.serviceUnavailable,
               message: 'No healthy account is available for `${request.model}`.',
               statusCode: 503,
+              detail: GeminiGatewayFailureDetail.noHealthyAccountAvailable,
+              source: GeminiGatewayFailureSource.accountPool,
             );
       }
       triedIds.add(account.id);
@@ -775,6 +784,7 @@ class _ProxyIsolateHost {
               message: error.message,
               stackTrace: stackTrace,
               details: _failureContextPayload(prompt: request, error: error),
+              rawPayload: error.rawResponseBody,
             );
             for (final event in _streamErrorEvents(route: route, request: request, error: error)) {
               yield utf8.encode(event);
@@ -785,6 +795,7 @@ class _ProxyIsolateHost {
               kind: GeminiGatewayFailureKind.unknown,
               message: error.toString(),
               statusCode: 500,
+              source: GeminiGatewayFailureSource.proxy,
             );
             _registerFailure(account, request.model, gatewayError);
             _emitRequestFailedAnalytics(request: request, route: route, error: gatewayError);
@@ -879,6 +890,7 @@ class _ProxyIsolateHost {
         }
         break;
       case GeminiGatewayFailureKind.capacity:
+      case GeminiGatewayFailureKind.serviceUnavailable:
         _pool.markCapacityFailure(account, cooldown: error.retryAfter);
         break;
       case GeminiGatewayFailureKind.unsupportedModel:
@@ -896,6 +908,7 @@ class _ProxyIsolateHost {
     return kind == GeminiGatewayFailureKind.auth ||
         kind == GeminiGatewayFailureKind.quota ||
         kind == GeminiGatewayFailureKind.capacity ||
+        kind == GeminiGatewayFailureKind.serviceUnavailable ||
         kind == GeminiGatewayFailureKind.unsupportedModel;
   }
 
@@ -973,6 +986,7 @@ class _ProxyIsolateHost {
     required String message,
     required StackTrace stackTrace,
     Map<String, Object?> details = const <String, Object?>{},
+    String? rawPayload,
   }) async {
     final verbosity = (_settings?['logging_verbosity'] as String?) ?? 'normal';
     _sendPort.send({
@@ -986,7 +1000,11 @@ class _ProxyIsolateHost {
         'message': LogSanitizer.sanitizeText(message),
         'masked_payload': details.isEmpty ? null : jsonEncode(details),
         'raw_payload': verbosity == 'verbose' && _unsafeRawLoggingEnabled
-            ? stackTrace.toString()
+            ? jsonEncode({
+                'stack_trace': stackTrace.toString(),
+                if (rawPayload?.trim().isNotEmpty == true)
+                  'upstream_response': _decodeRawPayload(rawPayload!),
+              })
             : null,
       },
     });
@@ -1222,6 +1240,7 @@ class _ProxyIsolateHost {
   Map<String, Object?> _gatewayErrorContext(GeminiGatewayException error) {
     return {
       'error_kind': error.kind.name,
+      'error_source': error.source.name,
       'status_code': error.statusCode,
       if (error.detail != null) 'error_detail': error.detail!.name,
       if (error.upstreamReason?.trim().isNotEmpty == true)
@@ -1229,7 +1248,21 @@ class _ProxyIsolateHost {
       if (error.retryAfter != null) 'retry_after_ms': error.retryAfter!.inMilliseconds,
       if (error.actionUrl?.trim().isNotEmpty == true) 'has_action_url': true,
       if (error.quotaSnapshot?.trim().isNotEmpty == true) 'has_quota_snapshot': true,
+      if (error.sanitizedResponseBody != null) 'upstream_response': error.sanitizedResponseBody,
     };
+  }
+
+  Object _decodeRawPayload(String payload) {
+    final trimmed = payload.trim();
+    if (trimmed.isEmpty) {
+      return payload;
+    }
+
+    try {
+      return jsonDecode(trimmed);
+    } catch (_) {
+      return payload;
+    }
   }
 
   Map<String, Object?> _responseSummaryPayload(Map<String, Object?> payload) {
@@ -1327,6 +1360,7 @@ class _ProxyIsolateHost {
       case GeminiGatewayFailureKind.quota:
         return 429;
       case GeminiGatewayFailureKind.capacity:
+      case GeminiGatewayFailureKind.serviceUnavailable:
         return 503;
       case GeminiGatewayFailureKind.unsupportedModel:
       case GeminiGatewayFailureKind.invalidRequest:
@@ -1480,7 +1514,8 @@ class _ProxyIsolateHost {
       };
     }
 
-    if (error.message.toLowerCase().contains('no healthy account is available')) {
+    if (error.detail == GeminiGatewayFailureDetail.noHealthyAccountAvailable ||
+        error.source == GeminiGatewayFailureSource.accountPool) {
       return 'no_healthy_account_available';
     }
 
@@ -1729,6 +1764,7 @@ class _RequestRetryTracker {
 
   static Map<String, Object?> _errorContext(GeminiGatewayException error) {
     return {
+      'error_source': error.source.name,
       if (error.detail != null) 'error_detail': error.detail!.name,
       if (error.upstreamReason?.trim().isNotEmpty == true)
         'upstream_reason': error.upstreamReason!.trim(),
@@ -1739,6 +1775,7 @@ class _RequestRetryTracker {
 
   static Map<String, Object?> _prefixedErrorContext(String prefix, GeminiGatewayException error) {
     return {
+      '${prefix}error_source': error.source.name,
       if (error.detail != null) '${prefix}error_detail': error.detail!.name,
       if (error.upstreamReason?.trim().isNotEmpty == true)
         '${prefix}upstream_reason': error.upstreamReason!.trim(),

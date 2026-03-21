@@ -11,13 +11,6 @@ import '../data/models/app_log_entry.dart';
 
 const _defaultGlitchTipTracesSampleRate = 0.0;
 const _maxSanitizedStringLength = 4096;
-const _reportableProxyLogCategories = <String>{
-  'chat.completions',
-  'responses',
-  'proxy.runtime',
-  'proxy.unhandled',
-};
-
 final GlitchTipBuildConfig _glitchTipBuildConfig = GlitchTipBuildConfig.fromEnvironment();
 
 class GlitchTipBuildConfig {
@@ -226,7 +219,7 @@ Future<void> recordGlitchTipProxyLog(AppLogEntry entry) async {
 
 @visibleForTesting
 bool shouldCaptureGlitchTipProxyLog(AppLogEntry entry) {
-  return entry.level == AppLogLevel.error && _reportableProxyLogCategories.contains(entry.category);
+  return entry.level == AppLogLevel.error;
 }
 
 @visibleForTesting

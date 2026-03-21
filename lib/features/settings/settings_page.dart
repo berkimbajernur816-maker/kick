@@ -29,6 +29,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _portController = TextEditingController();
   final _apiKeyController = TextEditingController();
   final _requestRetriesController = TextEditingController();
+  final _retry429DelayController = TextEditingController();
   final _customModelsController = TextEditingController();
 
   ThemeMode _themeMode = ThemeMode.system;
@@ -64,6 +65,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _portController.addListener(_handleTextSettingsChanged);
     _apiKeyController.addListener(_handleTextSettingsChanged);
     _requestRetriesController.addListener(_handleTextSettingsChanged);
+    _retry429DelayController.addListener(_handleTextSettingsChanged);
     _customModelsController.addListener(_handleTextSettingsChanged);
   }
 
@@ -75,6 +77,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _portController.dispose();
     _apiKeyController.dispose();
     _requestRetriesController.dispose();
+    _retry429DelayController.dispose();
     _customModelsController.dispose();
     super.dispose();
   }
@@ -95,6 +98,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         final hostError = _hostValidationError(l10n);
         final portError = _portValidationError(l10n);
         final requestRetriesError = _requestRetriesValidationError(l10n);
+        final retry429DelayError = _retry429DelayValidationError(l10n);
 
         return SingleChildScrollView(
           child: Column(
@@ -275,6 +279,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         errorText: requestRetriesError,
                       ),
                     ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _retry429DelayController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: l10n.retry429DelayLabel,
+                        helperText: l10n.retry429DelayHelperText.isEmpty
+                            ? null
+                            : l10n.retry429DelayHelperText,
+                        errorText: retry429DelayError,
+                      ),
+                    ),
                     const SizedBox(height: 18),
                     _SettingToggle(
                       title: l10n.mark429AsUnhealthyTitle,
@@ -385,6 +401,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _portController.text = settings.port.toString();
     _apiKeyController.text = settings.apiKey;
     _requestRetriesController.text = settings.requestMaxRetries.toString();
+    _retry429DelayController.text = settings.retry429DelaySeconds.toString();
     _customModelsController.text = settings.customModels.join('\n');
     _apiKeyRequired = settings.apiKeyRequired;
     _themeMode = settings.themeMode;
@@ -449,6 +466,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       androidBackgroundRuntime: _androidBackgroundRuntime,
       windowsLaunchAtStartup: _windowsLaunchAtStartup,
       requestMaxRetries: int.parse(_requestRetriesController.text.trim()),
+      retry429DelaySeconds: int.parse(_retry429DelayController.text.trim()),
       mark429AsUnhealthy: _mark429AsUnhealthy,
       loggingVerbosity: _verbosity,
       unsafeRawLoggingEnabled: _unsafeRawLoggingEnabled,
@@ -596,10 +614,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return null;
   }
 
+  String? _retry429DelayValidationError(KickLocalizations l10n) {
+    final value = _retry429DelayController.text.trim();
+    final parsed = int.tryParse(value);
+    if (parsed == null || parsed < 1 || parsed > 3600) {
+      return l10n.retry429DelayInvalidError;
+    }
+    return null;
+  }
+
   bool _hasBlockingValidationErrors(KickLocalizations l10n) {
     return _hostValidationError(l10n) != null ||
         _portValidationError(l10n) != null ||
-        _requestRetriesValidationError(l10n) != null;
+        _requestRetriesValidationError(l10n) != null ||
+        _retry429DelayValidationError(l10n) != null;
   }
 
   bool _settingsEqual(AppSettings left, AppSettings right) {
@@ -615,6 +643,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         left.androidBackgroundRuntime == right.androidBackgroundRuntime &&
         left.windowsLaunchAtStartup == right.windowsLaunchAtStartup &&
         left.requestMaxRetries == right.requestMaxRetries &&
+        left.retry429DelaySeconds == right.retry429DelaySeconds &&
         left.mark429AsUnhealthy == right.mark429AsUnhealthy &&
         left.loggingVerbosity == right.loggingVerbosity &&
         left.unsafeRawLoggingEnabled == right.unsafeRawLoggingEnabled &&

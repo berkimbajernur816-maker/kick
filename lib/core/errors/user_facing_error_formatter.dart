@@ -90,10 +90,11 @@ String formatUserFacingMessage(KickLocalizations l10n, String rawMessage) {
   if (_looksLikeNetworkError(lower)) {
     return l10n.errorNetworkUnavailable;
   }
-  if (lower.contains('capacity') ||
-      lower.contains('service unavailable') ||
-      lower.contains('unavailable')) {
+  if (lower.contains('capacity')) {
     return l10n.errorGoogleCapacity;
+  }
+  if (lower.contains('service unavailable') || lower.contains('unavailable')) {
+    return l10n.errorGoogleServiceUnavailable;
   }
   if (lower.contains('unsupported model') || lower.contains('model not found')) {
     return l10n.errorUnsupportedModel;
@@ -121,6 +122,7 @@ String _formatGatewayError(KickLocalizations l10n, GeminiGatewayException error)
         case GeminiGatewayFailureDetail.quotaExhausted:
         case GeminiGatewayFailureDetail.rateLimited:
         case GeminiGatewayFailureDetail.reasoningConfigUnsupported:
+        case GeminiGatewayFailureDetail.noHealthyAccountAvailable:
         case null:
           return l10n.errorAuthExpired;
       }
@@ -137,6 +139,8 @@ String _formatGatewayError(KickLocalizations l10n, GeminiGatewayException error)
       return l10n.errorGoogleRateLimitedLater;
     case GeminiGatewayFailureKind.capacity:
       return l10n.errorGoogleCapacity;
+    case GeminiGatewayFailureKind.serviceUnavailable:
+      return l10n.errorGoogleServiceUnavailable;
     case GeminiGatewayFailureKind.unsupportedModel:
       return l10n.errorUnsupportedModel;
     case GeminiGatewayFailureKind.invalidRequest:

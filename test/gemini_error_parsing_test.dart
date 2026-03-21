@@ -112,6 +112,18 @@ void main() {
     expect(error.retryAfter, const Duration(seconds: 12));
   });
 
+  test('treats generic 503 as service unavailable instead of capacity', () {
+    final error = decodeGeminiGatewayError(
+      503,
+      '{"error":{"message":"Service temporarily unavailable. Please try again later.","status":"UNAVAILABLE"}}',
+    );
+
+    expect(error.kind, GeminiGatewayFailureKind.serviceUnavailable);
+    expect(error.statusCode, 503);
+    expect(error.source, GeminiGatewayFailureSource.upstream);
+    expect(error.sanitizedResponseBody, isA<Map>());
+  });
+
   test('parses quota exhausted retry hints with hours and minutes', () {
     final error = decodeGeminiGatewayError(
       429,

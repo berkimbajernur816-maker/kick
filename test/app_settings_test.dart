@@ -9,6 +9,7 @@ void main() {
     expect(settings.analyticsConsentEnabled, isFalse);
     expect(settings.hasAcknowledgedDisclaimer, isFalse);
     expect(settings.requestMaxRetries, 10);
+    expect(settings.retry429DelaySeconds, 30);
     expect(settings.mark429AsUnhealthy, isFalse);
     expect(settings.apiKeyRequired, isTrue);
   });
@@ -27,6 +28,7 @@ void main() {
       androidBackgroundRuntime: false,
       windowsLaunchAtStartup: true,
       requestMaxRetries: 7,
+      retry429DelaySeconds: 45,
       mark429AsUnhealthy: true,
       loggingVerbosity: KickLogVerbosity.verbose,
       unsafeRawLoggingEnabled: true,
@@ -41,6 +43,7 @@ void main() {
     expect(restored.themeMode, ThemeMode.dark);
     expect(restored.allowLan, isTrue);
     expect(restored.requestMaxRetries, 7);
+    expect(restored.retry429DelaySeconds, 45);
     expect(restored.mark429AsUnhealthy, isTrue);
     expect(restored.windowsLaunchAtStartup, isTrue);
     expect(restored.unsafeRawLoggingEnabled, isTrue);

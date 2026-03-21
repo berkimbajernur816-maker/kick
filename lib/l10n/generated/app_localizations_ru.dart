@@ -426,6 +426,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get requestRetriesInvalidError => 'Укажите число от 0 до 20';
 
   @override
+  String get retry429DelayLabel => 'Интервал повтора для 429';
+
+  @override
+  String get retry429DelayHelperText =>
+      'Интервал, с которым прокси повторяет запрос при ошибке 429';
+
+  @override
+  String get retry429DelayInvalidError => 'Укажите число от 1 до 3600';
+
+  @override
   String get mark429AsUnhealthyTitle => 'Временно выводить аккаунт из ротации при ошибке 429';
 
   @override

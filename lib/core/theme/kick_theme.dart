@@ -189,12 +189,15 @@ extension KickThemeBuildContext on BuildContext {
 }
 
 class KickThemeData {
+  static const defaultFontFamily = 'KickGoogleSans';
+
   static ThemeData build(ColorScheme scheme) {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
       brightness: scheme.brightness,
       visualDensity: VisualDensity.standard,
+      fontFamily: defaultFontFamily,
     );
     const tokens = KickThemeTokens.fallback;
 

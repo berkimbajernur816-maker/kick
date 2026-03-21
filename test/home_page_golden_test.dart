@@ -28,7 +28,7 @@ void main() {
       devicePixelRatio: 2,
       themeMode: ThemeMode.light,
     );
-  });
+  }, tags: 'golden');
 
   testWidgets('home page matches phone dark golden', (tester) async {
     await _expectHomePageGolden(
@@ -38,7 +38,7 @@ void main() {
       devicePixelRatio: 3,
       themeMode: ThemeMode.dark,
     );
-  });
+  }, tags: 'golden');
 }
 
 Future<void> _expectHomePageGolden(

@@ -35,6 +35,10 @@ if [[ -f "$native_symbols_zip" ]]; then
   unzip -q "$native_symbols_zip" -d "$temp_dir/native-symbols"
 fi
 
+if find "$temp_dir" -path '*/libflutter.so.sym' -type f | grep -q .; then
+  find "$temp_dir" -path '*/libflutter.so' -type f -print -delete
+fi
+
 if ! find "$temp_dir" -type f | grep -q .; then
   echo "Resolved Android debug files directory is empty." >&2
   exit 1

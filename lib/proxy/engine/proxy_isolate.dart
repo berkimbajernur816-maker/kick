@@ -71,10 +71,8 @@ Map<String, Object?> normalizeOpenAiCompatRequest({
   }
 
   final extraBody =
-      (normalized['extra_body'] as Map?)?.cast<String, Object?>() ??
-      <String, Object?>{};
-  final google =
-      (extraBody['google'] as Map?)?.cast<String, Object?>() ?? <String, Object?>{};
+      (normalized['extra_body'] as Map?)?.cast<String, Object?>() ?? <String, Object?>{};
+  final google = (extraBody['google'] as Map?)?.cast<String, Object?>() ?? <String, Object?>{};
   google.putIfAbsent('web_search', () => effectiveFlag);
   extraBody['google'] = google;
   normalized['extra_body'] = extraBody;
@@ -144,6 +142,49 @@ bool? _parseBooleanFlag(Object? raw) {
       return false;
     default:
       return null;
+  }
+}
+
+void applyProxyAccountFailurePolicy({
+  required GeminiAccountPool pool,
+  required ProxyRuntimeAccount account,
+  required String requestedModel,
+  required GeminiGatewayException error,
+  required bool mark429AsUnhealthy,
+}) {
+  switch (error.kind) {
+    case GeminiGatewayFailureKind.auth:
+      pool.markAuthFailure(account, cooldown: error.retryAfter);
+      break;
+    case GeminiGatewayFailureKind.quota:
+      if (mark429AsUnhealthy) {
+        pool.markQuotaFailure(
+          account,
+          quotaSnapshot: error.quotaSnapshot,
+          cooldown: error.retryAfter,
+        );
+      } else {
+        account.errorCount += 1;
+        account.lastQuotaSnapshot = error.quotaSnapshot ?? account.lastQuotaSnapshot;
+      }
+      break;
+    case GeminiGatewayFailureKind.capacity:
+      pool.markCapacityFailure(account, cooldown: error.retryAfter);
+      break;
+    case GeminiGatewayFailureKind.serviceUnavailable:
+      if (error.source == GeminiGatewayFailureSource.transport) {
+        account.errorCount += 1;
+      } else {
+        pool.markCapacityFailure(account, cooldown: error.retryAfter);
+      }
+      break;
+    case GeminiGatewayFailureKind.unsupportedModel:
+      pool.markUnsupportedModel(account, requestedModel);
+      break;
+    case GeminiGatewayFailureKind.invalidRequest:
+    case GeminiGatewayFailureKind.unknown:
+      account.errorCount += 1;
+      break;
   }
 }
 
@@ -355,6 +396,7 @@ class _ProxyIsolateHost {
 
       await _logRequest('chat.completions', request, body);
       await _logPromptSummary(resolvedPrompt, route: route);
+      _recordAcceptedRequest();
       if (resolvedPrompt.stream) {
         await _logTrace(
           category: 'chat.completions',
@@ -551,6 +593,7 @@ class _ProxyIsolateHost {
 
       await _logRequest('responses', request, body);
       await _logPromptSummary(resolvedPrompt, route: route);
+      _recordAcceptedRequest();
       if (resolvedPrompt.stream) {
         await _logTrace(
           category: 'responses',
@@ -749,7 +792,6 @@ class _ProxyIsolateHost {
             );
           },
         );
-        _requestCount += 1;
         if (_pool.markSuccess(account)) {
           await _publishAccounts();
         }
@@ -851,7 +893,6 @@ class _ProxyIsolateHost {
               yield utf8.encode(done);
             }
             completed = true;
-            _requestCount += 1;
             if (_pool.markSuccess(account)) {
               await _publishAccounts();
             }
@@ -984,35 +1025,15 @@ class _ProxyIsolateHost {
     String requestedModel,
     GeminiGatewayException error,
   ) {
-    switch (error.kind) {
-      case GeminiGatewayFailureKind.auth:
-        _pool.markAuthFailure(account, cooldown: error.retryAfter);
-        break;
-      case GeminiGatewayFailureKind.quota:
-        if (_settings?['mark_429_as_unhealthy'] == true) {
-          _pool.markQuotaFailure(
-            account,
-            quotaSnapshot: error.quotaSnapshot,
-            cooldown: error.retryAfter,
-          );
-        } else {
-          account.errorCount += 1;
-          account.lastQuotaSnapshot = error.quotaSnapshot ?? account.lastQuotaSnapshot;
-        }
-        break;
-      case GeminiGatewayFailureKind.capacity:
-      case GeminiGatewayFailureKind.serviceUnavailable:
-        _pool.markCapacityFailure(account, cooldown: error.retryAfter);
-        break;
-      case GeminiGatewayFailureKind.unsupportedModel:
-        _pool.markUnsupportedModel(account, requestedModel);
-        break;
-      case GeminiGatewayFailureKind.invalidRequest:
-      case GeminiGatewayFailureKind.unknown:
-        account.errorCount += 1;
-        break;
-    }
+    applyProxyAccountFailurePolicy(
+      pool: _pool,
+      account: account,
+      requestedModel: requestedModel,
+      error: error,
+      mark429AsUnhealthy: _settings?['mark_429_as_unhealthy'] == true,
+    );
     _publishAccounts();
+    _publishStatus();
   }
 
   bool _shouldRetry(GeminiGatewayFailureKind kind) {
@@ -1699,6 +1720,11 @@ class _ProxyIsolateHost {
       requestedHeaders: requestedHeaders,
       requestedPrivateNetwork: requestedPrivateNetwork,
     );
+  }
+
+  void _recordAcceptedRequest() {
+    _requestCount += 1;
+    _publishStatus();
   }
 
   void _publishStatus() {

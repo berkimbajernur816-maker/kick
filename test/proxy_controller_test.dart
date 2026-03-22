@@ -192,6 +192,50 @@ void main() {
       isTrue,
     );
   });
+
+  test(
+    'session summary preserves uptime and stop-state counters when stop clears startedAt',
+    () async {
+      final transport = _RecordingAnalyticsTransport();
+      final analytics = KickAnalytics(
+        config: const AnalyticsBuildConfig(buildChannel: 'test', appKey: 'A-EU-test'),
+        transport: transport,
+        trackingAllowed: true,
+      );
+      final harness = await _ControllerHarness.create(
+        analytics: analytics,
+        spawnIsolate: (messagePort, errorPort, exitPort) {
+          return Isolate.spawn(
+            _stopSummarySnapshotIsolate,
+            messagePort,
+            onError: errorPort,
+            onExit: exitPort,
+          );
+        },
+      );
+      addTearDown(harness.dispose);
+      final settings = AppSettings.defaults(
+        apiKey: 'expected-key',
+      ).copyWith(port: 0, androidBackgroundRuntime: false);
+
+      await harness.controller.configure(settings: settings, accounts: const <AccountProfile>[]);
+      await harness.controller.start();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await harness.controller.stop();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(
+        transport.events.any((event) {
+          final uptimeSec = event.properties['uptime_sec'] as int? ?? 0;
+          return event.name == 'proxy_session_summary' &&
+              uptimeSec >= 4 &&
+              event.properties['request_count'] == 5 &&
+              event.properties['healthy_accounts'] == 0;
+        }),
+        isTrue,
+      );
+    },
+  );
 }
 
 int _spawnAttempts = 0;
@@ -330,6 +374,54 @@ Future<void> _analyticsSessionIsolate(SendPort sendPort) async {
             'request_count': 3,
             'active_accounts': 2,
             'healthy_accounts': 1,
+            'last_error': null,
+          },
+        });
+        break;
+      case 'shutdown':
+        commands.close();
+        break;
+    }
+  }
+}
+
+@pragma('vm:entry-point')
+Future<void> _stopSummarySnapshotIsolate(SendPort sendPort) async {
+  final commands = ReceivePort();
+  sendPort.send({'type': 'ready', 'port': commands.sendPort});
+  await for (final message in commands) {
+    if (message is! Map) {
+      continue;
+    }
+    switch (message['type']) {
+      case 'start':
+        sendPort.send({
+          'type': 'status',
+          'payload': {
+            'ready': true,
+            'running': true,
+            'bound_host': '127.0.0.1',
+            'port': 3000,
+            'started_at': DateTime.now().subtract(const Duration(seconds: 5)).toIso8601String(),
+            'request_count': 2,
+            'active_accounts': 1,
+            'healthy_accounts': 1,
+            'last_error': null,
+          },
+        });
+        break;
+      case 'stop':
+        sendPort.send({
+          'type': 'status',
+          'payload': {
+            'ready': true,
+            'running': false,
+            'bound_host': '127.0.0.1',
+            'port': 3000,
+            'started_at': null,
+            'request_count': 5,
+            'active_accounts': 1,
+            'healthy_accounts': 0,
             'last_error': null,
           },
         });

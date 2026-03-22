@@ -539,7 +539,12 @@ class KickProxyController {
       if (!previous.running && next.running) {
         _sessionMetrics.begin();
       } else if (previous.running && !next.running) {
-        unawaited(_emitProxySessionSummaryIfNeeded(stopReason: _stopReasonForState(next)));
+        unawaited(
+          _emitProxySessionSummaryIfNeeded(
+            stopReason: _stopReasonForState(next),
+            stateSnapshot: _summaryStateForStopTransition(previous, next),
+          ),
+        );
       }
       return;
     }
@@ -564,7 +569,12 @@ class KickProxyController {
     }
 
     if (previous.running && !next.running) {
-      unawaited(_emitProxySessionSummaryIfNeeded(stopReason: _stopReasonForState(next)));
+      unawaited(
+        _emitProxySessionSummaryIfNeeded(
+          stopReason: _stopReasonForState(next),
+          stateSnapshot: _summaryStateForStopTransition(previous, next),
+        ),
+      );
     }
   }
 
@@ -658,13 +668,23 @@ class KickProxyController {
     return 'runtime_error';
   }
 
-  Future<void> _emitProxySessionSummaryIfNeeded({required String stopReason}) async {
+  ProxyRuntimeState _summaryStateForStopTransition(
+    ProxyRuntimeState previous,
+    ProxyRuntimeState next,
+  ) {
+    return next.copyWith(startedAt: next.startedAt ?? previous.startedAt);
+  }
+
+  Future<void> _emitProxySessionSummaryIfNeeded({
+    required String stopReason,
+    ProxyRuntimeState? stateSnapshot,
+  }) async {
     if (!_sessionMetrics.active || _sessionMetrics.summaryEmitted) {
       return;
     }
 
     final currentSettings = _lastSettings;
-    final currentState = _currentState;
+    final currentState = stateSnapshot ?? _currentState;
     final uptimeSec = currentState.startedAt == null
         ? 0
         : DateTime.now().difference(currentState.startedAt!).inSeconds;

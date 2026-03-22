@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="static/logo.png" alt="Логотип KiCk" style="width: 128px; height: 128px; margin-bottom: 3px;">
+<img src="static/github/logo/logo.png" alt="Логотип KiCk" style="width: 128px; height: 128px; margin-bottom: 3px;">
 
 # KiCk
 
@@ -24,13 +24,26 @@
 **Поддерживаемые платформы**
 
 <a href="https://github.com/mxnix/kick/releases/latest">
-  <img src="static/windows.png" alt="Скачать для Windows" style="width: 128px; height: 128px; margin-bottom: 6px; margin-right: 24px;">
+  <img src="static/github/logo/windows.png" alt="Скачать для Windows" style="width: 128px; height: 128px; margin-bottom: 6px; margin-right: 24px;">
 </a>
 <a href="https://github.com/mxnix/kick/releases/latest">
-  <img src="static/android.png" alt="Скачать для Android" style="width: auto; height: 128px; margin-bottom: 6px;">
+  <img src="static/github/logo/android.png" alt="Скачать для Android" style="width: auto; height: 128px; margin-bottom: 6px;">
 </a>
 
 </div>
+
+<details>
+<summary><strong>Интерфейс</strong></summary>
+
+<p align="center">
+  <img src="static/github/screenshots/desktop.png" alt="KiCk на Windows: экран управления аккаунтами" width="100%">
+</p>
+
+<p align="center">
+  <img src="static/github/screenshots/mobile.png" alt="KiCk на Android: быстрый запуск локального прокси" width="100%">
+</p>
+
+</details>
 
 <details>
 <summary><strong>Что это</strong></summary>

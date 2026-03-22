@@ -156,6 +156,7 @@ const _cloudCodeDomains = <String>{
 };
 const defaultGeminiRequestMaxRetries = 10;
 const defaultGeminiBaseRetryDelay = Duration(seconds: 1);
+const defaultGeminiRequestTimeout = Duration(seconds: 90);
 const _maxTransientRequestRetries = 3;
 const _maxRetryable429Delay = Duration(minutes: 1);
 const _maxRetryableTransientDelay = Duration(minutes: 5);
@@ -383,7 +384,7 @@ class GeminiCodeAssistClient {
     GeminiInstallationIdLoader? privilegedUserIdLoader,
     bool warmupEnabled = false,
     GeminiRetryPolicy retryPolicy = const GeminiRetryPolicy(),
-    Duration requestTimeout = const Duration(seconds: 45),
+    Duration requestTimeout = defaultGeminiRequestTimeout,
   }) : _onTokensUpdated = onTokensUpdated,
        _http = httpClient ?? http.Client(),
        _wait = wait ?? _defaultWait,
@@ -393,7 +394,7 @@ class GeminiCodeAssistClient {
        _retryPolicy = retryPolicy.normalized(),
        _requestTimeout = requestTimeout > Duration.zero
            ? requestTimeout
-           : const Duration(seconds: 45);
+           : defaultGeminiRequestTimeout;
 
   final Future<void> Function(ProxyRuntimeAccount account, OAuthTokens tokens) _onTokensUpdated;
   final http.Client _http;
@@ -556,19 +557,29 @@ class GeminiCodeAssistClient {
     for (var pass = 0; pass <= _maxContinuationPasses; pass++) {
       final accumulatedBeforePass = accumulatedText;
       await _ensureFreshTokens(account);
-      final payload = await _executeWithRetry(
-        () => _sendUnaryRequest(
+      final response = await _executeWithRetry(
+        () => _sendStreamRequest(
           accessToken: account.tokens.accessToken,
           model: model,
           projectId: projectId,
           requestBody: currentRequestBody,
           sessionState: sessionState,
+          timeoutLabel: 'Gemini request',
         ),
         onRetry: onRetry,
       );
-      lastPayload = payload;
 
-      final generatedText = _extractGeneratedText(payload);
+      lastPayload = await _collectUnaryStreamPayload(
+        response,
+        pass: pass,
+        accumulatedBeforePass: accumulatedBeforePass,
+      );
+
+      if (lastPayload == null) {
+        break;
+      }
+
+      final generatedText = _extractGeneratedText(lastPayload);
       if (generatedText.isNotEmpty) {
         accumulatedText = pass == 0
             ? generatedText
@@ -576,12 +587,14 @@ class GeminiCodeAssistClient {
       }
 
       final shouldContinue =
-          _extractFinishReason(payload) == 'MAX_TOKENS' &&
+          _extractFinishReason(lastPayload) == 'MAX_TOKENS' &&
           accumulatedText.isNotEmpty &&
           accumulatedText != accumulatedBeforePass &&
           pass < _maxContinuationPasses;
       if (!shouldContinue) {
-        return accumulatedText.isEmpty ? payload : _withAccumulatedText(payload, accumulatedText);
+        return accumulatedText.isEmpty
+            ? lastPayload
+            : _withAccumulatedText(lastPayload, accumulatedText);
       }
 
       currentRequestBody = _buildContinuationRequestBody(
@@ -601,6 +614,30 @@ class GeminiCodeAssistClient {
     return accumulatedText.isEmpty
         ? lastPayload
         : _withAccumulatedText(lastPayload, accumulatedText);
+  }
+
+  Future<Map<String, Object?>?> _collectUnaryStreamPayload(
+    http.StreamedResponse response, {
+    required int pass,
+    required String accumulatedBeforePass,
+  }) async {
+    Map<String, Object?>? lastPayload;
+    final iterator = StreamIterator<Map<String, Object?>>(_streamResponse(response));
+    try {
+      while (await iterator.moveNext()) {
+        final rawPayload = iterator.current;
+        final generatedText = _extractGeneratedText(rawPayload);
+        final mergedText = pass == 0
+            ? generatedText
+            : _appendContinuationText(accumulatedBeforePass, generatedText);
+        lastPayload = mergedText == generatedText
+            ? rawPayload
+            : _withAccumulatedText(rawPayload, mergedText);
+      }
+    } finally {
+      await iterator.cancel();
+    }
+    return lastPayload;
   }
 
   Map<String, Object?> _buildRequestBody(
@@ -891,47 +928,6 @@ class GeminiCodeAssistClient {
     }
   }
 
-  Map<String, Object?> _decodeResponse(http.Response response) {
-    if (response.statusCode >= 400) {
-      throw decodeGeminiGatewayError(response.statusCode, response.body);
-    }
-
-    final decoded = jsonDecode(response.body);
-    if (decoded is! Map<String, dynamic>) {
-      throw GeminiGatewayException(
-        kind: GeminiGatewayFailureKind.unknown,
-        message: 'Unexpected Gemini response shape.',
-        statusCode: response.statusCode,
-      );
-    }
-    return decoded.cast<String, Object?>();
-  }
-
-  Future<Map<String, Object?>> _sendUnaryRequest({
-    required String accessToken,
-    required String model,
-    required String projectId,
-    required Map<String, Object?> requestBody,
-    required _CodeAssistSessionState sessionState,
-  }) async {
-    final response = await _runWithRequestTimeout(
-      () async => _http.post(
-        _methodUri('generateContent'),
-        headers: await _headers(accessToken, model: model),
-        body: jsonEncode(
-          _buildRequestEnvelope(
-            model: model,
-            projectId: projectId,
-            requestBody: requestBody,
-            sessionState: sessionState,
-          ),
-        ),
-      ),
-      'Gemini request',
-    );
-    return _decodeResponse(response);
-  }
-
   Future<http.StreamedResponse> _sendStreamRequest({
     required String accessToken,
     required String model,
@@ -939,6 +935,7 @@ class GeminiCodeAssistClient {
     required Map<String, Object?> requestBody,
     required _CodeAssistSessionState sessionState,
     _RequestCancellation? cancellation,
+    String timeoutLabel = 'Gemini streaming request',
   }) async {
     final headers = await _headers(accessToken, model: model);
     final httpRequest =
@@ -956,10 +953,7 @@ class GeminiCodeAssistClient {
               sessionState: sessionState,
             ),
           );
-    final response = await _runWithRequestTimeout(
-      () => _http.send(httpRequest),
-      'Gemini streaming request',
-    );
+    final response = await _runWithRequestTimeout(() => _http.send(httpRequest), timeoutLabel);
     if (response.statusCode >= 400) {
       final body = await response.stream.bytesToString();
       throw decodeGeminiGatewayError(response.statusCode, body);
@@ -982,6 +976,7 @@ class GeminiCodeAssistClient {
           final buffer = <String>[];
           while (await lineIterator!.moveNext()) {
             final line = lineIterator!.current;
+            final trimmedLine = line.trim();
             if (line.startsWith('data: ')) {
               buffer.add(line.substring(6).trim());
               continue;
@@ -989,6 +984,10 @@ class GeminiCodeAssistClient {
             if (line.isEmpty && buffer.isNotEmpty) {
               _emitBufferedChunk(controller, buffer);
               buffer.clear();
+            }
+            if (buffer.isEmpty && (trimmedLine.startsWith('{') || trimmedLine.startsWith('['))) {
+              // Some tests and intermediary adapters return a bare JSON payload instead of SSE.
+              buffer.add(trimmedLine);
             }
           }
           if (buffer.isNotEmpty) {

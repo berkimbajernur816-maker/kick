@@ -323,8 +323,8 @@ void main() {
     expect(seenPaths, [
       '/v1internal:loadCodeAssist',
       '/v1internal:listExperiments',
-      '/v1internal:generateContent',
-      '/v1internal:generateContent',
+      '/v1internal:streamGenerateContent',
+      '/v1internal:streamGenerateContent',
     ]);
 
     expect((seenBodies[0]['metadata'] as Map?)?.cast<String, Object?>(), {
@@ -374,6 +374,53 @@ void main() {
       ),
     );
   });
+
+  test(
+    'allows unary generation to finish after the request timeout once the stream is open',
+    () async {
+      final client = GeminiCodeAssistClient(
+        onTokensUpdated: (account, tokens) async {},
+        requestTimeout: const Duration(milliseconds: 10),
+        retryPolicy: const GeminiRetryPolicy(maxRetries: 0),
+        httpClient: QueueHttpClient([
+          (_) async {
+            return http.StreamedResponse(
+              Stream<List<int>>.fromFuture(
+                Future<List<int>>.delayed(
+                  const Duration(milliseconds: 40),
+                  () => utf8.encode(
+                    jsonEncode({
+                      'response': {
+                        'candidates': [
+                          {
+                            'content': {
+                              'parts': [
+                                {'text': 'Recovered after slow body'},
+                              ],
+                            },
+                            'finishReason': 'STOP',
+                          },
+                        ],
+                      },
+                    }),
+                  ),
+                ),
+              ),
+              200,
+            );
+          },
+        ]),
+      );
+
+      final response = await client.generateContent(
+        account: sampleAccount(),
+        request: sampleRequest(),
+      );
+
+      expect(OpenAiResponseMapper.currentText(response), 'Recovered after slow body');
+      expect(OpenAiResponseMapper.currentFinishReason(response), 'stop');
+    },
+  );
 
   test('retries quota failures using retry hint before succeeding', () async {
     final waits = <Duration>[];

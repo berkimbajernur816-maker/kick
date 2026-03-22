@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../proxy/model_catalog.dart';
 import '../app_database.dart';
 import '../models/account_profile.dart';
 
@@ -19,11 +20,11 @@ class AccountsRepository {
     await _database.customInsert('''
       INSERT INTO accounts (
         id, label, email, project_id, google_subject_id, avatar_url,
-        enabled, priority, not_supported_models,
+        enabled, priority, not_supported_models, runtime_not_supported_models,
         last_used_at, usage_count, error_count, cooldown_until,
         last_quota_snapshot, token_ref
       ) VALUES (
-        ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15
+        ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16
       )
       ON CONFLICT(id) DO UPDATE SET
         label = excluded.label,
@@ -34,6 +35,7 @@ class AccountsRepository {
         enabled = excluded.enabled,
         priority = excluded.priority,
         not_supported_models = excluded.not_supported_models,
+        runtime_not_supported_models = excluded.runtime_not_supported_models,
         last_used_at = excluded.last_used_at,
         usage_count = excluded.usage_count,
         error_count = excluded.error_count,
@@ -80,7 +82,7 @@ class AccountsRepository {
 
         await upsert(
           current.copyWith(
-            notSupportedModels: _mergeNotSupportedModels(
+            runtimeNotSupportedModels: _extractRuntimeNotSupportedModels(
               current.notSupportedModels,
               runtimeAccount.notSupportedModels,
             ),
@@ -110,6 +112,7 @@ class AccountsRepository {
       Variable<int>((map['enabled'] as int?) ?? 1),
       Variable<int>((map['priority'] as int?) ?? 0),
       Variable<String>(map['not_supported_models'] as String? ?? ''),
+      Variable<String>(map['runtime_not_supported_models'] as String? ?? ''),
       Variable<String>((map['last_used_at'] as String?) ?? ''),
       Variable<int>((map['usage_count'] as int?) ?? 0),
       Variable<int>((map['error_count'] as int?) ?? 0),
@@ -119,8 +122,24 @@ class AccountsRepository {
     ];
   }
 
-  List<String> _mergeNotSupportedModels(List<String> current, List<String> runtime) {
-    final merged = <String>{...current, ...runtime};
-    return merged.toList(growable: false);
+  List<String> _extractRuntimeNotSupportedModels(List<String> manual, List<String> combined) {
+    final manualModels = {
+      for (final model in manual)
+        if (model.trim().isNotEmpty) ModelCatalog.normalizeModel(model),
+    };
+    final runtimeModels = <String>[];
+    final seen = <String>{};
+    for (final model in combined) {
+      final trimmed = model.trim();
+      if (trimmed.isEmpty) {
+        continue;
+      }
+      final normalized = ModelCatalog.normalizeModel(trimmed);
+      if (manualModels.contains(normalized) || !seen.add(normalized)) {
+        continue;
+      }
+      runtimeModels.add(normalized);
+    }
+    return runtimeModels;
   }
 }

@@ -9,6 +9,7 @@ class AppDatabase extends DatabaseConnectionUser {
     'enabled': 'INTEGER NOT NULL DEFAULT 1',
     'priority': 'INTEGER NOT NULL DEFAULT 0',
     'not_supported_models': "TEXT NOT NULL DEFAULT ''",
+    'runtime_not_supported_models': "TEXT NOT NULL DEFAULT ''",
     'google_subject_id': 'TEXT',
     'avatar_url': 'TEXT',
     'last_used_at': 'TEXT',
@@ -64,6 +65,7 @@ class AppDatabase extends DatabaseConnectionUser {
         enabled INTEGER NOT NULL,
         priority INTEGER NOT NULL,
         not_supported_models TEXT NOT NULL,
+        runtime_not_supported_models TEXT NOT NULL,
         last_used_at TEXT,
         usage_count INTEGER NOT NULL,
         error_count INTEGER NOT NULL,
@@ -136,6 +138,13 @@ class AppDatabase extends DatabaseConnectionUser {
         UPDATE accounts
         SET not_supported_models = ''
         WHERE not_supported_models IS NULL
+      ''');
+    }
+    if (columns.contains('runtime_not_supported_models')) {
+      await customStatement('''
+        UPDATE accounts
+        SET runtime_not_supported_models = ''
+        WHERE runtime_not_supported_models IS NULL
       ''');
     }
     if (columns.contains('usage_count')) {

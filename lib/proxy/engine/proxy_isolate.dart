@@ -1053,10 +1053,18 @@ class _ProxyIsolateHost {
     }
     final expectedKey = _settings?['api_key'] as String? ?? '';
     final authorization = request.headers['authorization'] ?? '';
-    if (authorization != 'Bearer $expectedKey') {
+    if (!_hasValidBearerToken(authorization, expectedKey)) {
       return _errorResponse(401, 'invalid_api_key', 'Missing or invalid Bearer token.');
     }
     return null;
+  }
+
+  bool _hasValidBearerToken(String authorization, String expectedKey) {
+    final match = RegExp(r'^\s*bearer\s+(.+?)\s*$', caseSensitive: false).firstMatch(authorization);
+    if (match == null) {
+      return false;
+    }
+    return match.group(1) == expectedKey;
   }
 
   Future<Map<String, Object?>?> _readJson(Request request) async {

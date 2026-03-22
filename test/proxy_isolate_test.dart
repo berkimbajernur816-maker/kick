@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kick/data/models/oauth_tokens.dart';
 import 'package:kick/proxy/account_pool/account_pool.dart';
-import 'package:kick/proxy/gemini/gemini_code_assist_client.dart';
 import 'package:kick/proxy/engine/proxy_isolate.dart';
+import 'package:kick/proxy/gemini/gemini_code_assist_client.dart';
 
 void main() {
   OAuthTokens sampleTokens() => OAuthTokens(

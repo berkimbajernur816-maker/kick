@@ -102,8 +102,10 @@ bool _isValidHeaderName(String value) => RegExp(r'^[A-Za-z0-9-]+$').hasMatch(val
 String _normalizeOrigin(Uri uri) {
   final defaultPort =
       (uri.scheme == 'http' && uri.port == 80) || (uri.scheme == 'https' && uri.port == 443);
+  final host = uri.host.toLowerCase();
+  final hostSegment = host.contains(':') ? '[$host]' : host;
   final portSegment = uri.hasPort && !defaultPort ? ':${uri.port}' : '';
-  return '${uri.scheme.toLowerCase()}://${uri.host.toLowerCase()}$portSegment';
+  return '${uri.scheme.toLowerCase()}://$hostSegment$portSegment';
 }
 
 bool _isLoopbackHost(String host) {
@@ -121,7 +123,9 @@ bool _isPrivateHost(String host) {
     return false;
   }
   if (address.type == InternetAddressType.IPv6) {
-    return address.isLinkLocal || address.isLoopback;
+    final octets = address.rawAddress;
+    final isUniqueLocal = octets.isNotEmpty && (octets.first & 0xfe) == 0xfc;
+    return address.isLinkLocal || address.isLoopback || isUniqueLocal;
   }
 
   final octets = address.rawAddress;

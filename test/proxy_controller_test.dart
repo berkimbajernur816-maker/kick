@@ -95,6 +95,36 @@ void main() {
     expect(harness.controller.currentState.lastError, isNull);
   });
 
+  test('accepts bearer authorization regardless of scheme case and extra spacing', () async {
+    final harness = await _ControllerHarness.create();
+    addTearDown(harness.dispose);
+    final settings = AppSettings.defaults(
+      apiKey: 'expected-key',
+    ).copyWith(port: 0, androidBackgroundRuntime: false);
+
+    await harness.controller.configure(settings: settings, accounts: const <AccountProfile>[]);
+    final runningState = harness.controller.states.firstWhere((state) => state.running);
+
+    await harness.controller.start();
+    final state = await runningState.timeout(const Duration(seconds: 2));
+
+    await runWithRealHttpClient(() async {
+      final client = HttpClient();
+      try {
+        for (final headerValue in const ['bearer expected-key', 'Bearer   expected-key']) {
+          final request = await client.getUrl(Uri.http('127.0.0.1:${state.port}', '/v1/models'));
+          request.headers.set(HttpHeaders.authorizationHeader, headerValue);
+          final response = await request.close();
+          await response.drain();
+
+          expect(response.statusCode, HttpStatus.ok);
+        }
+      } finally {
+        client.close(force: true);
+      }
+    });
+  });
+
   test('ignores repeated start requests while a start is already pending', () async {
     final harness = await _ControllerHarness.create(
       spawnIsolate: (messagePort, errorPort, exitPort) {
@@ -236,6 +266,54 @@ void main() {
       );
     },
   );
+
+  test('reattaching to an existing Android runtime does not reset session counters', () async {
+    final transport = _RecordingAnalyticsTransport();
+    final analytics = KickAnalytics(
+      config: const AnalyticsBuildConfig(buildChannel: 'test', appKey: 'A-EU-test'),
+      transport: transport,
+      trackingAllowed: true,
+    );
+    final harness = await _ControllerHarness.create(
+      analytics: analytics,
+      isAndroidPlatform: () => true,
+      isAndroidRuntimeRunning: () async => true,
+      stopAndroidRuntimeIfRunning: () async {},
+      ensureAndroidRuntimeRunning: () async {},
+      probeExistingRuntime: (_) async => <String, Object?>{
+        'ok': true,
+        'running': true,
+        'active_accounts': 1,
+        'healthy_accounts': 1,
+      },
+      spawnIsolate: (messagePort, errorPort, exitPort) {
+        return Isolate.spawn(
+          _reattachedRuntimeMetricsIsolate,
+          messagePort,
+          onError: errorPort,
+          onExit: exitPort,
+        );
+      },
+    );
+    addTearDown(harness.dispose);
+    final settings = AppSettings.defaults(
+      apiKey: 'expected-key',
+    ).copyWith(androidBackgroundRuntime: true);
+
+    await harness.controller.configure(settings: settings, accounts: const <AccountProfile>[]);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
+    await harness.controller.start();
+    await harness.controller.stop();
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
+    expect(
+      transport.events.any(
+        (event) => event.name == 'proxy_session_summary' && event.properties['success_count'] == 1,
+      ),
+      isTrue,
+    );
+  });
 }
 
 int _spawnAttempts = 0;
@@ -484,6 +562,53 @@ Future<void> _delayedStartCountingIsolate(SendPort sendPort) async {
   }
 }
 
+@pragma('vm:entry-point')
+Future<void> _reattachedRuntimeMetricsIsolate(SendPort sendPort) async {
+  final commands = ReceivePort();
+  var configureCount = 0;
+  sendPort.send({'type': 'ready', 'port': commands.sendPort});
+  await for (final message in commands) {
+    if (message is! Map) {
+      continue;
+    }
+    switch (message['type']) {
+      case 'configure':
+        configureCount += 1;
+        if (configureCount == 1) {
+          sendPort.send({
+            'type': 'analytics',
+            'payload': {
+              'kind': 'proxy_request_succeeded',
+              'route': '/v1/responses',
+              'model': 'gemini-3-flash',
+              'stream': false,
+            },
+          });
+        }
+        break;
+      case 'stop':
+        sendPort.send({
+          'type': 'status',
+          'payload': {
+            'ready': true,
+            'running': false,
+            'bound_host': '127.0.0.1',
+            'port': 3000,
+            'started_at': DateTime.now().subtract(const Duration(seconds: 2)).toIso8601String(),
+            'request_count': 1,
+            'active_accounts': 1,
+            'healthy_accounts': 1,
+            'last_error': null,
+          },
+        });
+        break;
+      case 'shutdown':
+        commands.close();
+        break;
+    }
+  }
+}
+
 OAuthTokens _sampleTokens(String accessToken) {
   return OAuthTokens(
     accessToken: accessToken,
@@ -504,6 +629,11 @@ class _ControllerHarness {
   static Future<_ControllerHarness> create({
     ProxyIsolateSpawner? spawnIsolate,
     KickAnalytics? analytics,
+    AndroidPlatformCheck? isAndroidPlatform,
+    AndroidRuntimeRunningCheck? isAndroidRuntimeRunning,
+    AndroidRuntimeEffect? stopAndroidRuntimeIfRunning,
+    AndroidRuntimeEffect? ensureAndroidRuntimeRunning,
+    ProxyRuntimeProbe? probeExistingRuntime,
   }) async {
     final database = AppDatabase(NativeDatabase.memory());
     await database.ensureSchema();
@@ -518,6 +648,11 @@ class _ControllerHarness {
           ),
       logsRepository: LogsRepository(database),
       secretStore: secretStore,
+      isAndroidPlatform: isAndroidPlatform,
+      isAndroidRuntimeRunning: isAndroidRuntimeRunning,
+      stopAndroidRuntimeIfRunning: stopAndroidRuntimeIfRunning,
+      ensureAndroidRuntimeRunning: ensureAndroidRuntimeRunning,
+      probeExistingRuntime: probeExistingRuntime,
       spawnIsolate: spawnIsolate,
     );
     return _ControllerHarness(database: database, secretStore: secretStore, controller: controller);

@@ -175,6 +175,7 @@ class AccountsController extends AsyncNotifier<List<AccountProfile>> {
         enabled: true,
         priority: normalizeAccountPriority(priority),
         notSupportedModels: notSupportedModels,
+        runtimeNotSupportedModels: existing?.runtimeNotSupportedModels ?? const <String>[],
         lastUsedAt: existing?.lastUsedAt,
         usageCount: existing?.usageCount ?? 0,
         errorCount: existing?.errorCount ?? 0,
@@ -223,7 +224,12 @@ class AccountsController extends AsyncNotifier<List<AccountProfile>> {
 
   Future<void> resetHealth(AccountProfile account) async {
     await saveAccount(
-      account.copyWith(errorCount: 0, clearCooldown: true, clearQuotaSnapshot: true),
+      account.copyWith(
+        errorCount: 0,
+        runtimeNotSupportedModels: const <String>[],
+        clearCooldown: true,
+        clearQuotaSnapshot: true,
+      ),
     );
   }
 

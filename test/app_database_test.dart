@@ -95,6 +95,7 @@ void main() {
             enabled,
             priority,
             not_supported_models,
+            runtime_not_supported_models,
             google_subject_id,
             avatar_url,
             usage_count,
@@ -113,6 +114,7 @@ void main() {
         'enabled',
         'priority',
         'not_supported_models',
+        'runtime_not_supported_models',
         'google_subject_id',
         'avatar_url',
         'last_used_at',
@@ -127,6 +129,7 @@ void main() {
     expect(accountRow.read<int>('enabled'), 1);
     expect(accountRow.read<int>('priority'), 0);
     expect(accountRow.read<String>('not_supported_models'), '');
+    expect(accountRow.read<String>('runtime_not_supported_models'), '');
     expect(accountRow.read<String?>('google_subject_id'), anyOf(equals(null), isEmpty));
     expect(accountRow.read<String?>('avatar_url'), anyOf(equals(null), isEmpty));
     expect(accountRow.read<int>('usage_count'), 0);

@@ -113,6 +113,7 @@ class _AccountCard extends ConsumerWidget {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final effectiveUnsupportedModels = account.effectiveNotSupportedModels;
     final priorityLabel = accountPriorityLabel(l10n, account.priority);
     final resetLabel = account.isCoolingDown ? l10n.clearCooldownAction : l10n.resetCooldownTooltip;
     final statusLabel = !account.enabled
@@ -194,10 +195,10 @@ class _AccountCard extends ConsumerWidget {
                 ),
             ],
           ),
-          if (account.notSupportedModels.isNotEmpty) ...[
+          if (effectiveUnsupportedModels.isNotEmpty) ...[
             const SizedBox(height: 14),
             Text(
-              l10n.unsupportedModelsList(account.notSupportedModels.join(', ')),
+              l10n.unsupportedModelsList(effectiveUnsupportedModels.join(', ')),
               style: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
             ),
           ],

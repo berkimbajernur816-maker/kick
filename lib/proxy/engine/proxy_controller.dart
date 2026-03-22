@@ -17,6 +17,10 @@ import '../engine/proxy_isolate.dart';
 
 typedef ProxyIsolateSpawner =
     Future<Isolate> Function(SendPort messagePort, SendPort errorPort, SendPort exitPort);
+typedef ProxyRuntimeProbe = Future<Map<String, Object?>?> Function(AppSettings settings);
+typedef AndroidPlatformCheck = bool Function();
+typedef AndroidRuntimeRunningCheck = Future<bool> Function();
+typedef AndroidRuntimeEffect = Future<void> Function();
 
 class ProxyRuntimeState {
   const ProxyRuntimeState({
@@ -132,18 +136,35 @@ class KickProxyController {
     String geminiInstallationIdPath = '',
     required LogsRepository logsRepository,
     required SecretStore secretStore,
+    AndroidPlatformCheck? isAndroidPlatform,
+    AndroidRuntimeRunningCheck? isAndroidRuntimeRunning,
+    AndroidRuntimeEffect? stopAndroidRuntimeIfRunning,
+    AndroidRuntimeEffect? ensureAndroidRuntimeRunning,
+    ProxyRuntimeProbe? probeExistingRuntime,
     ProxyIsolateSpawner? spawnIsolate,
   }) : _accountsRepository = accountsRepository,
        _analytics = analytics,
        _geminiInstallationIdPath = geminiInstallationIdPath,
+       _isAndroidPlatform = isAndroidPlatform ?? _defaultIsAndroidPlatform,
+       _isAndroidRuntimeRunning = isAndroidRuntimeRunning ?? AndroidForegroundRuntime.isRunning,
+       _stopAndroidRuntimeIfRunning =
+           stopAndroidRuntimeIfRunning ?? AndroidForegroundRuntime.stopIfRunning,
+       _ensureAndroidRuntimeRunning =
+           ensureAndroidRuntimeRunning ?? AndroidForegroundRuntime.ensureRunning,
        _logsRepository = logsRepository,
+       _probeExistingRuntime = probeExistingRuntime ?? _defaultProbeExistingRuntime,
        _secretStore = secretStore,
        _spawnIsolate = spawnIsolate ?? _defaultSpawnIsolate;
 
   final AccountsRepository _accountsRepository;
   final KickAnalytics _analytics;
   final String _geminiInstallationIdPath;
+  final AndroidPlatformCheck _isAndroidPlatform;
+  final AndroidRuntimeRunningCheck _isAndroidRuntimeRunning;
+  final AndroidRuntimeEffect _stopAndroidRuntimeIfRunning;
+  final AndroidRuntimeEffect _ensureAndroidRuntimeRunning;
   final LogsRepository _logsRepository;
+  final ProxyRuntimeProbe _probeExistingRuntime;
   final SecretStore _secretStore;
   final ProxyIsolateSpawner _spawnIsolate;
 
@@ -212,7 +233,7 @@ class KickProxyController {
     _lastSettings = settings;
     _lastAccounts = accounts;
     if (!settings.androidBackgroundRuntime) {
-      await AndroidForegroundRuntime.stopIfRunning();
+      await _stopAndroidRuntimeIfRunning();
     } else {
       await _syncExistingAndroidRuntime(settings);
     }
@@ -284,7 +305,7 @@ class KickProxyController {
           );
         }
         if (settings.androidBackgroundRuntime) {
-          await AndroidForegroundRuntime.ensureRunning();
+          await _ensureAndroidRuntimeRunning();
         }
         return;
       }
@@ -292,20 +313,20 @@ class KickProxyController {
         _awaitingStartResult = false;
         _setStartPending(false);
         if (settings?.androidBackgroundRuntime == true) {
-          await AndroidForegroundRuntime.ensureRunning();
+          await _ensureAndroidRuntimeRunning();
         }
         return;
       }
       if (settings != null &&
           settings.androidBackgroundRuntime &&
-          await AndroidForegroundRuntime.isRunning()) {
-        await AndroidForegroundRuntime.stopIfRunning();
+          await _isAndroidRuntimeRunning()) {
+        await _stopAndroidRuntimeIfRunning();
         await Future<void>.delayed(const Duration(milliseconds: 250));
       }
       waitingForRuntimeStatus = true;
       _commandPort?.send({'type': 'start'});
       if (settings?.androidBackgroundRuntime == true) {
-        await AndroidForegroundRuntime.ensureRunning();
+        await _ensureAndroidRuntimeRunning();
       }
     } catch (_) {
       if (!waitingForRuntimeStatus) {
@@ -320,7 +341,7 @@ class KickProxyController {
     _awaitingStartResult = false;
     _setStartPending(false);
     _commandPort?.send({'type': 'stop'});
-    await AndroidForegroundRuntime.stopIfRunning();
+    await _stopAndroidRuntimeIfRunning();
   }
 
   Future<void> dispose() async {
@@ -485,7 +506,7 @@ class KickProxyController {
   }
 
   Future<bool> _syncExistingAndroidRuntime(AppSettings settings) async {
-    if (!Platform.isAndroid || !await AndroidForegroundRuntime.isRunning()) {
+    if (!_isAndroidPlatform() || !await _isAndroidRuntimeRunning()) {
       return false;
     }
 
@@ -494,6 +515,7 @@ class KickProxyController {
       return false;
     }
 
+    final wasRunning = _currentState.running;
     _currentState = _currentState.copyWith(
       ready: true,
       running: true,
@@ -504,12 +526,14 @@ class KickProxyController {
       healthyAccounts: payload['healthy_accounts'] as int? ?? 0,
       clearLastError: true,
     );
-    _sessionMetrics.begin();
+    if (!wasRunning) {
+      _sessionMetrics.begin();
+    }
     _emitState(_currentState);
     return true;
   }
 
-  Future<Map<String, Object?>?> _probeExistingRuntime(AppSettings settings) async {
+  static Future<Map<String, Object?>?> _defaultProbeExistingRuntime(AppSettings settings) async {
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 1);
     final probeHost = settings.allowLan || settings.host == '0.0.0.0' ? '127.0.0.1' : settings.host;
     final uri = Uri.http('$probeHost:${settings.port}', '/health');
@@ -533,6 +557,8 @@ class KickProxyController {
       client.close(force: true);
     }
   }
+
+  static bool _defaultIsAndroidPlatform() => Platform.isAndroid;
 
   void _handleStatusTransition(ProxyRuntimeState previous, ProxyRuntimeState next) {
     if (!_awaitingStartResult) {

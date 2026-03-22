@@ -11,6 +11,7 @@ class AccountProfile {
     required this.enabled,
     required this.priority,
     required this.notSupportedModels,
+    this.runtimeNotSupportedModels = const [],
     required this.lastUsedAt,
     required this.usageCount,
     required this.errorCount,
@@ -28,6 +29,7 @@ class AccountProfile {
   final bool enabled;
   final int priority;
   final List<String> notSupportedModels;
+  final List<String> runtimeNotSupportedModels;
   final DateTime? lastUsedAt;
   final int usageCount;
   final int errorCount;
@@ -36,6 +38,8 @@ class AccountProfile {
   final String tokenRef;
 
   bool get isCoolingDown => cooldownUntil != null && cooldownUntil!.isAfter(DateTime.now());
+  List<String> get effectiveNotSupportedModels =>
+      _mergeModelLists(notSupportedModels, runtimeNotSupportedModels);
 
   AccountProfile copyWith({
     String? id,
@@ -49,6 +53,7 @@ class AccountProfile {
     bool? enabled,
     int? priority,
     List<String>? notSupportedModels,
+    List<String>? runtimeNotSupportedModels,
     DateTime? lastUsedAt,
     bool clearLastUsedAt = false,
     int? usageCount,
@@ -69,6 +74,7 @@ class AccountProfile {
       enabled: enabled ?? this.enabled,
       priority: priority ?? this.priority,
       notSupportedModels: notSupportedModels ?? this.notSupportedModels,
+      runtimeNotSupportedModels: runtimeNotSupportedModels ?? this.runtimeNotSupportedModels,
       lastUsedAt: clearLastUsedAt ? null : (lastUsedAt ?? this.lastUsedAt),
       usageCount: usageCount ?? this.usageCount,
       errorCount: errorCount ?? this.errorCount,
@@ -89,6 +95,7 @@ class AccountProfile {
       'enabled': enabled ? 1 : 0,
       'priority': priority,
       'not_supported_models': notSupportedModels.join('\n'),
+      'runtime_not_supported_models': runtimeNotSupportedModels.join('\n'),
       'last_used_at': lastUsedAt?.toIso8601String(),
       'usage_count': usageCount,
       'error_count': errorCount,
@@ -105,7 +112,7 @@ class AccountProfile {
       'enabled': enabled,
       'google_subject_id': googleSubjectId,
       'avatar_url': avatarUrl,
-      'not_supported_models': List<String>.from(notSupportedModels),
+      'not_supported_models': List<String>.from(effectiveNotSupportedModels),
       'last_used_at': lastUsedAt?.toIso8601String(),
       'cooldown_until': cooldownUntil?.toIso8601String(),
       'tokens': tokens?.toJson(),
@@ -123,11 +130,8 @@ class AccountProfile {
       avatarUrl: _readOptionalString(map['avatar_url']),
       enabled: (map['enabled'] as int? ?? 1) == 1,
       priority: map['priority'] as int? ?? 0,
-      notSupportedModels: ((map['not_supported_models'] as String?) ?? '')
-          .split('\n')
-          .map((item) => item.trim())
-          .where((item) => item.isNotEmpty)
-          .toList(growable: false),
+      notSupportedModels: _decodeModelList(map['not_supported_models']),
+      runtimeNotSupportedModels: _decodeModelList(map['runtime_not_supported_models']),
       lastUsedAt: DateTime.tryParse(map['last_used_at'] as String? ?? ''),
       usageCount: map['usage_count'] as int? ?? 0,
       errorCount: map['error_count'] as int? ?? 0,
@@ -145,5 +149,18 @@ class AccountProfile {
       return null;
     }
     return text;
+  }
+
+  static List<String> _decodeModelList(Object? value) {
+    return (value?.toString() ?? '')
+        .split('\n')
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  static List<String> _mergeModelLists(List<String> primary, List<String> secondary) {
+    final merged = <String>{...primary, ...secondary};
+    return merged.toList(growable: false);
   }
 }

@@ -57,6 +57,25 @@ void main() {
       ),
       'http://localhost:3001',
     );
+    expect(
+      resolveProxyCorsOrigin(
+        origin: 'http://[::1]:3002',
+        allowLan: false,
+        configuredHost: '127.0.0.1',
+      ),
+      'http://[::1]:3002',
+    );
+  });
+
+  test('allows IPv6 unique local origins when LAN access is enabled', () {
+    expect(
+      resolveProxyCorsOrigin(
+        origin: 'http://[fd12:3456::1]:8080',
+        allowLan: true,
+        configuredHost: '0.0.0.0',
+      ),
+      'http://[fd12:3456::1]:8080',
+    );
   });
 
   test('echoes preflight headers and private network approval for allowed origins', () {

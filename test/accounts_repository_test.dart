@@ -99,7 +99,9 @@ void main() {
     expect(merged.googleSubjectId, 'google-subject-primary');
     expect(merged.avatarUrl, 'https://example.com/avatar-primary.png');
     expect(merged.tokenRef, 'primary-ref');
-    expect(merged.notSupportedModels, containsAll(['user-model', 'runtime-model']));
+    expect(merged.notSupportedModels, ['user-model']);
+    expect(merged.runtimeNotSupportedModels, ['runtime-model']);
+    expect(merged.effectiveNotSupportedModels, containsAll(['user-model', 'runtime-model']));
     expect(merged.usageCount, 7);
     expect(merged.errorCount, 2);
     expect(merged.lastQuotaSnapshot, 'quota-hit');

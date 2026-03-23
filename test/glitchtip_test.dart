@@ -50,9 +50,23 @@ void main() {
       message: 'Request succeeded after retries',
       maskedPayload: '{"request_id":"abc"}',
     );
+    final ignoredChatCompletions = AppLogEntry(
+      id: '3',
+      timestamp: DateTime(2026, 3, 17),
+      level: AppLogLevel.error,
+      category: 'chat.completions',
+      route: '/v1/chat/completions',
+      message: 'Request failed',
+      maskedPayload: '{"request_id":"abc"}',
+    );
 
     expect(shouldCaptureGlitchTipProxyLog(reportable), isTrue);
     expect(shouldCaptureGlitchTipProxyLog(ignored), isFalse);
+    expect(shouldCaptureGlitchTipProxyLog(ignoredChatCompletions), isFalse);
     expect(glitchTipProxyLogEventMessage(reportable), 'Gemini responses request failed');
+    expect(
+      glitchTipProxyLogEventMessage(ignoredChatCompletions),
+      'Gemini chat completion request failed',
+    );
   });
 }

@@ -48,11 +48,23 @@ class AppShell extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final useRail = constraints.maxWidth >= 1080;
+          final platform = Theme.of(context).platform;
+          final useSystemInsets =
+              platform == TargetPlatform.android ||
+              platform == TargetPlatform.iOS ||
+              platform == TargetPlatform.fuchsia;
 
           return Scaffold(
             extendBody: false,
             body: KickBackdrop(
-              padding: EdgeInsets.fromLTRB(useRail ? 20 : 24, 20, useRail ? 20 : 24, 24),
+              topInset: useSystemInsets,
+              bottomInset: useRail && useSystemInsets,
+              padding: EdgeInsets.fromLTRB(
+                useRail ? 20 : 24,
+                useRail ? 14 : 20,
+                useRail ? 20 : 24,
+                useRail ? 16 : 12,
+              ),
               child: useRail
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +77,8 @@ class AppShell extends StatelessWidget {
                         const SizedBox(width: 24),
                         Expanded(
                           child: KickContentFrame(
-                            maxWidth: 920,
+                            maxWidth: 1080,
+                            expandHeight: true,
                             child: _AnimatedShellContent(location: location, child: child),
                           ),
                         ),
@@ -73,6 +86,7 @@ class AppShell extends StatelessWidget {
                     )
                   : KickContentFrame(
                       maxWidth: 920,
+                      expandHeight: true,
                       child: _AnimatedShellContent(location: location, child: child),
                     ),
             ),
@@ -80,7 +94,7 @@ class AppShell extends StatelessWidget {
                 ? null
                 : SafeArea(
                     top: false,
-                    minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     child: _BottomNav(
                       destinations: destinations,
                       selectedIndex: selectedIndex,

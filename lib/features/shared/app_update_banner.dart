@@ -39,8 +39,8 @@ class AppUpdateBanner extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 14),
-          Align(
-            alignment: Alignment.centerLeft,
+          SizedBox(
+            width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () => _openExternalUrl(updateInfo.releaseUrl),
               icon: const Icon(Icons.open_in_new_rounded),

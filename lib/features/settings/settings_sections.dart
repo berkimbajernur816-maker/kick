@@ -273,8 +273,8 @@ class SettingsAccessSection extends StatelessWidget {
             decoration: InputDecoration(labelText: l10n.apiKeyTitle),
           ),
           const SizedBox(height: 14),
-          Align(
-            alignment: Alignment.centerLeft,
+          SizedBox(
+            width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () {
                 unawaited(onRegenerateApiKey());

@@ -26,53 +26,74 @@ class AccountsPage extends ConsumerWidget {
     return accountsValue.when(
       data: (accounts) {
         return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SectionHeading(
-                title: l10n.accountsTitle,
-                subtitle: l10n.accountsSubtitle,
-                trailing: FilledButton.icon(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final useCompactHeader = constraints.maxWidth < 680;
+
+              Widget buildAddButton({required bool fullWidth}) {
+                final button = FilledButton.icon(
                   onPressed: () => _authenticateNewAccount(context, ref),
                   icon: const Icon(Icons.add_rounded),
                   label: Text(l10n.addButton),
-                ),
-              ),
-              const SizedBox(height: 24),
-              if (accounts.isEmpty)
-                EmptyStateCard(
-                  icon: Icons.group_add_rounded,
-                  title: l10n.accountsEmptyTitle,
-                  message: l10n.accountsEmptyMessage,
-                  action: FilledButton(
-                    onPressed: () => _authenticateNewAccount(context, ref),
-                    child: Text(l10n.connectAccountButton),
-                  ),
-                )
-              else
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final spacing = 14.0;
-                    final cardWidth = switch (constraints.maxWidth) {
-                      > 980 => (constraints.maxWidth - spacing) / 2,
-                      _ => constraints.maxWidth,
-                    };
+                );
+                if (!fullWidth) {
+                  return button;
+                }
+                return SizedBox(width: double.infinity, child: button);
+              }
 
-                    return Wrap(
-                      spacing: spacing,
-                      runSpacing: spacing,
-                      children: accounts
-                          .map(
-                            (account) => SizedBox(
-                              width: cardWidth,
-                              child: _AccountCard(account: account),
-                            ),
-                          )
-                          .toList(growable: false),
-                    );
-                  },
-                ),
-            ],
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionHeading(
+                    title: l10n.accountsTitle,
+                    subtitle: l10n.accountsSubtitle,
+                    trailing: useCompactHeader ? null : buildAddButton(fullWidth: false),
+                  ),
+                  if (useCompactHeader) ...[
+                    const SizedBox(height: 16),
+                    buildAddButton(fullWidth: true),
+                  ],
+                  const SizedBox(height: 24),
+                  if (accounts.isEmpty)
+                    EmptyStateCard(
+                      icon: Icons.group_add_rounded,
+                      title: l10n.accountsEmptyTitle,
+                      message: l10n.accountsEmptyMessage,
+                      action: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: () => _authenticateNewAccount(context, ref),
+                          child: Text(l10n.connectAccountButton),
+                        ),
+                      ),
+                    )
+                  else
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final spacing = 14.0;
+                        final cardWidth = switch (constraints.maxWidth) {
+                          > 980 => (constraints.maxWidth - spacing) / 2,
+                          _ => constraints.maxWidth,
+                        };
+
+                        return Wrap(
+                          spacing: spacing,
+                          runSpacing: spacing,
+                          children: accounts
+                              .map(
+                                (account) => SizedBox(
+                                  width: cardWidth,
+                                  child: _AccountCard(account: account),
+                                ),
+                              )
+                              .toList(growable: false),
+                        );
+                      },
+                    ),
+                ],
+              );
+            },
           ),
         );
       },

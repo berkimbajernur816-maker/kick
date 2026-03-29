@@ -7,10 +7,14 @@ class KickBackdrop extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.fromLTRB(24, 24, 24, 104),
+    this.topInset = true,
+    this.bottomInset = true,
   });
 
   final Widget child;
   final EdgeInsets padding;
+  final bool topInset;
+  final bool bottomInset;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +32,8 @@ class KickBackdrop extends StatelessWidget {
         ),
       ),
       child: SafeArea(
+        top: topInset,
+        bottom: bottomInset,
         child: Padding(padding: padding, child: child),
       ),
     );
@@ -40,20 +46,30 @@ class KickContentFrame extends StatelessWidget {
     required this.child,
     this.maxWidth = 920,
     this.alignment = Alignment.topCenter,
+    this.expandHeight = false,
   });
 
   final Widget child;
   final double maxWidth;
   final Alignment alignment;
+  final bool expandHeight;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: alignment,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: child,
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final minHeight = expandHeight && constraints.maxHeight.isFinite
+            ? constraints.maxHeight
+            : 0.0;
+
+        return Align(
+          alignment: alignment,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth, minHeight: minHeight),
+            child: child,
+          ),
+        );
+      },
     );
   }
 }
@@ -78,36 +94,40 @@ class KickPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final resolvedRadius = radius ?? context.kickTokens.panelRadius;
+    final neutralSurface = Color.alphaBlend(
+      scheme.surface.withValues(alpha: 0.08),
+      scheme.surfaceContainerLow,
+    );
 
     final backgroundColor = switch (tone) {
-      KickPanelTone.soft => scheme.surfaceContainerLowest.withValues(alpha: 0.9),
+      KickPanelTone.soft => scheme.surfaceContainerLowest.withValues(alpha: 0.96),
       KickPanelTone.accent => Color.alphaBlend(
-        scheme.primary.withValues(alpha: 0.12),
-        scheme.surfaceContainerLow,
+        scheme.primary.withValues(alpha: 0.055),
+        neutralSurface,
       ),
-      KickPanelTone.outline => scheme.surfaceContainerLowest.withValues(alpha: 0.82),
-      KickPanelTone.muted => scheme.surfaceContainerLow.withValues(alpha: 0.88),
+      KickPanelTone.outline => scheme.surfaceContainerLowest.withValues(alpha: 0.88),
+      KickPanelTone.muted => neutralSurface.withValues(alpha: 0.94),
     };
 
     final borderColor = switch (tone) {
-      KickPanelTone.soft => scheme.outlineVariant.withValues(alpha: 0.34),
-      KickPanelTone.accent => scheme.primary.withValues(alpha: 0.2),
+      KickPanelTone.soft => scheme.outlineVariant.withValues(alpha: 0.26),
+      KickPanelTone.accent => scheme.outlineVariant.withValues(alpha: 0.32),
       KickPanelTone.outline => scheme.outlineVariant.withValues(alpha: 0.46),
-      KickPanelTone.muted => scheme.outlineVariant.withValues(alpha: 0.26),
+      KickPanelTone.muted => scheme.outlineVariant.withValues(alpha: 0.24),
     };
 
     final shadows = switch (tone) {
       KickPanelTone.accent => [
         BoxShadow(
-          color: scheme.primary.withValues(alpha: 0.08),
-          blurRadius: 30,
-          offset: const Offset(0, 12),
+          color: scheme.shadow.withValues(alpha: 0.045),
+          blurRadius: 18,
+          offset: const Offset(0, 8),
         ),
       ],
       KickPanelTone.soft => [
         BoxShadow(
-          color: scheme.shadow.withValues(alpha: 0.05),
-          blurRadius: 16,
+          color: scheme.shadow.withValues(alpha: 0.035),
+          blurRadius: 14,
           offset: const Offset(0, 6),
         ),
       ],

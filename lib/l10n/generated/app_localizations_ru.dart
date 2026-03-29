@@ -477,6 +477,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loggingVerbose => 'Подробное';
 
   @override
+  String get logRetentionLabel => 'Лимит записей лога';
+
+  @override
+  String get logRetentionHelperText =>
+      'Когда лимит достигнут, самые старые записи будут автоматически удаляться';
+
+  @override
+  String logRetentionInvalidError(int min, int max) {
+    return 'Укажите число от $min до $max';
+  }
+
+  @override
   String get unsafeRawLoggingTitle => 'Сырые логи отладки';
 
   @override
@@ -766,19 +778,27 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String logsLoadedCount(int count) {
+    return 'Загружено: $count';
+  }
+
+  @override
   String get logsEmptyTitle => 'Логи пусты';
 
   @override
   String get logsLoadErrorTitle => 'Не удалось загрузить логи';
 
   @override
-  String get logsExportTooltip => 'Сохранить логи в файл';
+  String get logsExportTooltip => 'Сохранить все логи по текущим фильтрам';
 
   @override
   String get logsExportDialogTitle => 'Куда сохранить логи?';
 
   @override
-  String get logsShareTooltip => 'Поделиться логами';
+  String get logsShareTooltip => 'Поделиться всеми логами по текущим фильтрам';
+
+  @override
+  String get logsLoadMoreButton => 'Загрузить еще';
 
   @override
   String get logsNothingToExportMessage => 'Нет логов для сохранения';

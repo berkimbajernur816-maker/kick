@@ -20,6 +20,7 @@ class SettingsDraftController extends ChangeNotifier {
     apiKeyController.addListener(_handleTextSettingsChanged);
     requestRetriesController.addListener(_handleTextSettingsChanged);
     retry429DelayController.addListener(_handleTextSettingsChanged);
+    logRetentionController.addListener(_handleTextSettingsChanged);
     customModelsController.addListener(_handleTextSettingsChanged);
   }
 
@@ -32,6 +33,7 @@ class SettingsDraftController extends ChangeNotifier {
   final apiKeyController = TextEditingController();
   final requestRetriesController = TextEditingController();
   final retry429DelayController = TextEditingController();
+  final logRetentionController = TextEditingController();
   final customModelsController = TextEditingController();
 
   ThemeMode _themeMode = ThemeMode.system;
@@ -219,6 +221,15 @@ class SettingsDraftController extends ChangeNotifier {
     return null;
   }
 
+  String? logRetentionValidationError(KickLocalizations l10n) {
+    final value = logRetentionController.text.trim();
+    final parsed = int.tryParse(value);
+    if (parsed == null || parsed < minLogRetentionCount || parsed > maxLogRetentionCount) {
+      return l10n.logRetentionInvalidError(minLogRetentionCount, maxLogRetentionCount);
+    }
+    return null;
+  }
+
   Future<String> regenerateApiKey() async {
     _saveDebounce?.cancel();
     final apiKey = await _regenerateApiKey();
@@ -252,6 +263,7 @@ class SettingsDraftController extends ChangeNotifier {
     apiKeyController.dispose();
     requestRetriesController.dispose();
     retry429DelayController.dispose();
+    logRetentionController.dispose();
     customModelsController.dispose();
     super.dispose();
   }
@@ -263,6 +275,7 @@ class SettingsDraftController extends ChangeNotifier {
     apiKeyController.text = settings.apiKey;
     requestRetriesController.text = settings.requestMaxRetries.toString();
     retry429DelayController.text = settings.retry429DelaySeconds.toString();
+    logRetentionController.text = settings.logRetentionCount.toString();
     customModelsController.text = settings.customModels.join('\n');
     _apiKeyRequired = settings.apiKeyRequired;
     _themeMode = settings.themeMode;
@@ -319,6 +332,7 @@ class SettingsDraftController extends ChangeNotifier {
       windowsLaunchAtStartup: _windowsLaunchAtStartup,
       requestMaxRetries: int.parse(requestRetriesController.text.trim()),
       retry429DelaySeconds: int.parse(retry429DelayController.text.trim()),
+      logRetentionCount: int.parse(logRetentionController.text.trim()),
       mark429AsUnhealthy: _mark429AsUnhealthy,
       defaultGoogleWebSearchEnabled: _defaultGoogleWebSearchEnabled,
       renderGoogleGroundingInMessage: _renderGoogleGroundingInMessage,
@@ -384,7 +398,8 @@ class SettingsDraftController extends ChangeNotifier {
         (hostController.text.trim() == '0.0.0.0' && !_allowLan) ||
         !_isValidPort(portController.text.trim()) ||
         !_isValidRequestRetries(requestRetriesController.text.trim()) ||
-        !_isValidRetry429Delay(retry429DelayController.text.trim());
+        !_isValidRetry429Delay(retry429DelayController.text.trim()) ||
+        !_isValidLogRetention(logRetentionController.text.trim());
   }
 
   bool _isValidPort(String value) {
@@ -400,6 +415,11 @@ class SettingsDraftController extends ChangeNotifier {
   bool _isValidRetry429Delay(String value) {
     final parsed = int.tryParse(value);
     return parsed != null && parsed >= 1 && parsed <= 3600;
+  }
+
+  bool _isValidLogRetention(String value) {
+    final parsed = int.tryParse(value);
+    return parsed != null && parsed >= minLogRetentionCount && parsed <= maxLogRetentionCount;
   }
 
   bool _settingsEqual(AppSettings left, AppSettings right) {
@@ -420,6 +440,7 @@ class SettingsDraftController extends ChangeNotifier {
         left.defaultGoogleWebSearchEnabled == right.defaultGoogleWebSearchEnabled &&
         left.renderGoogleGroundingInMessage == right.renderGoogleGroundingInMessage &&
         left.loggingVerbosity == right.loggingVerbosity &&
+        left.logRetentionCount == right.logRetentionCount &&
         left.unsafeRawLoggingEnabled == right.unsafeRawLoggingEnabled &&
         listEquals(left.customModels, right.customModels);
   }

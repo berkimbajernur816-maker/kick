@@ -3,20 +3,69 @@ import 'package:drift/drift.dart';
 import '../../core/logging/log_sanitizer.dart';
 import '../app_database.dart';
 import '../models/app_log_entry.dart';
+import '../models/app_settings.dart';
 
 class LogsRepository {
-  LogsRepository(this._database);
+  LogsRepository(this._database, {int retentionLimit = defaultLogRetentionCount})
+    : _retentionLimit = normalizeLogRetentionCount(retentionLimit);
 
   final AppDatabase _database;
+  int _retentionLimit;
 
-  Future<List<AppLogEntry>> readAll({int limit = 300}) async {
-    final rows = await _database
-        .customSelect(
-          'SELECT * FROM logs ORDER BY timestamp DESC LIMIT ?1',
-          variables: [Variable<int>(limit)],
-        )
-        .get();
+  Future<List<AppLogEntry>> readAll({
+    int? limit = 300,
+    int offset = 0,
+    String query = '',
+    AppLogLevel? level,
+    String? category,
+  }) async {
+    final parts = _buildQueryParts(query: query, level: level, category: category);
+    final sql = StringBuffer('SELECT * FROM logs${parts.whereClause} ORDER BY timestamp DESC');
+    final variables = <Variable>[...parts.variables];
+
+    if (limit != null) {
+      sql.write(' LIMIT ?${parts.nextIndex}');
+      variables.add(Variable<int>(limit));
+      if (offset > 0) {
+        sql.write(' OFFSET ?${parts.nextIndex + 1}');
+        variables.add(Variable<int>(offset));
+      }
+    } else if (offset > 0) {
+      sql.write(' LIMIT -1 OFFSET ?${parts.nextIndex}');
+      variables.add(Variable<int>(offset));
+    }
+
+    final rows = await _database.customSelect(sql.toString(), variables: variables).get();
     return rows.map((row) => AppLogEntry.fromDatabaseMap(row.data)).toList(growable: false);
+  }
+
+  Future<int> count({String query = '', AppLogLevel? level, String? category}) async {
+    final parts = _buildQueryParts(query: query, level: level, category: category);
+    final row = await _database
+        .customSelect(
+          'SELECT COUNT(*) AS total FROM logs${parts.whereClause}',
+          variables: parts.variables,
+        )
+        .getSingle();
+    return row.read<int>('total');
+  }
+
+  Future<List<String>> readCategories() async {
+    final rows = await _database.customSelect('''
+          SELECT DISTINCT category
+          FROM logs
+          WHERE TRIM(category) != ''
+          ORDER BY category COLLATE NOCASE
+          ''').get();
+    return rows
+        .map((row) => row.read<String>('category').trim())
+        .where((value) => value.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  Future<void> setRetentionLimit(int retentionLimit) async {
+    _retentionLimit = normalizeLogRetentionCount(retentionLimit);
+    await _pruneToRetentionLimit();
   }
 
   Future<void> insert(AppLogEntry entry) async {
@@ -41,12 +90,7 @@ class LogsRepository {
       ],
     );
 
-    await _database.customStatement('''
-      DELETE FROM logs
-      WHERE id NOT IN (
-        SELECT id FROM logs ORDER BY timestamp DESC LIMIT 500
-      )
-    ''');
+    await _pruneToRetentionLimit();
   }
 
   Future<void> clear() async {
@@ -54,7 +98,7 @@ class LogsRepository {
   }
 
   Future<void> scrubSensitiveEntries({required bool clearRawPayload}) async {
-    final entries = await readAll(limit: 500);
+    final entries = await readAll(limit: null);
     if (entries.isEmpty) {
       return;
     }
@@ -81,4 +125,76 @@ class LogsRepository {
       }
     });
   }
+
+  Future<void> _pruneToRetentionLimit() async {
+    final rows = await _database
+        .customSelect(
+          'SELECT id FROM logs ORDER BY timestamp DESC LIMIT -1 OFFSET ?1',
+          variables: [Variable<int>(_retentionLimit)],
+        )
+        .get();
+    final idsToDelete = rows.map((row) => row.read<String>('id')).toList(growable: false);
+    if (idsToDelete.isEmpty) {
+      return;
+    }
+
+    final placeholders = List.generate(idsToDelete.length, (index) => '?${index + 1}').join(', ');
+    await _database.customStatement('DELETE FROM logs WHERE id IN ($placeholders)', idsToDelete);
+  }
+
+  _LogQueryParts _buildQueryParts({
+    required String query,
+    required AppLogLevel? level,
+    required String? category,
+  }) {
+    final clauses = <String>[];
+    final variables = <Variable>[];
+    var nextIndex = 1;
+
+    if (level != null) {
+      clauses.add('level = ?$nextIndex');
+      variables.add(Variable<String>(level.name));
+      nextIndex += 1;
+    }
+
+    final normalizedCategory = category?.trim();
+    if (normalizedCategory != null && normalizedCategory.isNotEmpty) {
+      clauses.add('category = ?$nextIndex');
+      variables.add(Variable<String>(normalizedCategory));
+      nextIndex += 1;
+    }
+
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isNotEmpty) {
+      clauses.add('''
+        (
+          LOWER(message) LIKE ?$nextIndex ESCAPE '\\'
+          OR LOWER(category) LIKE ?$nextIndex ESCAPE '\\'
+          OR LOWER(COALESCE(route, '')) LIKE ?$nextIndex ESCAPE '\\'
+          OR LOWER(COALESCE(masked_payload, '')) LIKE ?$nextIndex ESCAPE '\\'
+        )
+      ''');
+      variables.add(Variable<String>('%${_escapeLikePattern(normalizedQuery)}%'));
+      nextIndex += 1;
+    }
+
+    final whereClause = clauses.isEmpty ? '' : ' WHERE ${clauses.join(' AND ')}';
+    return _LogQueryParts(whereClause: whereClause, variables: variables, nextIndex: nextIndex);
+  }
+
+  String _escapeLikePattern(String value) {
+    return value.replaceAll('\\', r'\\').replaceAll('%', r'\%').replaceAll('_', r'\_');
+  }
+}
+
+class _LogQueryParts {
+  const _LogQueryParts({
+    required this.whereClause,
+    required this.variables,
+    required this.nextIndex,
+  });
+
+  final String whereClause;
+  final List<Variable> variables;
+  final int nextIndex;
 }

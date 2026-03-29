@@ -93,6 +93,7 @@ Future<AppBootstrap> initializeAppBootstrap() async {
     timings.mark('settings_ready');
     final effectiveSettings =
         currentSettings?.copyWith(apiKey: apiKey) ?? AppSettings.defaults(apiKey: apiKey);
+    await logsRepository.setRetentionLimit(effectiveSettings.logRetentionCount);
     await WindowsDesktopRuntime.configure(
       settings: effectiveSettings,
       readTrayNotificationShown: () =>

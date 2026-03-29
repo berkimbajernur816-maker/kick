@@ -79,6 +79,16 @@ class SettingsAppearanceSection extends StatelessWidget {
             onSelectionChanged: (value) => controller.setVerbosity(value.first),
           ),
           const SizedBox(height: 18),
+          TextField(
+            controller: controller.logRetentionController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: l10n.logRetentionLabel,
+              helperText: l10n.logRetentionHelperText,
+              errorText: controller.logRetentionValidationError(l10n),
+            ),
+          ),
+          const SizedBox(height: 18),
           SettingToggleCard(
             title: l10n.unsafeRawLoggingTitle,
             subtitle: l10n.unsafeRawLoggingSubtitle,

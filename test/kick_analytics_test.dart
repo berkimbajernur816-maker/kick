@@ -48,6 +48,7 @@ void main() {
       retry429DelaySeconds: 30,
       mark429AsUnhealthy: false,
       loggingVerbosity: KickLogVerbosity.normal,
+      logRetentionCount: defaultLogRetentionCount,
       unsafeRawLoggingEnabled: false,
       customModels: <String>[],
     );

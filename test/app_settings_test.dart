@@ -14,6 +14,7 @@ void main() {
     expect(settings.apiKeyRequired, isTrue);
     expect(settings.defaultGoogleWebSearchEnabled, isFalse);
     expect(settings.renderGoogleGroundingInMessage, isFalse);
+    expect(settings.logRetentionCount, defaultLogRetentionCount);
   });
 
   test('round-trips disclaimer fields through storage map', () {
@@ -35,6 +36,7 @@ void main() {
       defaultGoogleWebSearchEnabled: true,
       renderGoogleGroundingInMessage: true,
       loggingVerbosity: KickLogVerbosity.verbose,
+      logRetentionCount: 2400,
       unsafeRawLoggingEnabled: true,
       customModels: ['gemini-2.5-flash'],
     );
@@ -52,6 +54,7 @@ void main() {
     expect(restored.defaultGoogleWebSearchEnabled, isTrue);
     expect(restored.renderGoogleGroundingInMessage, isTrue);
     expect(restored.windowsLaunchAtStartup, isTrue);
+    expect(restored.logRetentionCount, 2400);
     expect(restored.unsafeRawLoggingEnabled, isTrue);
     expect(restored.customModels, ['gemini-2.5-flash']);
   });

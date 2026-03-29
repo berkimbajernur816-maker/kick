@@ -125,9 +125,11 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     final bootstrap = ref.read(appBootstrapProvider);
     await bootstrap.secretStore.writeProxyApiKey(settings.apiKey);
     await bootstrap.settingsRepository.writeSettings(settings);
+    await bootstrap.logsRepository.setRetentionLimit(settings.logRetentionCount);
     await WindowsDesktopRuntime.applySettings(settings);
     await bootstrap.analytics.setTrackingAllowed(analyticsTrackingAllowed(settings));
     state = AsyncData(settings);
+    await ref.read(logsControllerProvider.notifier).refreshState();
   }
 
   Future<String> regenerateApiKey() async {
@@ -263,9 +265,65 @@ class AccountsController extends AsyncNotifier<List<AccountProfile>> {
   }
 }
 
-final logsControllerProvider = AsyncNotifierProvider<LogsController, List<AppLogEntry>>(
+const _logsPageSize = 100;
+const _logsFieldUnset = Object();
+
+final logsControllerProvider = AsyncNotifierProvider<LogsController, LogsViewState>(
   LogsController.new,
 );
+
+class LogsViewState {
+  const LogsViewState({
+    required this.entries,
+    required this.categories,
+    required this.totalCount,
+    required this.filteredCount,
+    required this.query,
+    required this.selectedLevel,
+    required this.selectedCategory,
+    this.isLoadingMore = false,
+  });
+
+  final List<AppLogEntry> entries;
+  final List<String> categories;
+  final int totalCount;
+  final int filteredCount;
+  final String query;
+  final AppLogLevel? selectedLevel;
+  final String? selectedCategory;
+  final bool isLoadingMore;
+
+  bool get hasActiveFilters =>
+      query.trim().isNotEmpty || selectedLevel != null || selectedCategory != null;
+
+  bool get hasMore => entries.length < filteredCount;
+
+  LogsViewState copyWith({
+    List<AppLogEntry>? entries,
+    List<String>? categories,
+    int? totalCount,
+    int? filteredCount,
+    String? query,
+    Object? selectedLevel = _logsFieldUnset,
+    Object? selectedCategory = _logsFieldUnset,
+    bool? isLoadingMore,
+  }) {
+    return LogsViewState(
+      entries: entries ?? this.entries,
+      categories: categories ?? this.categories,
+      totalCount: totalCount ?? this.totalCount,
+      filteredCount: filteredCount ?? this.filteredCount,
+      query: query ?? this.query,
+      selectedLevel: identical(selectedLevel, _logsFieldUnset)
+          ? this.selectedLevel
+          : selectedLevel as AppLogLevel?,
+      selectedCategory: identical(selectedCategory, _logsFieldUnset)
+          ? this.selectedCategory
+          : selectedCategory as String?,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
+}
 
 final proxyConfigurationOrchestratorProvider = Provider<ProxyConfigurationOrchestrator>((ref) {
   final orchestrator = ProxyConfigurationOrchestrator(
@@ -315,22 +373,148 @@ final appUpdateQueryProvider = FutureProvider.autoDispose<AppUpdateInfo>((ref) a
   return ref.watch(appUpdateCheckerProvider).checkForUpdates(currentVersion: currentVersion);
 });
 
-class LogsController extends AsyncNotifier<List<AppLogEntry>> {
+class LogsController extends AsyncNotifier<LogsViewState> {
+  int _loadRevision = 0;
+
   @override
-  Future<List<AppLogEntry>> build() async {
-    final bootstrap = ref.read(appBootstrapProvider);
-    return bootstrap.logsRepository.readAll();
+  Future<LogsViewState> build() async {
+    return _readState();
   }
 
   Future<void> refreshState() async {
+    final current = state.asData?.value;
+    await _reload(
+      query: current?.query ?? '',
+      level: current?.selectedLevel,
+      category: current?.selectedCategory,
+    );
+  }
+
+  Future<void> updateQuery(String query) async {
+    final current = state.asData?.value;
+    if (current != null && current.query == query) {
+      return;
+    }
+    await _reload(query: query, level: current?.selectedLevel, category: current?.selectedCategory);
+  }
+
+  Future<void> updateLevel(AppLogLevel? level) async {
+    final current = state.asData?.value;
+    if (current != null && current.selectedLevel == level) {
+      return;
+    }
+    await _reload(query: current?.query ?? '', level: level, category: current?.selectedCategory);
+  }
+
+  Future<void> updateCategory(String? category) async {
+    final current = state.asData?.value;
+    final normalizedCategory = category?.trim().isEmpty == true ? null : category?.trim();
+    if (current != null && current.selectedCategory == normalizedCategory) {
+      return;
+    }
+    await _reload(
+      query: current?.query ?? '',
+      level: current?.selectedLevel,
+      category: normalizedCategory,
+    );
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || current.isLoadingMore || !current.hasMore) {
+      return;
+    }
+
+    state = AsyncData(current.copyWith(isLoadingMore: true));
+    try {
+      final bootstrap = ref.read(appBootstrapProvider);
+      final nextEntries = await bootstrap.logsRepository.readAll(
+        limit: _logsPageSize,
+        offset: current.entries.length,
+        query: current.query,
+        level: current.selectedLevel,
+        category: current.selectedCategory,
+      );
+      state = AsyncData(
+        current.copyWith(
+          entries: [...current.entries, ...nextEntries],
+          filteredCount: nextEntries.isEmpty ? current.entries.length : current.filteredCount,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+    }
+  }
+
+  Future<List<AppLogEntry>> readAllMatchingEntries() async {
     final bootstrap = ref.read(appBootstrapProvider);
-    state = AsyncData(await bootstrap.logsRepository.readAll());
+    final current = state.asData?.value;
+    return bootstrap.logsRepository.readAll(
+      limit: null,
+      query: current?.query ?? '',
+      level: current?.selectedLevel,
+      category: current?.selectedCategory,
+    );
   }
 
   Future<void> clear() async {
     final bootstrap = ref.read(appBootstrapProvider);
     await bootstrap.logsRepository.clear();
-    state = const AsyncData(<AppLogEntry>[]);
+    await refreshState();
+  }
+
+  Future<void> _reload({
+    required String query,
+    required AppLogLevel? level,
+    required String? category,
+  }) async {
+    final revision = ++_loadRevision;
+    try {
+      final next = await _readState(query: query, level: level, category: category);
+      if (revision != _loadRevision) {
+        return;
+      }
+      state = AsyncData(next);
+    } catch (error, stackTrace) {
+      if (revision != _loadRevision) {
+        return;
+      }
+      state = AsyncError(error, stackTrace);
+    }
+  }
+
+  Future<LogsViewState> _readState({
+    String query = '',
+    AppLogLevel? level,
+    String? category,
+  }) async {
+    final bootstrap = ref.read(appBootstrapProvider);
+    final categories = await bootstrap.logsRepository.readCategories();
+    final normalizedCategory = categories.contains(category) ? category : null;
+    final totalCount = await bootstrap.logsRepository.count();
+    final filteredCount = await bootstrap.logsRepository.count(
+      query: query,
+      level: level,
+      category: normalizedCategory,
+    );
+    final entries = await bootstrap.logsRepository.readAll(
+      limit: _logsPageSize,
+      query: query,
+      level: level,
+      category: normalizedCategory,
+    );
+
+    return LogsViewState(
+      entries: entries,
+      categories: categories,
+      totalCount: totalCount,
+      filteredCount: filteredCount,
+      query: query,
+      selectedLevel: level,
+      selectedCategory: normalizedCategory,
+      isLoadingMore: false,
+    );
   }
 }
 

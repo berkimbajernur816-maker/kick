@@ -11,6 +11,7 @@ import '../../data/models/app_log_entry.dart';
 import '../../l10n/kick_localizations.dart';
 import '../app_state/providers.dart';
 import '../shared/kick_surfaces.dart';
+import 'log_export_service.dart';
 
 class LogsPage extends ConsumerStatefulWidget {
   const LogsPage({super.key});
@@ -20,9 +21,6 @@ class LogsPage extends ConsumerStatefulWidget {
 }
 
 class _LogsPageState extends ConsumerState<LogsPage> {
-  String _query = '';
-  AppLogLevel? _selectedLevel;
-  String? _selectedCategory;
   bool _isExporting = false;
   bool _isSharing = false;
   final Set<String> _expandedPayloadEntries = <String>{};
@@ -34,34 +32,7 @@ class _LogsPageState extends ConsumerState<LogsPage> {
 
     return logsValue.when(
       data: (logs) {
-        final categories = logs.map((entry) => entry.category).toSet().toList(growable: false)
-          ..sort();
-        final hasActiveFilters =
-            _query.trim().isNotEmpty || _selectedLevel != null || _selectedCategory != null;
-        final filtered = logs
-            .where((entry) {
-              if (_selectedLevel != null && entry.level != _selectedLevel) {
-                return false;
-              }
-              if (_selectedCategory != null && entry.category != _selectedCategory) {
-                return false;
-              }
-
-              final query = _query.trim().toLowerCase();
-              if (query.isEmpty) {
-                return true;
-              }
-
-              final sanitizedMessage = LogSanitizer.sanitizeText(entry.message);
-              final sanitizedPayload =
-                  LogSanitizer.sanitizeSerializedPayload(entry.maskedPayload) ?? '';
-              return sanitizedMessage.toLowerCase().contains(query) ||
-                  entry.category.toLowerCase().contains(query) ||
-                  (entry.route ?? '').toLowerCase().contains(query) ||
-                  sanitizedPayload.toLowerCase().contains(query);
-            })
-            .toList(growable: false);
-
+        final entries = logs.entries;
         return CustomScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           slivers: [
@@ -74,16 +45,16 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                   runSpacing: 8,
                   children: [
                     IconButton(
-                      onPressed: filtered.isEmpty || _isExporting || _isSharing
+                      onPressed: logs.filteredCount == 0 || _isExporting || _isSharing
                           ? null
-                          : () => _exportLogs(filtered),
+                          : _exportLogs,
                       tooltip: l10n.logsExportTooltip,
                       icon: const Icon(Icons.download_rounded),
                     ),
                     IconButton(
-                      onPressed: filtered.isEmpty || _isExporting || _isSharing
+                      onPressed: logs.filteredCount == 0 || _isExporting || _isSharing
                           ? null
-                          : () => _shareLogs(filtered),
+                          : _shareLogs,
                       tooltip: l10n.logsShareTooltip,
                       icon: const Icon(Icons.share_rounded),
                     ),
@@ -93,7 +64,7 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                       icon: const Icon(Icons.refresh_rounded),
                     ),
                     IconButton(
-                      onPressed: logs.isEmpty ? null : _confirmClearLogs,
+                      onPressed: logs.totalCount == 0 ? null : _confirmClearLogs,
                       tooltip: l10n.logsClearButton,
                       style: IconButton.styleFrom(
                         foregroundColor: Theme.of(context).colorScheme.error,
@@ -120,7 +91,9 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                         prefixIcon: const Icon(Icons.search_rounded),
                         hintText: l10n.logsSearchHint,
                       ),
-                      onChanged: (value) => setState(() => _query = value),
+                      onChanged: (value) {
+                        unawaited(ref.read(logsControllerProvider.notifier).updateQuery(value));
+                      },
                     ),
                     const SizedBox(height: 14),
                     Wrap(
@@ -128,14 +101,20 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                       runSpacing: 8,
                       children: [
                         KickBadge(
-                          label: l10n.logsTotalCount(logs.length),
+                          label: l10n.logsTotalCount(logs.totalCount),
                           leading: const Icon(Icons.article_rounded),
                         ),
                         KickBadge(
-                          label: l10n.logsFilteredCount(filtered.length),
+                          label: l10n.logsFilteredCount(logs.filteredCount),
                           leading: const Icon(Icons.filter_alt_rounded),
-                          emphasis: hasActiveFilters,
+                          emphasis: logs.hasActiveFilters,
                         ),
+                        if (logs.filteredCount != entries.length)
+                          KickBadge(
+                            label: l10n.logsLoadedCount(entries.length),
+                            leading: const Icon(Icons.unfold_more_rounded),
+                            emphasis: true,
+                          ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -145,27 +124,47 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                       children: [
                         _LogsFilterChip(
                           label: l10n.logsLevelAll,
-                          selected: _selectedLevel == null,
-                          onSelected: () => setState(() => _selectedLevel = null),
+                          selected: logs.selectedLevel == null,
+                          onSelected: () {
+                            unawaited(ref.read(logsControllerProvider.notifier).updateLevel(null));
+                          },
                         ),
                         _LogsFilterChip(
                           label: l10n.logsLevelInfo,
-                          selected: _selectedLevel == AppLogLevel.info,
-                          onSelected: () => setState(() => _selectedLevel = AppLogLevel.info),
+                          selected: logs.selectedLevel == AppLogLevel.info,
+                          onSelected: () {
+                            unawaited(
+                              ref
+                                  .read(logsControllerProvider.notifier)
+                                  .updateLevel(AppLogLevel.info),
+                            );
+                          },
                         ),
                         _LogsFilterChip(
                           label: l10n.logsLevelWarning,
-                          selected: _selectedLevel == AppLogLevel.warning,
-                          onSelected: () => setState(() => _selectedLevel = AppLogLevel.warning),
+                          selected: logs.selectedLevel == AppLogLevel.warning,
+                          onSelected: () {
+                            unawaited(
+                              ref
+                                  .read(logsControllerProvider.notifier)
+                                  .updateLevel(AppLogLevel.warning),
+                            );
+                          },
                         ),
                         _LogsFilterChip(
                           label: l10n.logsLevelError,
-                          selected: _selectedLevel == AppLogLevel.error,
-                          onSelected: () => setState(() => _selectedLevel = AppLogLevel.error),
+                          selected: logs.selectedLevel == AppLogLevel.error,
+                          onSelected: () {
+                            unawaited(
+                              ref
+                                  .read(logsControllerProvider.notifier)
+                                  .updateLevel(AppLogLevel.error),
+                            );
+                          },
                         ),
                       ],
                     ),
-                    if (categories.length > 1) ...[
+                    if (logs.categories.length > 1) ...[
                       const SizedBox(height: 16),
                       Text(
                         l10n.logsCategoryFilterTitle,
@@ -178,14 +177,24 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                         children: [
                           _LogsFilterChip(
                             label: l10n.logsCategoryAll,
-                            selected: _selectedCategory == null,
-                            onSelected: () => setState(() => _selectedCategory = null),
+                            selected: logs.selectedCategory == null,
+                            onSelected: () {
+                              unawaited(
+                                ref.read(logsControllerProvider.notifier).updateCategory(null),
+                              );
+                            },
                           ),
-                          ...categories.map(
+                          ...logs.categories.map(
                             (category) => _LogsFilterChip(
                               label: category,
-                              selected: _selectedCategory == category,
-                              onSelected: () => setState(() => _selectedCategory = category),
+                              selected: logs.selectedCategory == category,
+                              onSelected: () {
+                                unawaited(
+                                  ref
+                                      .read(logsControllerProvider.notifier)
+                                      .updateCategory(category),
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -196,14 +205,14 @@ class _LogsPageState extends ConsumerState<LogsPage> {
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
-            if (filtered.isEmpty)
+            if (logs.filteredCount == 0)
               SliverToBoxAdapter(
                 child: SizedBox(
                   width: double.infinity,
                   child: EmptyStateCard(
                     icon: Icons.article_rounded,
-                    title: logs.isEmpty ? l10n.logsEmptyTitle : l10n.logsFilteredEmptyTitle,
-                    message: logs.isEmpty ? null : l10n.logsFilteredEmptyMessage,
+                    title: logs.totalCount == 0 ? l10n.logsEmptyTitle : l10n.logsFilteredEmptyTitle,
+                    message: logs.totalCount == 0 ? null : l10n.logsFilteredEmptyMessage,
                   ),
                 ),
               )
@@ -215,14 +224,35 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                     return const SizedBox(height: 12);
                   }
 
-                  final entry = filtered[itemIndex];
+                  final entry = entries[itemIndex];
                   return _LogCard(
                     entry: entry,
                     expandedPayload: _expandedPayloadEntries.contains(entry.id),
                     onCopy: () => _copyLogEntry(entry),
                     onTogglePayload: () => _togglePayload(entry.id),
                   );
-                }, childCount: filtered.length * 2 - 1),
+                }, childCount: entries.length * 2 - 1),
+              ),
+            if (logs.hasMore)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
+                  child: Center(
+                    child: OutlinedButton.icon(
+                      onPressed: logs.isLoadingMore
+                          ? null
+                          : () => ref.read(logsControllerProvider.notifier).loadMore(),
+                      icon: logs.isLoadingMore
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.expand_more_rounded),
+                      label: Text(l10n.logsLoadMoreButton),
+                    ),
+                  ),
+                ),
               ),
           ],
         );
@@ -236,8 +266,9 @@ class _LogsPageState extends ConsumerState<LogsPage> {
     );
   }
 
-  Future<void> _exportLogs(List<AppLogEntry> entries) async {
+  Future<void> _exportLogs() async {
     final l10n = context.l10n;
+    final entries = await ref.read(logsControllerProvider.notifier).readAllMatchingEntries();
     if (entries.isEmpty) {
       _showSnackBar(l10n.logsNothingToExportMessage);
       return;
@@ -245,9 +276,10 @@ class _LogsPageState extends ConsumerState<LogsPage> {
 
     setState(() => _isExporting = true);
     try {
+      final metadata = await _buildExportMetadata();
       final result = await ref
           .read(logExportServiceProvider)
-          .export(entries, dialogTitle: l10n.logsExportDialogTitle);
+          .export(entries, dialogTitle: l10n.logsExportDialogTitle, metadata: metadata);
       if (!mounted) {
         return;
       }
@@ -267,8 +299,9 @@ class _LogsPageState extends ConsumerState<LogsPage> {
     }
   }
 
-  Future<void> _shareLogs(List<AppLogEntry> entries) async {
+  Future<void> _shareLogs() async {
     final l10n = context.l10n;
+    final entries = await ref.read(logsControllerProvider.notifier).readAllMatchingEntries();
     if (entries.isEmpty) {
       _showSnackBar(l10n.logsNothingToExportMessage);
       return;
@@ -276,7 +309,8 @@ class _LogsPageState extends ConsumerState<LogsPage> {
 
     setState(() => _isSharing = true);
     try {
-      await ref.read(logExportServiceProvider).share(entries);
+      final metadata = await _buildExportMetadata();
+      await ref.read(logExportServiceProvider).share(entries, metadata: metadata);
     } catch (error) {
       if (!mounted) {
         return;
@@ -346,6 +380,35 @@ class _LogsPageState extends ConsumerState<LogsPage> {
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<LogExportMetadata> _buildExportMetadata() async {
+    final logs = ref.read(logsControllerProvider).asData?.value;
+    final settings = ref.read(settingsControllerProvider).asData?.value;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String? appVersion;
+    try {
+      appVersion = await ref.read(appVersionProvider.future);
+    } catch (_) {
+      appVersion = null;
+    }
+
+    return LogExportMetadata(
+      appVersion: appVersion,
+      locale: locale,
+      query: logs?.query,
+      level: logs?.selectedLevel,
+      category: logs?.selectedCategory,
+      retainedEntries: logs?.totalCount,
+      matchingEntries: logs?.filteredCount,
+      retentionLimit: settings?.logRetentionCount,
+      loggingVerbosity: settings?.loggingVerbosity,
+      unsafeRawLoggingEnabled: settings?.unsafeRawLoggingEnabled,
+      requestMaxRetries: settings?.requestMaxRetries,
+      retry429DelaySeconds: settings?.retry429DelaySeconds,
+      mark429AsUnhealthy: settings?.mark429AsUnhealthy,
+      androidBackgroundRuntime: settings?.androidBackgroundRuntime,
+    );
   }
 }
 

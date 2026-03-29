@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 enum KickLogVerbosity { quiet, normal, verbose }
 
+const defaultLogRetentionCount = 500;
+const minLogRetentionCount = 1;
+const maxLogRetentionCount = 50000;
 const _defaultRequestMaxRetries = 10;
 const _minRequestMaxRetries = 0;
 const _maxRequestMaxRetries = 20;
@@ -27,6 +30,7 @@ class AppSettings {
     'default_google_web_search_enabled',
     'render_google_grounding_in_message',
     'logging_verbosity',
+    'log_retention_count',
     'unsafe_raw_logging_enabled',
     'custom_models',
   };
@@ -49,6 +53,7 @@ class AppSettings {
     this.defaultGoogleWebSearchEnabled = false,
     this.renderGoogleGroundingInMessage = false,
     required this.loggingVerbosity,
+    required this.logRetentionCount,
     required this.unsafeRawLoggingEnabled,
     required this.customModels,
   });
@@ -70,6 +75,7 @@ class AppSettings {
   final bool defaultGoogleWebSearchEnabled;
   final bool renderGoogleGroundingInMessage;
   final KickLogVerbosity loggingVerbosity;
+  final int logRetentionCount;
   final bool unsafeRawLoggingEnabled;
   final List<String> customModels;
 
@@ -92,6 +98,7 @@ class AppSettings {
       defaultGoogleWebSearchEnabled: false,
       renderGoogleGroundingInMessage: false,
       loggingVerbosity: KickLogVerbosity.normal,
+      logRetentionCount: defaultLogRetentionCount,
       unsafeRawLoggingEnabled: false,
       customModels: const [],
     );
@@ -115,6 +122,7 @@ class AppSettings {
     bool? defaultGoogleWebSearchEnabled,
     bool? renderGoogleGroundingInMessage,
     KickLogVerbosity? loggingVerbosity,
+    int? logRetentionCount,
     bool? unsafeRawLoggingEnabled,
     List<String>? customModels,
   }) {
@@ -141,6 +149,7 @@ class AppSettings {
       renderGoogleGroundingInMessage:
           renderGoogleGroundingInMessage ?? this.renderGoogleGroundingInMessage,
       loggingVerbosity: loggingVerbosity ?? this.loggingVerbosity,
+      logRetentionCount: normalizeLogRetentionCount(logRetentionCount ?? this.logRetentionCount),
       unsafeRawLoggingEnabled: unsafeRawLoggingEnabled ?? this.unsafeRawLoggingEnabled,
       customModels: customModels ?? this.customModels,
     );
@@ -164,6 +173,7 @@ class AppSettings {
       'default_google_web_search_enabled': defaultGoogleWebSearchEnabled.toString(),
       'render_google_grounding_in_message': renderGoogleGroundingInMessage.toString(),
       'logging_verbosity': loggingVerbosity.name,
+      'log_retention_count': logRetentionCount.toString(),
       'unsafe_raw_logging_enabled': unsafeRawLoggingEnabled.toString(),
       'custom_models': customModels.join('\n'),
     };
@@ -198,6 +208,9 @@ class AppSettings {
       loggingVerbosity: KickLogVerbosity.values.firstWhere(
         (value) => value.name == values['logging_verbosity'],
         orElse: () => KickLogVerbosity.normal,
+      ),
+      logRetentionCount: normalizeLogRetentionCount(
+        int.tryParse(values['log_retention_count'] ?? ''),
       ),
       unsafeRawLoggingEnabled: values['unsafe_raw_logging_enabled'] == 'true',
       customModels: (values['custom_models'] ?? '')
@@ -242,6 +255,19 @@ int _normalizeRetry429DelaySeconds(int? value) {
   }
   if (value > _maxRetry429DelaySeconds) {
     return _maxRetry429DelaySeconds;
+  }
+  return value;
+}
+
+int normalizeLogRetentionCount(int? value) {
+  if (value == null) {
+    return defaultLogRetentionCount;
+  }
+  if (value < minLogRetentionCount) {
+    return minLogRetentionCount;
+  }
+  if (value > maxLogRetentionCount) {
+    return maxLogRetentionCount;
   }
   return value;
 }

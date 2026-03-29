@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../analytics/android_background_session_tracker.dart';
 import '../../core/logging/log_sanitizer.dart';
 import '../../data/models/app_log_entry.dart';
+import '../../data/models/app_settings.dart';
 
 typedef LogExportDirectoryResolver = Future<Directory> Function();
 typedef LogShareCallback = Future<ShareResult> Function(ShareParams params);
@@ -28,6 +29,40 @@ class LogExportResult {
   final File? file;
 }
 
+class LogExportMetadata {
+  const LogExportMetadata({
+    this.appVersion,
+    this.locale,
+    this.query,
+    this.level,
+    this.category,
+    this.retainedEntries,
+    this.matchingEntries,
+    this.retentionLimit,
+    this.loggingVerbosity,
+    this.unsafeRawLoggingEnabled,
+    this.requestMaxRetries,
+    this.retry429DelaySeconds,
+    this.mark429AsUnhealthy,
+    this.androidBackgroundRuntime,
+  });
+
+  final String? appVersion;
+  final String? locale;
+  final String? query;
+  final AppLogLevel? level;
+  final String? category;
+  final int? retainedEntries;
+  final int? matchingEntries;
+  final int? retentionLimit;
+  final KickLogVerbosity? loggingVerbosity;
+  final bool? unsafeRawLoggingEnabled;
+  final int? requestMaxRetries;
+  final int? retry429DelaySeconds;
+  final bool? mark429AsUnhealthy;
+  final bool? androidBackgroundRuntime;
+}
+
 class LogExportService {
   LogExportService({
     LogExportDirectoryResolver? exportDirectoryResolver,
@@ -44,12 +79,16 @@ class LogExportService {
   final LogSaveFileCallback _saveFileCallback;
   final bool _useNativeSaveDialog;
 
-  Future<LogExportResult?> export(List<AppLogEntry> entries, {String? dialogTitle}) async {
+  Future<LogExportResult?> export(
+    List<AppLogEntry> entries, {
+    String? dialogTitle,
+    LogExportMetadata? metadata,
+  }) async {
     if (entries.isEmpty) {
       throw StateError('No log entries available for export.');
     }
 
-    final contents = format(entries);
+    final contents = format(entries, metadata: metadata);
     final fileName = _buildFileName();
 
     if (_useNativeSaveDialog) {
@@ -71,17 +110,18 @@ class LogExportService {
     return _writeExportFile(fileName: fileName, contents: contents);
   }
 
-  Future<LogExportResult> share(List<AppLogEntry> entries) async {
+  Future<LogExportResult> share(List<AppLogEntry> entries, {LogExportMetadata? metadata}) async {
     if (entries.isEmpty) {
       throw StateError('No log entries available for export.');
     }
 
-    final result = await _writeExportFile(fileName: _buildFileName(), contents: format(entries));
+    final result = await _writeExportFile(
+      fileName: _buildFileName(),
+      contents: format(entries, metadata: metadata),
+    );
     await _shareCallback(
       ShareParams(
-        files: [
-          XFile(result.file!.path, name: result.fileName, mimeType: 'text/plain'),
-        ],
+        files: [XFile(result.file!.path, name: result.fileName, mimeType: 'text/plain')],
         subject: 'KiCk logs',
         text: 'KiCk log export',
       ),
@@ -89,25 +129,42 @@ class LogExportService {
     return result;
   }
 
-  String format(List<AppLogEntry> entries) {
+  String format(List<AppLogEntry> entries, {LogExportMetadata? metadata}) {
     if (entries.isEmpty) {
       throw StateError('No log entries available for export.');
     }
 
+    final generatedAt = DateTime.now();
     final buffer = StringBuffer()
       ..writeln('KiCk log export')
-      ..writeln('Generated at: ${DateTime.now().toIso8601String()}')
-      ..writeln('Entries: ${entries.length}')
-      ..writeln()
-      ..writeln(_formatDiagnosticsSummary(entries))
-      ..writeln();
+      ..writeln('Generated at: ${_formatTimestampWithOffset(generatedAt)}')
+      ..writeln('Entries: ${entries.length}');
+
+    final environmentSection = _formatEnvironmentSection(
+      metadata: metadata,
+      generatedAt: generatedAt,
+    );
+    if (environmentSection.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln(environmentSection);
+    }
+
+    final summarySection = _formatDiagnosticsSummary(entries);
+    if (summarySection.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln(summarySection);
+    }
+
+    buffer..writeln();
 
     for (final entry in entries) {
       buffer
         ..writeln(
           '--------------------------------------------------------------------------------',
         )
-        ..writeln('Timestamp: ${entry.timestamp.toIso8601String()}')
+        ..writeln('Timestamp: ${_formatTimestampWithOffset(entry.timestamp)}')
         ..writeln('Level: ${entry.level.name}')
         ..writeln('Category: ${entry.category}');
       if (entry.route?.isNotEmpty == true) {
@@ -209,6 +266,54 @@ class LogExportService {
     return candidate.isNotEmpty && candidate != '.' && candidate != '/' && candidate != '\\';
   }
 
+  String _formatEnvironmentSection({
+    required LogExportMetadata? metadata,
+    required DateTime generatedAt,
+  }) {
+    final details = <String>[
+      if (metadata?.appVersion?.trim().isNotEmpty == true)
+        'version=${metadata!.appVersion!.trim()}',
+      'platform=${Platform.operatingSystem}',
+      if (metadata?.locale?.trim().isNotEmpty == true) 'locale=${metadata!.locale!.trim()}',
+      'timezone=${_formatUtcOffset(generatedAt.timeZoneOffset)}',
+    ];
+    final filters = <String>[
+      if (metadata?.query?.trim().isNotEmpty == true) 'query="${metadata!.query!.trim()}"',
+      if (metadata?.level != null) 'level=${metadata!.level!.name}',
+      if (metadata?.category?.trim().isNotEmpty == true) 'category=${metadata!.category!.trim()}',
+    ];
+    final scope = <String>[
+      if (metadata?.matchingEntries != null) 'matching_entries=${metadata!.matchingEntries}',
+      if (metadata?.retainedEntries != null) 'retained_entries=${metadata!.retainedEntries}',
+      if (metadata?.retentionLimit != null) 'retention_limit=${metadata!.retentionLimit}',
+    ];
+    final runtimeSettings = <String>[
+      if (metadata?.loggingVerbosity != null) 'verbosity=${metadata!.loggingVerbosity!.name}',
+      if (metadata?.unsafeRawLoggingEnabled != null)
+        'unsafe_raw_logging=${metadata!.unsafeRawLoggingEnabled}',
+      if (metadata?.requestMaxRetries != null) 'request_max_retries=${metadata!.requestMaxRetries}',
+      if (metadata?.retry429DelaySeconds != null)
+        'retry_429_delay_sec=${metadata!.retry429DelaySeconds}',
+      if (metadata?.mark429AsUnhealthy != null)
+        'mark_429_as_unhealthy=${metadata!.mark429AsUnhealthy}',
+      if (metadata?.androidBackgroundRuntime != null)
+        'android_background_runtime=${metadata!.androidBackgroundRuntime}',
+    ];
+
+    final section = StringBuffer()..writeln('Environment');
+    if (details.isNotEmpty) {
+      section.writeln('App: ${details.join(', ')}');
+    }
+    section.writeln(filters.isEmpty ? 'Filters: none' : 'Filters: ${filters.join(', ')}');
+    if (scope.isNotEmpty) {
+      section.writeln('Scope: ${scope.join(', ')}');
+    }
+    if (runtimeSettings.isNotEmpty) {
+      section.writeln('Runtime settings: ${runtimeSettings.join(', ')}');
+    }
+    return section.toString().trimRight();
+  }
+
   String _formatDiagnosticsSummary(List<AppLogEntry> entries) {
     final sorted = entries.toList(growable: false)
       ..sort((left, right) => left.timestamp.compareTo(right.timestamp));
@@ -217,7 +322,25 @@ class LogExportService {
     final levelCounts = <String, int>{};
     final categoryCounts = <String, int>{};
     final routeCounts = <String, int>{};
+    final modelCounts = <String, int>{};
+    final requestModels = <String, String>{};
+    final statusCodeCounts = <String, int>{};
+    final errorDetailCounts = <String, int>{};
+    final upstreamReasonCounts = <String, int>{};
     final backgroundDurations = <int>[];
+    var retriedRequests = 0;
+    var retriedSucceeded = 0;
+    var retriedFailed = 0;
+    var totalRetryCount = 0;
+    var maxRetryCount = 0;
+    var totalAccountFailovers = 0;
+    var maxAccountFailovers = 0;
+    var totalPromptTokens = 0;
+    var totalCompletionTokens = 0;
+    var totalTokens = 0;
+    var totalCachedTokens = 0;
+    var totalReasoningTokens = 0;
+    var hasTokenMetrics = false;
     var recoveredBackgroundSessions = 0;
 
     for (final entry in sorted) {
@@ -226,10 +349,72 @@ class LogExportService {
       if (entry.route?.isNotEmpty == true) {
         routeCounts.update(entry.route!, (value) => value + 1, ifAbsent: () => 1);
       }
+      final payload = _decodePayload(entry.maskedPayload);
+      final requestId = _readNonEmptyString(payload['request_id']);
+      final model = _readNonEmptyString(payload['model']);
+      if (requestId != null && model != null) {
+        requestModels.putIfAbsent(requestId, () => model);
+      } else if (model != null) {
+        modelCounts.update(model, (value) => value + 1, ifAbsent: () => 1);
+      }
+
+      final statusCode = _readInt(payload['final_status_code']) ?? _readInt(payload['status_code']);
+      if (statusCode != null) {
+        statusCodeCounts.update(statusCode.toString(), (value) => value + 1, ifAbsent: () => 1);
+      }
+
+      final errorDetail =
+          _readNonEmptyString(payload['final_error_detail']) ??
+          _readNonEmptyString(payload['error_detail']);
+      if (errorDetail != null) {
+        errorDetailCounts.update(errorDetail, (value) => value + 1, ifAbsent: () => 1);
+      }
+
+      final upstreamReason =
+          _readNonEmptyString(payload['final_upstream_reason']) ??
+          _readNonEmptyString(payload['upstream_reason']);
+      if (upstreamReason != null) {
+        upstreamReasonCounts.update(upstreamReason, (value) => value + 1, ifAbsent: () => 1);
+      }
+
+      final retryCount = _readInt(payload['retry_count']);
+      if (retryCount != null) {
+        retriedRequests += 1;
+        totalRetryCount += retryCount;
+        if (retryCount > maxRetryCount) {
+          maxRetryCount = retryCount;
+        }
+
+        final accountFailovers = _readInt(payload['account_failover_count']) ?? 0;
+        totalAccountFailovers += accountFailovers;
+        if (accountFailovers > maxAccountFailovers) {
+          maxAccountFailovers = accountFailovers;
+        }
+
+        switch (_readNonEmptyString(payload['outcome'])) {
+          case 'succeeded':
+            retriedSucceeded += 1;
+          case 'failed':
+            retriedFailed += 1;
+        }
+      }
+
+      totalPromptTokens += _readInt(payload['prompt_tokens']) ?? 0;
+      totalCompletionTokens += _readInt(payload['completion_tokens']) ?? 0;
+      totalTokens += _readInt(payload['total_tokens']) ?? 0;
+      totalCachedTokens += _readInt(payload['cached_tokens']) ?? 0;
+      totalReasoningTokens += _readInt(payload['reasoning_tokens']) ?? 0;
+      hasTokenMetrics =
+          hasTokenMetrics ||
+          payload.containsKey('prompt_tokens') ||
+          payload.containsKey('completion_tokens') ||
+          payload.containsKey('total_tokens') ||
+          payload.containsKey('cached_tokens') ||
+          payload.containsKey('reasoning_tokens');
+
       if (entry.category == androidBackgroundSessionCategory &&
           (entry.message == androidBackgroundSessionEndedMessage ||
               entry.message == androidBackgroundSessionRecoveredMessage)) {
-        final payload = _decodePayload(entry.maskedPayload);
         final durationSec = payload['duration_sec'] as int?;
         if (durationSec != null && durationSec >= 0) {
           backgroundDurations.add(durationSec);
@@ -243,11 +428,47 @@ class LogExportService {
     final diagnostics = StringBuffer()
       ..writeln('Diagnostics summary')
       ..writeln(
-        'Time range: ${first.timestamp.toIso8601String()} -> ${last.timestamp.toIso8601String()}',
+        'Time range: ${_formatTimestampWithOffset(first.timestamp)} -> ${_formatTimestampWithOffset(last.timestamp)}',
       )
       ..writeln('Levels: ${_formatCountMap(levelCounts)}')
       ..writeln('Categories: ${_formatCountMap(categoryCounts)}')
       ..writeln(routeCounts.isEmpty ? 'Routes: none' : 'Routes: ${_formatCountMap(routeCounts)}');
+
+    for (final model in requestModels.values) {
+      modelCounts.update(model, (value) => value + 1, ifAbsent: () => 1);
+    }
+    if (modelCounts.isNotEmpty) {
+      diagnostics.writeln('Models: ${_formatCountMap(modelCounts)}');
+    }
+    if (statusCodeCounts.isNotEmpty) {
+      diagnostics.writeln('Status codes: ${_formatCountMap(statusCodeCounts)}');
+    }
+    if (errorDetailCounts.isNotEmpty) {
+      diagnostics.writeln('Error details: ${_formatCountMap(errorDetailCounts)}');
+    }
+    if (upstreamReasonCounts.isNotEmpty) {
+      diagnostics.writeln('Upstream reasons: ${_formatCountMap(upstreamReasonCounts)}');
+    }
+    if (retriedRequests > 0) {
+      diagnostics.writeln(
+        'Retried requests: total=$retriedRequests, '
+        'succeeded=$retriedSucceeded, '
+        'failed=$retriedFailed, '
+        'avg_retry_count=${(totalRetryCount / retriedRequests).toStringAsFixed(1)}, '
+        'max_retry_count=$maxRetryCount, '
+        'total_account_failovers=$totalAccountFailovers, '
+        'max_account_failovers=$maxAccountFailovers',
+      );
+    }
+    if (hasTokenMetrics) {
+      diagnostics.writeln(
+        'Tokens: prompt=$totalPromptTokens, '
+        'completion=$totalCompletionTokens, '
+        'total=$totalTokens, '
+        'cached=$totalCachedTokens, '
+        'reasoning=$totalReasoningTokens',
+      );
+    }
 
     if (backgroundDurations.isEmpty) {
       diagnostics.writeln('Android background sessions: none detected');
@@ -275,6 +496,35 @@ class LogExportService {
         return left.key.compareTo(right.key);
       });
     return entries.map((entry) => '${entry.key}=${entry.value}').join(', ');
+  }
+
+  String _formatUtcOffset(Duration offset) {
+    final sign = offset.isNegative ? '-' : '+';
+    final absoluteOffset = offset.abs();
+    final hours = absoluteOffset.inHours.toString().padLeft(2, '0');
+    final minutes = (absoluteOffset.inMinutes % 60).toString().padLeft(2, '0');
+    return 'UTC$sign$hours:$minutes';
+  }
+
+  String _formatTimestampWithOffset(DateTime timestamp) {
+    return '${timestamp.toIso8601String()} ${_formatUtcOffset(timestamp.timeZoneOffset)}';
+  }
+
+  String? _readNonEmptyString(Object? value) {
+    final text = value?.toString().trim();
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+    return text;
+  }
+
+  int? _readInt(Object? value) {
+    return switch (value) {
+      int number => number,
+      num number => number.round(),
+      String text => int.tryParse(text.trim()),
+      _ => null,
+    };
   }
 
   Map<String, Object?> _decodePayload(String? raw) {

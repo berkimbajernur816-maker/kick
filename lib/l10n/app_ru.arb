@@ -256,6 +256,19 @@
   "loggingQuiet": "Минимальное",
   "loggingNormal": "Стандартное",
   "loggingVerbose": "Подробное",
+  "logRetentionLabel": "Лимит записей лога",
+  "logRetentionHelperText": "Когда лимит достигнут, самые старые записи будут автоматически удаляться",
+  "logRetentionInvalidError": "Укажите число от {min} до {max}",
+  "@logRetentionInvalidError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "unsafeRawLoggingTitle": "Сырые логи отладки",
   "unsafeRawLoggingSubtitle": "Сохраняет содержимое запросов и ответов. Включайте только для отладки!",
   "defaultGoogleWebSearchTitle": "Включать веб-поиск по умолчанию",
@@ -382,11 +395,20 @@
       }
     }
   },
+  "logsLoadedCount": "Загружено: {count}",
+  "@logsLoadedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logsEmptyTitle": "Логи пусты",
   "logsLoadErrorTitle": "Не удалось загрузить логи",
-  "logsExportTooltip": "Сохранить логи в файл",
+  "logsExportTooltip": "Сохранить все логи по текущим фильтрам",
   "logsExportDialogTitle": "Куда сохранить логи?",
-  "logsShareTooltip": "Поделиться логами",
+  "logsShareTooltip": "Поделиться всеми логами по текущим фильтрам",
+  "logsLoadMoreButton": "Загрузить еще",
   "logsNothingToExportMessage": "Нет логов для сохранения",
   "logsExportedMessage": "Логи сохранены в файл {fileName}",
   "@logsExportedMessage": {

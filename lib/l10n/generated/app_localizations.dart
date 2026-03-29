@@ -944,6 +944,24 @@ abstract class AppLocalizations {
   /// **'Подробное'**
   String get loggingVerbose;
 
+  /// No description provided for @logRetentionLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лимит записей лога'**
+  String get logRetentionLabel;
+
+  /// No description provided for @logRetentionHelperText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда лимит достигнут, самые старые записи будут автоматически удаляться'**
+  String get logRetentionHelperText;
+
+  /// No description provided for @logRetentionInvalidError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите число от {min} до {max}'**
+  String logRetentionInvalidError(int min, int max);
+
   /// No description provided for @unsafeRawLoggingTitle.
   ///
   /// In ru, this message translates to:
@@ -1472,6 +1490,12 @@ abstract class AppLocalizations {
   /// **'После фильтра: {count}'**
   String logsFilteredCount(int count);
 
+  /// No description provided for @logsLoadedCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загружено: {count}'**
+  String logsLoadedCount(int count);
+
   /// No description provided for @logsEmptyTitle.
   ///
   /// In ru, this message translates to:
@@ -1487,7 +1511,7 @@ abstract class AppLocalizations {
   /// No description provided for @logsExportTooltip.
   ///
   /// In ru, this message translates to:
-  /// **'Сохранить логи в файл'**
+  /// **'Сохранить все логи по текущим фильтрам'**
   String get logsExportTooltip;
 
   /// No description provided for @logsExportDialogTitle.
@@ -1499,8 +1523,14 @@ abstract class AppLocalizations {
   /// No description provided for @logsShareTooltip.
   ///
   /// In ru, this message translates to:
-  /// **'Поделиться логами'**
+  /// **'Поделиться всеми логами по текущим фильтрам'**
   String get logsShareTooltip;
+
+  /// No description provided for @logsLoadMoreButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузить еще'**
+  String get logsLoadMoreButton;
 
   /// No description provided for @logsNothingToExportMessage.
   ///

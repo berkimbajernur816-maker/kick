@@ -86,5 +86,26 @@ void main() {
       expect(controller.saveState, SettingsDraftSaveState.saved);
       expect(controller.showSaveStatus, isTrue);
     });
+
+    test('persists log retention changes when the draft is valid', () async {
+      final savedSettings = <AppSettings>[];
+      final controller = SettingsDraftController(
+        saveSettings: (settings) async {
+          savedSettings.add(settings);
+        },
+        regenerateApiKey: () async => 'regenerated-key',
+        saveDebounceDuration: Duration.zero,
+      );
+      addTearDown(controller.dispose);
+
+      controller.syncWithSettings(buildSettings());
+      controller.logRetentionController.text = '2400';
+
+      await Future<void>.delayed(Duration.zero);
+
+      expect(savedSettings, isNotEmpty);
+      expect(savedSettings.last.logRetentionCount, 2400);
+      expect(controller.saveState, SettingsDraftSaveState.saved);
+    });
   });
 }

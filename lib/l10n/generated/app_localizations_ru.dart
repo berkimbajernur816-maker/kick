@@ -403,7 +403,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hostLabel => 'Хост';
 
   @override
-  String get hostHelperText => 'Обычно 127.0.0.1';
+  String get hostHelperText => 'Обычно localhost';
 
   @override
   String get hostRequiredError => 'Укажите адрес хоста';

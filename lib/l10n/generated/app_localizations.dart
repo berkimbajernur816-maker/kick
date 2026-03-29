@@ -809,7 +809,7 @@ abstract class AppLocalizations {
   /// No description provided for @hostHelperText.
   ///
   /// In ru, this message translates to:
-  /// **'Обычно 127.0.0.1'**
+  /// **'Обычно localhost'**
   String get hostHelperText;
 
   /// No description provided for @hostRequiredError.

@@ -233,7 +233,7 @@
   "settingsGoogleSectionTitle": "Поиск Google",
   "settingsGoogleSectionSummary": "Веб-поиск в Google и настройка источников",
   "hostLabel": "Хост",
-  "hostHelperText": "Обычно 127.0.0.1",
+  "hostHelperText": "Обычно localhost",
   "hostRequiredError": "Укажите адрес хоста",
   "hostInvalidError": "Адрес не должен содержать пробелы",
   "hostLanDisabledError": "Чтобы использовать 0.0.0.0, включите доступ из локальной сети",

@@ -96,6 +96,31 @@ void main() {
     expect(find.text('С чего начать'), findsOneWidget);
   });
 
+  testWidgets('shows localhost endpoint for loopback proxy access', (tester) async {
+    final bootstrap = await _createBootstrap();
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await bootstrap.dispose();
+    });
+
+    await tester.pumpWidget(
+      _TestApp(
+        bootstrap: bootstrap,
+        updateInfo: const AppUpdateInfo(
+          currentVersion: '1.0.2',
+          latestVersion: '1.0.2',
+          releaseUrl: 'https://example.com/releases/tag/v1.0.2',
+          hasUpdate: false,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.textContaining('http://localhost:3000/v1', findRichText: true), findsWidgets);
+    expect(find.textContaining('127.0.0.1', findRichText: true), findsNothing);
+  });
+
   testWidgets('disables the start button while proxy startup is pending', (tester) async {
     final bootstrap = await _createBootstrap();
     addTearDown(() async {

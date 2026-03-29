@@ -466,8 +466,31 @@ String _maskSecret(String value) {
 }
 
 String _buildProxyEndpoint({required String host, required int port, required bool allowLan}) {
-  final displayHost = (allowLan || host == '0.0.0.0') ? '127.0.0.1' : host;
+  final displayHost = _buildClientFacingHost(host: host, allowLan: allowLan);
   return Uri(scheme: 'http', host: displayHost, port: port, path: '/v1').toString();
+}
+
+String _buildClientFacingHost({required String host, required bool allowLan}) {
+  final trimmedHost = host.trim();
+  final normalizedHost = trimmedHost.toLowerCase();
+
+  if (allowLan || normalizedHost == '0.0.0.0') {
+    return 'localhost';
+  }
+
+  if (_isLoopbackHost(normalizedHost)) {
+    return 'localhost';
+  }
+
+  return trimmedHost;
+}
+
+bool _isLoopbackHost(String host) {
+  return host == 'localhost' ||
+      host == '::1' ||
+      host == '[::1]' ||
+      host == '0:0:0:0:0:0:0:1' ||
+      host.startsWith('127.');
 }
 
 Future<void> _copyText(BuildContext context, String value, String confirmationMessage) async {

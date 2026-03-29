@@ -224,7 +224,7 @@ class _AboutHeroCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     KickBadge(
                       label: versionLabel,
-                      leading: const Icon(Icons.new_releases_rounded),
+                      leading: const Icon(Icons.label_rounded),
                       emphasis: true,
                     ),
                   ],

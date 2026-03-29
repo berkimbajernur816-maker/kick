@@ -22,6 +22,7 @@ import '../../proxy/gemini/gemini_usage_models.dart';
 import '../../proxy/gemini/gemini_usage_service.dart';
 import '../logs/log_export_service.dart';
 import '../settings/app_update_checker.dart';
+import 'proxy_configuration_orchestrator.dart';
 
 final proxyControllerProvider = Provider<KickProxyController>(
   (ref) => ref.watch(appBootstrapProvider).proxyController,
@@ -266,6 +267,35 @@ final logsControllerProvider = AsyncNotifierProvider<LogsController, List<AppLog
   LogsController.new,
 );
 
+final proxyConfigurationOrchestratorProvider = Provider<ProxyConfigurationOrchestrator>((ref) {
+  final orchestrator = ProxyConfigurationOrchestrator(
+    readSettings: () => ref.read(settingsControllerProvider).asData?.value,
+    readAccounts: () => ref.read(accountsControllerProvider).asData?.value,
+    syncConfiguration: ({required settings, required accounts}) {
+      return ref.read(proxyControllerProvider).configure(settings: settings, accounts: accounts);
+    },
+    refreshAccounts: () => ref.read(accountsControllerProvider.notifier).refreshState(),
+    refreshLogs: () => ref.read(logsControllerProvider.notifier).refreshState(),
+  );
+
+  ref.listen<AsyncValue<AppSettings>>(
+    settingsControllerProvider,
+    (previous, next) => orchestrator.onSettingsChanged(),
+    fireImmediately: true,
+  );
+  ref.listen<AsyncValue<List<AccountProfile>>>(
+    accountsControllerProvider,
+    (previous, next) => orchestrator.onAccountsChanged(),
+    fireImmediately: true,
+  );
+  ref.listen<AsyncValue<String>>(proxyActivityProvider, (previous, next) {
+    orchestrator.onProxyActivity(next.asData?.value);
+  });
+  ref.onDispose(orchestrator.dispose);
+
+  return orchestrator;
+});
+
 final logExportServiceProvider = Provider<LogExportService>((ref) => LogExportService());
 
 final appVersionReaderProvider = Provider<AppVersionReader>((ref) => const AppVersionReader());
@@ -304,102 +334,19 @@ class LogsController extends AsyncNotifier<List<AppLogEntry>> {
   }
 }
 
-class ProxyConfigurationSync extends ConsumerStatefulWidget {
+class ProxyConfigurationSync extends ConsumerWidget {
   const ProxyConfigurationSync({super.key, required this.child});
 
   final Widget child;
 
   @override
-  ConsumerState<ProxyConfigurationSync> createState() => _ProxyConfigurationSyncState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(proxyConfigurationOrchestratorProvider);
+    return child;
+  }
 }
 
 String _analyticsErrorKind(Object error) {
   final type = error.runtimeType.toString().trim();
   return type.isEmpty ? 'unknown' : type;
-}
-
-class _ProxyConfigurationSyncState extends ConsumerState<ProxyConfigurationSync> {
-  ProviderSubscription<AsyncValue<AppSettings>>? _settingsSub;
-  ProviderSubscription<AsyncValue<List<AccountProfile>>>? _accountsSub;
-  ProviderSubscription<AsyncValue<String>>? _activitySub;
-  Future<void>? _pendingSync;
-  bool _syncRequested = false;
-  bool _suppressAccountsSync = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _settingsSub = ref.listenManual(
-      settingsControllerProvider,
-      (previous, next) => _scheduleSync(),
-      fireImmediately: true,
-    );
-    _accountsSub = ref.listenManual(accountsControllerProvider, (previous, next) {
-      if (_suppressAccountsSync) {
-        return;
-      }
-      _scheduleSync();
-    }, fireImmediately: true);
-    _activitySub = ref.listenManual(proxyActivityProvider, (_, next) {
-      final activity = next.asData?.value;
-      if (activity == 'accounts') {
-        unawaited(_refreshAccountsFromRuntime());
-      } else if (activity == 'logs') {
-        unawaited(ref.read(logsControllerProvider.notifier).refreshState());
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _settingsSub?.close();
-    _accountsSub?.close();
-    _activitySub?.close();
-    super.dispose();
-  }
-
-  void _scheduleSync() {
-    _syncRequested = true;
-    _pendingSync ??= Future<void>.microtask(() async {
-      try {
-        while (_syncRequested) {
-          _syncRequested = false;
-          final settings = ref.read(settingsControllerProvider).asData?.value;
-          final accounts = ref.read(accountsControllerProvider).asData?.value;
-          try {
-            if (settings != null && accounts != null) {
-              await ref
-                  .read(proxyControllerProvider)
-                  .configure(settings: settings, accounts: accounts);
-            }
-          } catch (error, stackTrace) {
-            FlutterError.reportError(
-              FlutterErrorDetails(
-                exception: error,
-                stack: stackTrace,
-                library: 'kick',
-                context: ErrorDescription('while synchronizing proxy configuration'),
-              ),
-            );
-          }
-        }
-      } finally {
-        _pendingSync = null;
-      }
-    });
-  }
-
-  Future<void> _refreshAccountsFromRuntime() async {
-    _suppressAccountsSync = true;
-    try {
-      await ref.read(accountsControllerProvider.notifier).refreshState();
-    } finally {
-      _suppressAccountsSync = false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
 }

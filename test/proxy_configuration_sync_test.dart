@@ -33,9 +33,9 @@ void main() {
       logsRepository: logsRepository,
       secretStore: secretStore,
     );
-    final initialSettings = AppSettings.defaults(apiKey: 'initial-key').copyWith(
-      androidBackgroundRuntime: false,
-    );
+    final initialSettings = AppSettings.defaults(
+      apiKey: 'initial-key',
+    ).copyWith(androidBackgroundRuntime: false);
     final bootstrap = AppBootstrap(
       database: database,
       secretStore: secretStore,
@@ -66,10 +66,12 @@ void main() {
     expect(proxyController.configureCallCount, 1);
     tester.takeException();
 
-    final container = ProviderScope.containerOf(tester.element(find.byType(ProxyConfigurationSync)));
-    await container.read(settingsControllerProvider.notifier).save(
-      initialSettings.copyWith(port: 4010),
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(ProxyConfigurationSync)),
     );
+    await container
+        .read(settingsControllerProvider.notifier)
+        .save(initialSettings.copyWith(port: 4010));
     await tester.pump();
     await tester.pump();
 

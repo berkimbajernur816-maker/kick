@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kick/analytics/kick_analytics.dart';
 import 'package:kick/app/bootstrap.dart';
+import 'package:kick/core/platform/android_auth_keep_alive.dart';
 import 'package:kick/data/app_database.dart';
 import 'package:kick/data/models/account_profile.dart';
 import 'package:kick/data/models/app_settings.dart';
@@ -138,7 +139,7 @@ void main() {
 
     expect(find.text('Авторизация Kiro'), findsOneWidget);
     expect(find.text('Код для сверки'), findsOneWidget);
-    expect(find.textContaining('сверить код'), findsOneWidget);
+    expect(find.textContaining('вводить его не нужно'), findsOneWidget);
     expect(find.text('Скопировать код'), findsNothing);
   });
 
@@ -208,13 +209,88 @@ void main() {
       expect(find.text(l10n.kiroLinkAuthOpenLinkFailedMessage), findsOneWidget);
     },
   );
+
+  testWidgets('kiro link authorization keeps Android auth runtime alive while dialog is open', (
+    tester,
+  ) async {
+    final bootstrap = await _createBootstrap();
+    final completion = Completer<KiroAuthSourceSnapshot>();
+    String? startedNotificationTitle;
+    var stopCalls = 0;
+    final keepAlive = AndroidAuthKeepAlive(
+      isProxyRunning: () => false,
+      startTemporaryRuntime: ({String? notificationTitle}) async {
+        startedNotificationTitle = notificationTitle;
+        return true;
+      },
+      stopRuntimeIfRunning: () async {
+        stopCalls += 1;
+      },
+    );
+    final service = _FakeKiroLinkAuthService(
+      request: KiroLinkAuthRequest(
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        deviceCode: 'device-code',
+        userCode: 'PSZF-PDMS',
+        verificationUri: 'https://view.awsapps.com/start/#/device',
+        verificationUriComplete: 'https://view.awsapps.com/start/#/device?user_code=PSZF-PDMS',
+        interval: const Duration(seconds: 1),
+        expiresAt: DateTime.now().add(const Duration(minutes: 5)),
+        region: defaultKiroRegion,
+        startUrl: defaultKiroBuilderIdStartUrl,
+      ),
+      completion: completion.future,
+    );
+
+    addTearDown(() async {
+      if (!completion.isCompleted) {
+        completion.completeError(StateError('cancelled'));
+      }
+      service.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
+      await bootstrap.dispose();
+    });
+
+    await tester.pumpWidget(
+      _TestApp(bootstrap: bootstrap, kiroLinkAuthService: service, androidAuthKeepAlive: keepAlive),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Подключить аккаунт'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Kiro'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Продолжить'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+
+    final l10n = AppLocalizations.of(tester.element(find.byType(AccountsPage)))!;
+    expect(find.text(l10n.kiroLinkAuthDialogTitle), findsOneWidget);
+    expect(startedNotificationTitle, l10n.kiroLinkAuthDialogTitle);
+    expect(stopCalls, 0);
+
+    await tester.tap(find.widgetWithText(FilledButton, l10n.cancelButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.kiroLinkAuthDialogTitle), findsNothing);
+    expect(stopCalls, 1);
+  });
 }
 
 class _TestApp extends StatelessWidget {
-  const _TestApp({required this.bootstrap, required this.kiroLinkAuthService});
+  const _TestApp({
+    required this.bootstrap,
+    required this.kiroLinkAuthService,
+    this.androidAuthKeepAlive,
+  });
 
   final AppBootstrap bootstrap;
   final KiroLinkAuthService kiroLinkAuthService;
+  final AndroidAuthKeepAlive? androidAuthKeepAlive;
 
   @override
   Widget build(BuildContext context) {
@@ -222,6 +298,8 @@ class _TestApp extends StatelessWidget {
       overrides: [
         appBootstrapProvider.overrideWithValue(bootstrap),
         kiroLinkAuthServiceProvider.overrideWithValue(kiroLinkAuthService),
+        if (androidAuthKeepAlive != null)
+          androidAuthKeepAliveProvider.overrideWithValue(androidAuthKeepAlive!),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

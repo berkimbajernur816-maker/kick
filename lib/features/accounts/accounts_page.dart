@@ -501,6 +501,10 @@ Future<void> _connectKiroAccount(
   required List<String> notSupportedModels,
   AccountProfile? existing,
 }) async {
+  final keepAlive = ref.read(androidAuthKeepAliveProvider);
+  final keepAliveStarted = await keepAlive.begin(
+    notificationTitle: context.l10n.kiroLinkAuthDialogTitle,
+  );
   try {
     final resolvedCredentialSourcePath = await _authorizeKiroByLink(
       context,
@@ -529,6 +533,8 @@ Future<void> _connectKiroAccount(
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(SnackBar(content: Text(formatUserFacingError(context.l10n, error))));
+  } finally {
+    await keepAlive.end(keepAliveStarted);
   }
 }
 

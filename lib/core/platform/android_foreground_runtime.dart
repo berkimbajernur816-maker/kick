@@ -9,6 +9,8 @@ import '../../l10n/kick_localizations.dart';
 
 const _notificationModeStorageKey = 'kick.notification_mode';
 const _notificationModePayloadKey = 'notification_mode';
+const _notificationTitleStorageKey = 'kick.notification_title';
+const _notificationTitlePayloadKey = 'notification_title';
 const _notificationModeProxy = 'proxy';
 const _notificationModeOAuth = 'oauth';
 
@@ -90,7 +92,7 @@ class AndroidForegroundRuntime {
         NotificationPermission.granted) {
       return;
     }
-    await _setNotificationMode(_notificationModeProxy);
+    await _setNotificationState(mode: _notificationModeProxy);
     if (await isRunning()) {
       await FlutterForegroundTask.updateService(
         notificationTitle: l10n.runtimeNotificationTitle,
@@ -108,7 +110,7 @@ class AndroidForegroundRuntime {
     );
   }
 
-  static Future<bool> ensureTemporaryRunning() async {
+  static Future<bool> ensureTemporaryRunning({String? notificationTitle}) async {
     if (!Platform.isAndroid) {
       return false;
     }
@@ -124,11 +126,18 @@ class AndroidForegroundRuntime {
     // Keep the process prioritized while an external browser completes the
     // loopback OAuth flow on devices that aggressively kill background apps.
     final l10n = lookupKickLocalizations();
+    final resolvedNotificationTitle = notificationTitle?.trim();
+    final authNotificationTitle = resolvedNotificationTitle?.isNotEmpty == true
+        ? resolvedNotificationTitle!
+        : l10n.connectGoogleAccountTitle;
     try {
-      await _setNotificationMode(_notificationModeOAuth);
+      await _setNotificationState(
+        mode: _notificationModeOAuth,
+        notificationTitle: resolvedNotificationTitle,
+      );
       await FlutterForegroundTask.startService(
         serviceId: 701,
-        notificationTitle: l10n.connectGoogleAccountTitle,
+        notificationTitle: authNotificationTitle,
         notificationText: l10n.runtimeNotificationReturn,
         notificationInitialRoute: '/home',
         callback: startForegroundRuntimeCallback,
@@ -156,12 +165,28 @@ class AndroidForegroundRuntime {
       await FlutterForegroundTask.stopService();
     }
     await FlutterForegroundTask.removeData(key: _notificationModeStorageKey);
+    await FlutterForegroundTask.removeData(key: _notificationTitleStorageKey);
   }
 
-  static Future<void> _setNotificationMode(String mode) async {
+  static Future<void> _setNotificationState({
+    required String mode,
+    String? notificationTitle,
+  }) async {
     await FlutterForegroundTask.saveData(key: _notificationModeStorageKey, value: mode);
+    final resolvedNotificationTitle = notificationTitle?.trim() ?? '';
+    if (resolvedNotificationTitle.isEmpty) {
+      await FlutterForegroundTask.removeData(key: _notificationTitleStorageKey);
+    } else {
+      await FlutterForegroundTask.saveData(
+        key: _notificationTitleStorageKey,
+        value: resolvedNotificationTitle,
+      );
+    }
     if (await isRunning()) {
-      FlutterForegroundTask.sendDataToTask({_notificationModePayloadKey: mode});
+      FlutterForegroundTask.sendDataToTask({
+        _notificationModePayloadKey: mode,
+        _notificationTitlePayloadKey: resolvedNotificationTitle,
+      });
     }
   }
 
@@ -190,19 +215,25 @@ void startForegroundRuntimeCallback() {
 
 class KickForegroundTaskHandler extends TaskHandler {
   String _notificationMode = _notificationModeProxy;
+  String _notificationTitle = '';
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     _notificationMode =
         await FlutterForegroundTask.getData<String>(key: _notificationModeStorageKey) ??
         _notificationModeProxy;
+    _notificationTitle =
+        await FlutterForegroundTask.getData<String>(key: _notificationTitleStorageKey) ?? '';
   }
 
   @override
   void onRepeatEvent(DateTime timestamp) {
     final l10n = lookupKickLocalizations();
+    final authNotificationTitle = _notificationTitle.trim().isNotEmpty
+        ? _notificationTitle.trim()
+        : l10n.connectGoogleAccountTitle;
     final (title, text) = switch (_notificationMode) {
-      _notificationModeOAuth => (l10n.connectGoogleAccountTitle, l10n.runtimeNotificationReturn),
+      _notificationModeOAuth => (authNotificationTitle, l10n.runtimeNotificationReturn),
       _ => (l10n.runtimeNotificationTitle, l10n.runtimeNotificationActive),
     };
     FlutterForegroundTask.updateService(notificationTitle: title, notificationText: text);
@@ -220,6 +251,11 @@ class KickForegroundTaskHandler extends TaskHandler {
     final mode = data[_notificationModePayloadKey];
     if (mode is String && mode.isNotEmpty) {
       _notificationMode = mode;
+    }
+
+    final notificationTitle = data[_notificationTitlePayloadKey];
+    if (notificationTitle is String) {
+      _notificationTitle = notificationTitle.trim();
     }
   }
 

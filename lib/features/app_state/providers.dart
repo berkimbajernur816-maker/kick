@@ -8,6 +8,7 @@ import '../../analytics/kick_analytics.dart';
 import '../../app/app_version_reader.dart';
 import '../../app/bootstrap.dart';
 import '../../core/accounts/account_priority.dart';
+import '../../core/platform/android_auth_keep_alive.dart';
 import '../../core/platform/android_foreground_runtime.dart';
 import '../../core/platform/windows_desktop_runtime.dart';
 import '../../core/security/proxy_api_key.dart';
@@ -42,6 +43,12 @@ final proxyActivityProvider = StreamProvider<String>(
 final analyticsProvider = Provider<KickAnalytics>(
   (ref) => ref.watch(appBootstrapProvider).analytics,
 );
+
+final androidAuthKeepAliveProvider = Provider<AndroidAuthKeepAlive>((ref) {
+  return AndroidAuthKeepAlive(
+    isProxyRunning: () => ref.read(proxyControllerProvider).currentState.running,
+  );
+});
 
 final clockTickerProvider = StreamProvider<DateTime>(
   (ref) => Stream<DateTime>.periodic(const Duration(seconds: 1), (_) => DateTime.now()),
@@ -193,7 +200,8 @@ class AccountsController extends AsyncNotifier<List<AccountProfile>> {
     final bootstrap = ref.read(appBootstrapProvider);
     final reauthorization = existing != null;
     unawaited(bootstrap.analytics.trackAccountConnectStarted(reauthorization: reauthorization));
-    final keepAliveStarted = await _beginOAuthKeepAlive();
+    final keepAlive = ref.read(androidAuthKeepAliveProvider);
+    final keepAliveStarted = await keepAlive.begin();
     try {
       final authResult = await bootstrap.oauthService.authenticate();
       final tokenRef = existing?.tokenRef ?? 'kick.oauth.${_uuid.v4()}';
@@ -238,7 +246,7 @@ class AccountsController extends AsyncNotifier<List<AccountProfile>> {
       );
       rethrow;
     } finally {
-      await _endOAuthKeepAlive(keepAliveStarted);
+      await keepAlive.end(keepAliveStarted);
     }
   }
 
@@ -349,28 +357,6 @@ class AccountsController extends AsyncNotifier<List<AccountProfile>> {
         clearQuotaSnapshot: true,
       ),
     );
-  }
-
-  Future<bool> _beginOAuthKeepAlive() async {
-    try {
-      return await AndroidForegroundRuntime.ensureTemporaryRunning();
-    } catch (_) {
-      return false;
-    }
-  }
-
-  Future<void> _endOAuthKeepAlive(bool keepAliveStarted) async {
-    if (!keepAliveStarted) {
-      return;
-    }
-
-    try {
-      if (!ref.read(proxyControllerProvider).currentState.running) {
-        await AndroidForegroundRuntime.stopIfRunning();
-      }
-    } catch (_) {
-      // Best-effort cleanup for the temporary Android foreground runtime.
-    }
   }
 }
 

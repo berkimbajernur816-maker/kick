@@ -140,10 +140,24 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
+    final dialog = find.byType(AlertDialog);
+
+    expect(dialog, findsOneWidget);
     expect(find.text(ruL10n.kiroLinkAuthDialogTitle), findsOneWidget);
     expect(find.text(ruL10n.kiroLinkAuthUserCodeLabel), findsOneWidget);
-    expect(find.text(ruL10n.kiroLinkAuthDialogMessage), findsOneWidget);
-    expect(find.text('Скопировать код'), findsNothing);
+    expect(
+      find.descendant(
+        of: dialog,
+        matching: find.widgetWithText(TextButton, ruL10n.kiroLinkAuthOpenLinkButton),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: dialog, matching: find.widgetWithText(FilledButton, ruL10n.cancelButton)),
+      findsOneWidget,
+    );
+    expect(find.descendant(of: dialog, matching: find.byType(TextButton)), findsOneWidget);
+    expect(find.descendant(of: dialog, matching: find.byType(FilledButton)), findsOneWidget);
   });
 
   testWidgets(

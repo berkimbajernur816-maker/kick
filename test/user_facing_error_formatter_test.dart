@@ -52,7 +52,7 @@ void main() {
       ),
     );
 
-    expect(message, l10n.errorQuotaExhaustedRetry('1 ч 20 мин'));
+    expect(message, l10n.errorQuotaExhaustedRetry(l10n.durationHoursMinutes(1, 20)));
   });
 
   test('formats indefinite quota exhaustion without reset hint distinctly', () {

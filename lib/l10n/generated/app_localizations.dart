@@ -768,7 +768,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageOptionRussian.
   ///
   /// In en, this message translates to:
-  /// **'Русский'**
+  /// **'Russian'**
   String get languageOptionRussian;
 
   /// No description provided for @themeLabel.
@@ -1880,6 +1880,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to share logs: {error}'**
   String logsShareFailedMessage(String error);
+
+  /// No description provided for @logsExportFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'KiCk log export'**
+  String get logsExportFileTitle;
+
+  /// No description provided for @logsExportShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'KiCk logs'**
+  String get logsExportShareSubject;
+
+  /// No description provided for @logsExportGeneratedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated at'**
+  String get logsExportGeneratedAtLabel;
+
+  /// No description provided for @logsExportEntriesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries: {count}'**
+  String logsExportEntriesCount(int count);
+
+  /// No description provided for @logsExportSectionEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get logsExportSectionEnvironment;
+
+  /// No description provided for @logsExportAppLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get logsExportAppLabel;
+
+  /// No description provided for @logsExportFiltersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get logsExportFiltersLabel;
+
+  /// No description provided for @logsExportScopeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get logsExportScopeLabel;
+
+  /// No description provided for @logsExportRuntimeSettingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime settings'**
+  String get logsExportRuntimeSettingsLabel;
+
+  /// No description provided for @logsExportNoneValue.
+  ///
+  /// In en, this message translates to:
+  /// **'none'**
+  String get logsExportNoneValue;
+
+  /// No description provided for @logsExportNoneDetectedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'none detected'**
+  String get logsExportNoneDetectedValue;
+
+  /// No description provided for @logsExportSectionDiagnostics.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnostics summary'**
+  String get logsExportSectionDiagnostics;
+
+  /// No description provided for @logsExportTimeRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time range'**
+  String get logsExportTimeRangeLabel;
+
+  /// No description provided for @logsExportLevelsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels'**
+  String get logsExportLevelsLabel;
+
+  /// No description provided for @logsExportCategoriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get logsExportCategoriesLabel;
+
+  /// No description provided for @logsExportRoutesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Routes'**
+  String get logsExportRoutesLabel;
+
+  /// No description provided for @logsExportModelsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Models'**
+  String get logsExportModelsLabel;
+
+  /// No description provided for @logsExportStatusCodesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status codes'**
+  String get logsExportStatusCodesLabel;
+
+  /// No description provided for @logsExportErrorDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Error details'**
+  String get logsExportErrorDetailsLabel;
+
+  /// No description provided for @logsExportUpstreamReasonsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Upstream reasons'**
+  String get logsExportUpstreamReasonsLabel;
+
+  /// No description provided for @logsExportRetriedRequestsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Retried requests'**
+  String get logsExportRetriedRequestsLabel;
+
+  /// No description provided for @logsExportTokensLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens'**
+  String get logsExportTokensLabel;
+
+  /// No description provided for @logsExportAndroidBackgroundSessionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Android background sessions'**
+  String get logsExportAndroidBackgroundSessionsLabel;
+
+  /// No description provided for @logsExportTimestampLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get logsExportTimestampLabel;
+
+  /// No description provided for @logsExportLevelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get logsExportLevelLabel;
+
+  /// No description provided for @logsExportCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get logsExportCategoryLabel;
+
+  /// No description provided for @logsExportRouteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Route'**
+  String get logsExportRouteLabel;
+
+  /// No description provided for @logsExportMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get logsExportMessageLabel;
+
+  /// No description provided for @logsExportMaskedPayloadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Masked payload'**
+  String get logsExportMaskedPayloadLabel;
+
+  /// No description provided for @logsExportRawPayloadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw payload'**
+  String get logsExportRawPayloadLabel;
+
+  /// No description provided for @logMessageRequestReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Request received'**
+  String get logMessageRequestReceived;
+
+  /// No description provided for @logMessageParsedRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Parsed request'**
+  String get logMessageParsedRequest;
+
+  /// No description provided for @logMessageResponseCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Response completed'**
+  String get logMessageResponseCompleted;
+
+  /// No description provided for @logMessageStreamClientAborted.
+  ///
+  /// In en, this message translates to:
+  /// **'Streaming response aborted by client'**
+  String get logMessageStreamClientAborted;
+
+  /// No description provided for @logMessageRetryScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry scheduled after request failure'**
+  String get logMessageRetryScheduled;
+
+  /// No description provided for @logMessageRetryWithAnotherAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Retrying with another account after request failure'**
+  String get logMessageRetryWithAnotherAccount;
+
+  /// No description provided for @logMessageRequestSucceededAfterRetries.
+  ///
+  /// In en, this message translates to:
+  /// **'Request succeeded after retries'**
+  String get logMessageRequestSucceededAfterRetries;
+
+  /// No description provided for @logMessageRequestFailedAfterRetries.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed after retries'**
+  String get logMessageRequestFailedAfterRetries;
+
+  /// No description provided for @logMessageDispatchingStreamingRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatching streaming request to upstream provider'**
+  String get logMessageDispatchingStreamingRequest;
+
+  /// No description provided for @logMessageDispatchingRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatching request to upstream provider'**
+  String get logMessageDispatchingRequest;
+
+  /// No description provided for @logMessageUpstreamPayloadReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Upstream provider returned a payload'**
+  String get logMessageUpstreamPayloadReturned;
+
+  /// No description provided for @logMessageMappedChatCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapped upstream payload to OpenAI chat completion'**
+  String get logMessageMappedChatCompletion;
+
+  /// No description provided for @logMessageUsingAccountForModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Using account {account} for {model}'**
+  String logMessageUsingAccountForModel(String account, String model);
+
+  /// No description provided for @logMessageProxySessionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Proxy session summary'**
+  String get logMessageProxySessionSummary;
+
+  /// No description provided for @logMessageAndroidBackgroundSessionStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Android background session started'**
+  String get logMessageAndroidBackgroundSessionStarted;
+
+  /// No description provided for @logMessageAndroidBackgroundSessionEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Android background session ended'**
+  String get logMessageAndroidBackgroundSessionEnded;
+
+  /// No description provided for @logMessageAndroidBackgroundSessionRecovered.
+  ///
+  /// In en, this message translates to:
+  /// **'Android background session recovered after process restart'**
+  String get logMessageAndroidBackgroundSessionRecovered;
 
   /// No description provided for @accountDialogTitle.
   ///

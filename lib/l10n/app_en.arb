@@ -249,7 +249,7 @@
   "languageHelperText": "System follows your device language",
   "languageOptionSystem": "System",
   "languageOptionEnglish": "English",
-  "languageOptionRussian": "Русский",
+  "languageOptionRussian": "Russian",
   "themeLabel": "Theme",
   "themeModeSystem": "System",
   "themeModeLight": "Light",
@@ -563,6 +563,70 @@
       }
     }
   },
+  "logsExportFileTitle": "KiCk log export",
+  "logsExportShareSubject": "KiCk logs",
+  "logsExportGeneratedAtLabel": "Generated at",
+  "logsExportEntriesCount": "Entries: {count}",
+  "@logsExportEntriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "logsExportSectionEnvironment": "Environment",
+  "logsExportAppLabel": "App",
+  "logsExportFiltersLabel": "Filters",
+  "logsExportScopeLabel": "Scope",
+  "logsExportRuntimeSettingsLabel": "Runtime settings",
+  "logsExportNoneValue": "none",
+  "logsExportNoneDetectedValue": "none detected",
+  "logsExportSectionDiagnostics": "Diagnostics summary",
+  "logsExportTimeRangeLabel": "Time range",
+  "logsExportLevelsLabel": "Levels",
+  "logsExportCategoriesLabel": "Categories",
+  "logsExportRoutesLabel": "Routes",
+  "logsExportModelsLabel": "Models",
+  "logsExportStatusCodesLabel": "Status codes",
+  "logsExportErrorDetailsLabel": "Error details",
+  "logsExportUpstreamReasonsLabel": "Upstream reasons",
+  "logsExportRetriedRequestsLabel": "Retried requests",
+  "logsExportTokensLabel": "Tokens",
+  "logsExportAndroidBackgroundSessionsLabel": "Android background sessions",
+  "logsExportTimestampLabel": "Timestamp",
+  "logsExportLevelLabel": "Level",
+  "logsExportCategoryLabel": "Category",
+  "logsExportRouteLabel": "Route",
+  "logsExportMessageLabel": "Message",
+  "logsExportMaskedPayloadLabel": "Masked payload",
+  "logsExportRawPayloadLabel": "Raw payload",
+  "logMessageRequestReceived": "Request received",
+  "logMessageParsedRequest": "Parsed request",
+  "logMessageResponseCompleted": "Response completed",
+  "logMessageStreamClientAborted": "Streaming response aborted by client",
+  "logMessageRetryScheduled": "Retry scheduled after request failure",
+  "logMessageRetryWithAnotherAccount": "Retrying with another account after request failure",
+  "logMessageRequestSucceededAfterRetries": "Request succeeded after retries",
+  "logMessageRequestFailedAfterRetries": "Request failed after retries",
+  "logMessageDispatchingStreamingRequest": "Dispatching streaming request to upstream provider",
+  "logMessageDispatchingRequest": "Dispatching request to upstream provider",
+  "logMessageUpstreamPayloadReturned": "Upstream provider returned a payload",
+  "logMessageMappedChatCompletion": "Mapped upstream payload to OpenAI chat completion",
+  "logMessageUsingAccountForModel": "Using account {account} for {model}",
+  "@logMessageUsingAccountForModel": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      },
+      "model": {
+        "type": "String"
+      }
+    }
+  },
+  "logMessageProxySessionSummary": "Proxy session summary",
+  "logMessageAndroidBackgroundSessionStarted": "Android background session started",
+  "logMessageAndroidBackgroundSessionEnded": "Android background session ended",
+  "logMessageAndroidBackgroundSessionRecovered": "Android background session recovered after process restart",
   "accountDialogTitle": "Account",
   "accountDialogBasicsTitle": "Basics",
   "accountDialogBasicsSubtitle": "Fields for connecting the selected account type",

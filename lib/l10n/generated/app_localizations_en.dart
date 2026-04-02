@@ -387,7 +387,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageOptionEnglish => 'English';
 
   @override
-  String get languageOptionRussian => 'Русский';
+  String get languageOptionRussian => 'Russian';
 
   @override
   String get themeLabel => 'Theme';
@@ -1009,6 +1009,154 @@ class AppLocalizationsEn extends AppLocalizations {
   String logsShareFailedMessage(String error) {
     return 'Failed to share logs: $error';
   }
+
+  @override
+  String get logsExportFileTitle => 'KiCk log export';
+
+  @override
+  String get logsExportShareSubject => 'KiCk logs';
+
+  @override
+  String get logsExportGeneratedAtLabel => 'Generated at';
+
+  @override
+  String logsExportEntriesCount(int count) {
+    return 'Entries: $count';
+  }
+
+  @override
+  String get logsExportSectionEnvironment => 'Environment';
+
+  @override
+  String get logsExportAppLabel => 'App';
+
+  @override
+  String get logsExportFiltersLabel => 'Filters';
+
+  @override
+  String get logsExportScopeLabel => 'Scope';
+
+  @override
+  String get logsExportRuntimeSettingsLabel => 'Runtime settings';
+
+  @override
+  String get logsExportNoneValue => 'none';
+
+  @override
+  String get logsExportNoneDetectedValue => 'none detected';
+
+  @override
+  String get logsExportSectionDiagnostics => 'Diagnostics summary';
+
+  @override
+  String get logsExportTimeRangeLabel => 'Time range';
+
+  @override
+  String get logsExportLevelsLabel => 'Levels';
+
+  @override
+  String get logsExportCategoriesLabel => 'Categories';
+
+  @override
+  String get logsExportRoutesLabel => 'Routes';
+
+  @override
+  String get logsExportModelsLabel => 'Models';
+
+  @override
+  String get logsExportStatusCodesLabel => 'Status codes';
+
+  @override
+  String get logsExportErrorDetailsLabel => 'Error details';
+
+  @override
+  String get logsExportUpstreamReasonsLabel => 'Upstream reasons';
+
+  @override
+  String get logsExportRetriedRequestsLabel => 'Retried requests';
+
+  @override
+  String get logsExportTokensLabel => 'Tokens';
+
+  @override
+  String get logsExportAndroidBackgroundSessionsLabel => 'Android background sessions';
+
+  @override
+  String get logsExportTimestampLabel => 'Timestamp';
+
+  @override
+  String get logsExportLevelLabel => 'Level';
+
+  @override
+  String get logsExportCategoryLabel => 'Category';
+
+  @override
+  String get logsExportRouteLabel => 'Route';
+
+  @override
+  String get logsExportMessageLabel => 'Message';
+
+  @override
+  String get logsExportMaskedPayloadLabel => 'Masked payload';
+
+  @override
+  String get logsExportRawPayloadLabel => 'Raw payload';
+
+  @override
+  String get logMessageRequestReceived => 'Request received';
+
+  @override
+  String get logMessageParsedRequest => 'Parsed request';
+
+  @override
+  String get logMessageResponseCompleted => 'Response completed';
+
+  @override
+  String get logMessageStreamClientAborted => 'Streaming response aborted by client';
+
+  @override
+  String get logMessageRetryScheduled => 'Retry scheduled after request failure';
+
+  @override
+  String get logMessageRetryWithAnotherAccount =>
+      'Retrying with another account after request failure';
+
+  @override
+  String get logMessageRequestSucceededAfterRetries => 'Request succeeded after retries';
+
+  @override
+  String get logMessageRequestFailedAfterRetries => 'Request failed after retries';
+
+  @override
+  String get logMessageDispatchingStreamingRequest =>
+      'Dispatching streaming request to upstream provider';
+
+  @override
+  String get logMessageDispatchingRequest => 'Dispatching request to upstream provider';
+
+  @override
+  String get logMessageUpstreamPayloadReturned => 'Upstream provider returned a payload';
+
+  @override
+  String get logMessageMappedChatCompletion => 'Mapped upstream payload to OpenAI chat completion';
+
+  @override
+  String logMessageUsingAccountForModel(String account, String model) {
+    return 'Using account $account for $model';
+  }
+
+  @override
+  String get logMessageProxySessionSummary => 'Proxy session summary';
+
+  @override
+  String get logMessageAndroidBackgroundSessionStarted => 'Android background session started';
+
+  @override
+  String get logMessageAndroidBackgroundSessionEnded => 'Android background session ended';
+
+  @override
+  String get logMessageAndroidBackgroundSessionRecovered =>
+      'Android background session recovered after process restart';
 
   @override
   String get accountDialogTitle => 'Account';

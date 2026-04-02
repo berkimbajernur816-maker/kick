@@ -2179,7 +2179,7 @@ void main() {
           return http.StreamedResponse(
             Stream.value(
               utf8.encode(
-                'data: {"response":{"candidates":[{"content":{"parts":[{"text":"*Серафина мягко улыбается"}]},"finishReason":"MAX_TOKENS"}]}}\n\n',
+                'data: {"response":{"candidates":[{"content":{"parts":[{"text":"radiant smile spreads across Seraphina"}]},"finishReason":"MAX_TOKENS"}]}}\n\n',
               ),
             ),
             200,

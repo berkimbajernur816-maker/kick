@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,6 +12,8 @@ import '../../analytics/android_background_session_log.dart';
 import '../../core/logging/log_sanitizer.dart';
 import '../../data/models/app_log_entry.dart';
 import '../../data/models/app_settings.dart';
+import '../../l10n/kick_localizations.dart';
+import 'log_message_localizer.dart';
 
 typedef LogExportDirectoryResolver = Future<Directory> Function();
 typedef LogShareCallback = Future<ShareResult> Function(ShareParams params);
@@ -115,6 +118,7 @@ class LogExportService {
       throw StateError('No log entries available for export.');
     }
 
+    final l10n = _resolveLocalizations(metadata);
     final result = await _writeExportFile(
       fileName: _buildFileName(),
       contents: format(entries, metadata: metadata),
@@ -122,8 +126,8 @@ class LogExportService {
     await _shareCallback(
       ShareParams(
         files: [XFile(result.file!.path, name: result.fileName, mimeType: 'text/plain')],
-        subject: 'KiCk logs',
-        text: 'KiCk log export',
+        subject: l10n.logsExportShareSubject,
+        text: l10n.logsExportFileTitle,
       ),
     );
     return result;
@@ -134,13 +138,15 @@ class LogExportService {
       throw StateError('No log entries available for export.');
     }
 
+    final l10n = _resolveLocalizations(metadata);
     final generatedAt = DateTime.now();
     final buffer = StringBuffer()
-      ..writeln('KiCk log export')
-      ..writeln('Generated at: ${_formatTimestampWithOffset(generatedAt)}')
-      ..writeln('Entries: ${entries.length}');
+      ..writeln(l10n.logsExportFileTitle)
+      ..writeln('${l10n.logsExportGeneratedAtLabel}: ${_formatTimestampWithOffset(generatedAt)}')
+      ..writeln(l10n.logsExportEntriesCount(entries.length));
 
     final environmentSection = _formatEnvironmentSection(
+      l10n: l10n,
       metadata: metadata,
       generatedAt: generatedAt,
     );
@@ -150,7 +156,7 @@ class LogExportService {
         ..writeln(environmentSection);
     }
 
-    final summarySection = _formatDiagnosticsSummary(entries);
+    final summarySection = _formatDiagnosticsSummary(entries, l10n: l10n);
     if (summarySection.isNotEmpty) {
       buffer
         ..writeln()
@@ -164,24 +170,26 @@ class LogExportService {
         ..writeln(
           '--------------------------------------------------------------------------------',
         )
-        ..writeln('Timestamp: ${_formatTimestampWithOffset(entry.timestamp)}')
-        ..writeln('Level: ${entry.level.name}')
-        ..writeln('Category: ${entry.category}');
+        ..writeln('${l10n.logsExportTimestampLabel}: ${_formatTimestampWithOffset(entry.timestamp)}')
+        ..writeln('${l10n.logsExportLevelLabel}: ${_localizedLevelName(l10n, entry.level)}')
+        ..writeln('${l10n.logsExportCategoryLabel}: ${entry.category}');
       if (entry.route?.isNotEmpty == true) {
-        buffer.writeln('Route: ${entry.route}');
+        buffer.writeln('${l10n.logsExportRouteLabel}: ${entry.route}');
       }
-      buffer.writeln('Message: ${LogSanitizer.sanitizeText(entry.message)}');
+      buffer.writeln(
+        '${l10n.logsExportMessageLabel}: ${localizeLogMessage(l10n, LogSanitizer.sanitizeText(entry.message))}',
+      );
       if (entry.maskedPayload?.isNotEmpty == true) {
         final sanitizedMaskedPayload = LogSanitizer.formatPayloadForDisplay(entry.maskedPayload);
         buffer
           ..writeln()
-          ..writeln('Masked payload:')
+          ..writeln('${l10n.logsExportMaskedPayloadLabel}:')
           ..writeln(sanitizedMaskedPayload);
       }
       if (entry.rawPayload?.isNotEmpty == true) {
         buffer
           ..writeln()
-          ..writeln('Raw payload:')
+          ..writeln('${l10n.logsExportRawPayloadLabel}:')
           ..writeln(LogSanitizer.removedFromExportNotice);
       }
       buffer.writeln();
@@ -267,6 +275,7 @@ class LogExportService {
   }
 
   String _formatEnvironmentSection({
+    required KickLocalizations l10n,
     required LogExportMetadata? metadata,
     required DateTime generatedAt,
   }) {
@@ -300,21 +309,25 @@ class LogExportService {
         'android_background_runtime=${metadata!.androidBackgroundRuntime}',
     ];
 
-    final section = StringBuffer()..writeln('Environment');
+    final section = StringBuffer()..writeln(l10n.logsExportSectionEnvironment);
     if (details.isNotEmpty) {
-      section.writeln('App: ${details.join(', ')}');
+      section.writeln('${l10n.logsExportAppLabel}: ${details.join(', ')}');
     }
-    section.writeln(filters.isEmpty ? 'Filters: none' : 'Filters: ${filters.join(', ')}');
+    section.writeln(
+      filters.isEmpty
+          ? '${l10n.logsExportFiltersLabel}: ${l10n.logsExportNoneValue}'
+          : '${l10n.logsExportFiltersLabel}: ${filters.join(', ')}',
+    );
     if (scope.isNotEmpty) {
-      section.writeln('Scope: ${scope.join(', ')}');
+      section.writeln('${l10n.logsExportScopeLabel}: ${scope.join(', ')}');
     }
     if (runtimeSettings.isNotEmpty) {
-      section.writeln('Runtime settings: ${runtimeSettings.join(', ')}');
+      section.writeln('${l10n.logsExportRuntimeSettingsLabel}: ${runtimeSettings.join(', ')}');
     }
     return section.toString().trimRight();
   }
 
-  String _formatDiagnosticsSummary(List<AppLogEntry> entries) {
+  String _formatDiagnosticsSummary(List<AppLogEntry> entries, {required KickLocalizations l10n}) {
     final sorted = entries.toList(growable: false)
       ..sort((left, right) => left.timestamp.compareTo(right.timestamp));
     final first = sorted.first;
@@ -426,32 +439,38 @@ class LogExportService {
     }
 
     final diagnostics = StringBuffer()
-      ..writeln('Diagnostics summary')
+      ..writeln(l10n.logsExportSectionDiagnostics)
       ..writeln(
-        'Time range: ${_formatTimestampWithOffset(first.timestamp)} -> ${_formatTimestampWithOffset(last.timestamp)}',
+        '${l10n.logsExportTimeRangeLabel}: ${_formatTimestampWithOffset(first.timestamp)} -> ${_formatTimestampWithOffset(last.timestamp)}',
       )
-      ..writeln('Levels: ${_formatCountMap(levelCounts)}')
-      ..writeln('Categories: ${_formatCountMap(categoryCounts)}')
-      ..writeln(routeCounts.isEmpty ? 'Routes: none' : 'Routes: ${_formatCountMap(routeCounts)}');
+      ..writeln('${l10n.logsExportLevelsLabel}: ${_formatCountMap(levelCounts)}')
+      ..writeln('${l10n.logsExportCategoriesLabel}: ${_formatCountMap(categoryCounts)}')
+      ..writeln(
+        routeCounts.isEmpty
+            ? '${l10n.logsExportRoutesLabel}: ${l10n.logsExportNoneValue}'
+            : '${l10n.logsExportRoutesLabel}: ${_formatCountMap(routeCounts)}',
+      );
 
     for (final model in requestModels.values) {
       modelCounts.update(model, (value) => value + 1, ifAbsent: () => 1);
     }
     if (modelCounts.isNotEmpty) {
-      diagnostics.writeln('Models: ${_formatCountMap(modelCounts)}');
+      diagnostics.writeln('${l10n.logsExportModelsLabel}: ${_formatCountMap(modelCounts)}');
     }
     if (statusCodeCounts.isNotEmpty) {
-      diagnostics.writeln('Status codes: ${_formatCountMap(statusCodeCounts)}');
+      diagnostics.writeln('${l10n.logsExportStatusCodesLabel}: ${_formatCountMap(statusCodeCounts)}');
     }
     if (errorDetailCounts.isNotEmpty) {
-      diagnostics.writeln('Error details: ${_formatCountMap(errorDetailCounts)}');
+      diagnostics.writeln('${l10n.logsExportErrorDetailsLabel}: ${_formatCountMap(errorDetailCounts)}');
     }
     if (upstreamReasonCounts.isNotEmpty) {
-      diagnostics.writeln('Upstream reasons: ${_formatCountMap(upstreamReasonCounts)}');
+      diagnostics.writeln(
+        '${l10n.logsExportUpstreamReasonsLabel}: ${_formatCountMap(upstreamReasonCounts)}',
+      );
     }
     if (retriedRequests > 0) {
       diagnostics.writeln(
-        'Retried requests: total=$retriedRequests, '
+        '${l10n.logsExportRetriedRequestsLabel}: total=$retriedRequests, '
         'succeeded=$retriedSucceeded, '
         'failed=$retriedFailed, '
         'avg_retry_count=${(totalRetryCount / retriedRequests).toStringAsFixed(1)}, '
@@ -462,7 +481,7 @@ class LogExportService {
     }
     if (hasTokenMetrics) {
       diagnostics.writeln(
-        'Tokens: prompt=$totalPromptTokens, '
+        '${l10n.logsExportTokensLabel}: prompt=$totalPromptTokens, '
         'completion=$totalCompletionTokens, '
         'total=$totalTokens, '
         'cached=$totalCachedTokens, '
@@ -471,12 +490,14 @@ class LogExportService {
     }
 
     if (backgroundDurations.isEmpty) {
-      diagnostics.writeln('Android background sessions: none detected');
+      diagnostics.writeln(
+        '${l10n.logsExportAndroidBackgroundSessionsLabel}: ${l10n.logsExportNoneDetectedValue}',
+      );
     } else {
       final totalDuration = backgroundDurations.fold<int>(0, (sum, value) => sum + value);
       final maxDuration = backgroundDurations.reduce((left, right) => left > right ? left : right);
       diagnostics.writeln(
-        'Android background sessions: total=${backgroundDurations.length}, '
+        '${l10n.logsExportAndroidBackgroundSessionsLabel}: total=${backgroundDurations.length}, '
         'recovered_after_restart=$recoveredBackgroundSessions, '
         'avg_duration_sec=${(totalDuration / backgroundDurations.length).round()}, '
         'max_duration_sec=$maxDuration',
@@ -508,6 +529,37 @@ class LogExportService {
 
   String _formatTimestampWithOffset(DateTime timestamp) {
     return '${timestamp.toIso8601String()} ${_formatUtcOffset(timestamp.timeZoneOffset)}';
+  }
+
+  String _localizedLevelName(KickLocalizations l10n, AppLogLevel level) {
+    return switch (level) {
+      AppLogLevel.info => l10n.logsEntryLevelInfo,
+      AppLogLevel.warning => l10n.logsEntryLevelWarning,
+      AppLogLevel.error => l10n.logsEntryLevelError,
+    };
+  }
+
+  KickLocalizations _resolveLocalizations(LogExportMetadata? metadata) {
+    return lookupKickLocalizations(_parseLocale(metadata?.locale) ?? const Locale('en'));
+  }
+
+  Locale? _parseLocale(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+    final subtags = value.replaceAll('_', '-').split('-');
+    if (subtags.isEmpty || subtags.first.trim().isEmpty) {
+      return null;
+    }
+    return Locale.fromSubtags(
+      languageCode: subtags.first,
+      scriptCode: subtags.length >= 2 && subtags[1].length == 4 ? subtags[1] : null,
+      countryCode: switch (subtags.length) {
+        >= 3 when subtags[1].length == 4 => subtags[2],
+        >= 2 when subtags[1].length != 4 => subtags[1],
+        _ => null,
+      },
+    );
   }
 
   String? _readNonEmptyString(Object? value) {

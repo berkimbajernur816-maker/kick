@@ -5,37 +5,37 @@ import 'package:kick/features/accounts/account_editor_dialog.dart';
 import 'package:kick/l10n/kick_localizations.dart';
 
 void main() {
-  final ruL10n = lookupKickLocalizations(const Locale('ru'));
   final enL10n = lookupKickLocalizations(const Locale('en'));
+  final ruL10n = lookupKickLocalizations(const Locale('ru'));
 
   testWidgets('expands advanced account settings without throwing', (tester) async {
     await tester.pumpWidget(const _TestApp());
 
-    await tester.tap(find.text('Открыть диалог'));
+    await tester.tap(find.text('Open dialog'));
     await tester.pumpAndSettle();
 
-    expect(find.text(ruL10n.accountDialogAdvancedTitle), findsOneWidget);
+    expect(find.text(enL10n.accountDialogAdvancedTitle), findsOneWidget);
 
     final advancedSettings = find.byType(ExpansionTile);
     await tester.ensureVisible(advancedSettings);
     await tester.tap(advancedSettings);
     await tester.pumpAndSettle();
 
-    expect(find.text(ruL10n.blockedModelsLabel), findsOneWidget);
+    expect(find.text(enL10n.blockedModelsLabel), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('allows submitting the dialog without project id', (tester) async {
     await tester.pumpWidget(const _TestApp());
 
-    await tester.tap(find.text('Открыть диалог'));
+    await tester.tap(find.text('Open dialog'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
+    await tester.tap(find.widgetWithText(FilledButton, enL10n.continueButton));
     await tester.pumpAndSettle();
 
     expect(find.byType(AlertDialog), findsNothing);
-    expect(find.text(ruL10n.projectIdRequiredError), findsNothing);
+    expect(find.text(enL10n.projectIdRequiredError), findsNothing);
   });
 
   testWidgets('shows only browser authorization fields for kiro and stretches provider selector', (
@@ -43,19 +43,18 @@ void main() {
   ) async {
     await tester.pumpWidget(const _TestApp());
 
-    await tester.tap(find.text('Открыть диалог'));
+    await tester.tap(find.text('Open dialog'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(ruL10n.accountProviderKiro));
+    await tester.tap(find.text(enL10n.accountProviderKiro));
     await tester.pumpAndSettle();
 
-    expect(find.text('Способ подключения'), findsNothing);
-    expect(find.text('Локальная сессия'), findsNothing);
-    expect(find.text('Локальный источник Kiro'), findsNothing);
-    expect(find.text(ruL10n.kiroBuilderIdStartUrlLabel), findsOneWidget);
-    expect(find.text(ruL10n.kiroRegionLabel), findsOneWidget);
-    expect(find.text(ruL10n.kiroBuilderIdStartUrlHelperText), findsOneWidget);
-    expect(find.text(ruL10n.kiroRegionHelperText), findsOneWidget);
+    expect(find.text(enL10n.projectIdLabel), findsNothing);
+    expect(find.text(enL10n.projectIdConsoleLinkLabel), findsNothing);
+    expect(find.text(enL10n.kiroBuilderIdStartUrlLabel), findsOneWidget);
+    expect(find.text(enL10n.kiroRegionLabel), findsOneWidget);
+    expect(find.text(enL10n.kiroBuilderIdStartUrlHelperText), findsOneWidget);
+    expect(find.text(enL10n.kiroRegionHelperText), findsOneWidget);
 
     final providerSelector = find.byWidgetPredicate(
       (widget) => widget is SegmentedButton<AccountProvider>,
@@ -64,14 +63,14 @@ void main() {
     expect(tester.getSize(providerSelector).width, closeTo(tester.getSize(field).width, 0.1));
   });
 
-  testWidgets('builds the account editor dialog with the English locale enabled', (tester) async {
-    await tester.pumpWidget(const _TestApp(locale: Locale('en')));
+  testWidgets('builds the account editor dialog with the Russian locale enabled', (tester) async {
+    await tester.pumpWidget(const _TestApp(locale: Locale('ru')));
 
-    await tester.tap(find.text('Открыть диалог'));
+    await tester.tap(find.text('Open dialog'));
     await tester.pumpAndSettle();
 
-    expect(find.text(enL10n.accountDialogTitle), findsOneWidget);
-    expect(find.text(enL10n.accountDialogBasicsTitle), findsOneWidget);
+    expect(find.text(ruL10n.accountDialogTitle), findsOneWidget);
+    expect(find.text(ruL10n.accountDialogBasicsTitle), findsOneWidget);
   });
 }
 
@@ -83,7 +82,7 @@ class _TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      locale: locale,
+      locale: locale ?? const Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
@@ -93,7 +92,7 @@ class _TestApp extends StatelessWidget {
               onPressed: () {
                 showAccountEditorDialog(context);
               },
-              child: const Text('Открыть диалог'),
+              child: const Text('Open dialog'),
             ),
           ),
         ),

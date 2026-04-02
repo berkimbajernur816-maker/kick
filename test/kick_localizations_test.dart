@@ -7,13 +7,13 @@ void main() {
     addTearDown(() => setKickLocaleOverride(null));
     addTearDown(tester.binding.platformDispatcher.clearLocalesTestValue);
     tester.binding.platformDispatcher.localesTestValue = const <Locale>[
-      Locale('ru', 'RU'),
       Locale('en', 'US'),
+      Locale('ru', 'RU'),
     ];
 
     final l10n = lookupKickLocalizations();
 
-    expect(l10n.localeName, 'ru');
+    expect(l10n.localeName, 'en');
   });
 
   testWidgets('falls back to English when the system locale is unsupported', (tester) async {

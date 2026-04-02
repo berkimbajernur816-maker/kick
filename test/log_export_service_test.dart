@@ -112,12 +112,12 @@ void main() {
         message: 'Response completed',
         maskedPayload: '{"preview":"ok"}',
       ),
-    ], dialogTitle: 'Куда сохранить логи?');
+    ], dialogTitle: 'Where should the logs be saved?');
 
     expect(result, isNotNull);
     expect(result!.file, isNull);
     expect(result.fileName, 'kick-logs-custom.log');
-    expect(capturedDialogTitle, 'Куда сохранить логи?');
+    expect(capturedDialogTitle, 'Where should the logs be saved?');
     expect(capturedFileName, startsWith('kick-logs-'));
     expect(capturedFileName, endsWith('.log'));
     expect(utf8.decode(capturedBytes!), contains('KiCk log export'));
@@ -205,7 +205,7 @@ void main() {
       ],
       metadata: const LogExportMetadata(
         appVersion: '1.2.3',
-        locale: 'ru-RU',
+        locale: 'en-US',
         query: 'quota',
         level: AppLogLevel.warning,
         category: 'proxy',
@@ -222,7 +222,7 @@ void main() {
     );
 
     expect(contents, contains('App: version=1.2.3'));
-    expect(contents, contains('locale=ru-RU'));
+    expect(contents, contains('locale=en-US'));
     expect(contents, contains('timezone=UTC'));
     expect(contents, isNot(contains('RTZ')));
     expect(contents, contains('Filters: query="quota", level=warning, category=proxy'));

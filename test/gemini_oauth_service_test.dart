@@ -52,7 +52,7 @@ void main() {
           avatarUrl: 'https://example.com/avatar.png',
         );
       },
-      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
+      localizationsProvider: () => lookupKickLocalizations(const Locale('en')),
     );
 
     final result = await service.authenticate();
@@ -91,7 +91,7 @@ void main() {
           googleSubjectId: 'fallback-subject',
         );
       },
-      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
+      localizationsProvider: () => lookupKickLocalizations(const Locale('en')),
     );
 
     final result = await service.authenticate();
@@ -113,7 +113,7 @@ void main() {
         redirectUri = Uri.parse(url.queryParameters['redirect_uri']!);
         return true;
       },
-      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
+      localizationsProvider: () => lookupKickLocalizations(const Locale('en')),
       authorizationTimeout: const Duration(milliseconds: 20),
     );
 
@@ -146,7 +146,7 @@ void main() {
           return http.Response('{}', 200);
         },
       ]),
-      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
+      localizationsProvider: () => lookupKickLocalizations(const Locale('en')),
     );
 
     await expectLater(
@@ -187,7 +187,7 @@ void main() {
 }
 
 Future<void> _simulateBrowserFlow({required Uri redirectUri, required String state}) async {
-  final l10n = lookupKickLocalizations(const Locale('ru'));
+  final l10n = lookupKickLocalizations(const Locale('en'));
   final strayResponse = await _fetchUri(redirectUri.replace(path: '/'), followRedirects: false);
   expect(strayResponse.statusCode, HttpStatus.movedPermanently);
   expect(
@@ -199,7 +199,7 @@ Future<void> _simulateBrowserFlow({required Uri redirectUri, required String sta
     redirectUri.replace(queryParameters: {'state': state, 'code': 'oauth-code'}),
   );
   expect(callbackResponse.statusCode, HttpStatus.ok);
-  expect(callbackResponse.body, contains('<html lang="ru">'));
+  expect(callbackResponse.body, contains('<html lang="en">'));
   expect(callbackResponse.body, contains(l10n.oauthPageTitleSuccess));
   expect(callbackResponse.body, contains(l10n.oauthPageCloseTabMessage));
 }

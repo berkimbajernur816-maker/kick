@@ -150,11 +150,7 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     await bootstrap.settingsRepository.writeSettings(settings);
     await bootstrap.logsRepository.setRetentionLimit(settings.logRetentionCount);
     setKickLocaleOverride(settings.appLocale);
-    try {
-      await WindowBootstrap.refreshTitle();
-    } catch (_) {
-      // Best-effort update for the native window title.
-    }
+    _refreshWindowTitleSafely();
     await WindowsDesktopRuntime.applySettings(settings);
     await bootstrap.analytics.setTrackingAllowed(analyticsTrackingAllowed(settings));
     state = AsyncData(settings);
@@ -166,6 +162,16 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     final nextApiKey = generateProxyApiKey();
     await save(currentSettings.copyWith(apiKey: nextApiKey));
     return nextApiKey;
+  }
+
+  void _refreshWindowTitleSafely() {
+    unawaited(() async {
+      try {
+        await WindowBootstrap.refreshTitle();
+      } catch (_) {
+        // Best-effort update for the native window title.
+      }
+    }());
   }
 }
 

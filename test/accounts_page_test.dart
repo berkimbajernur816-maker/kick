@@ -24,8 +24,8 @@ import 'package:kick/proxy/kiro/kiro_link_auth_service.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
-  final ruL10n = lookupKickLocalizations(const Locale('ru'));
   final enL10n = lookupKickLocalizations(const Locale('en'));
+  final ruL10n = lookupKickLocalizations(const Locale('ru'));
 
   testWidgets('kiro account card does not show source badge', (tester) async {
     final bootstrap = await _createBootstrap(
@@ -79,8 +79,8 @@ void main() {
 
     expect(find.text('Kiro'), findsWidgets);
     expect(find.text('AWS Builder ID'), findsOneWidget);
-    expect(find.textContaining(ruL10n.kiroCredentialSourceChip('').split(':').first), findsNothing);
-    expect(find.text(ruL10n.kiroCredentialSourceChip('Builder ID')), findsNothing);
+    expect(find.textContaining(enL10n.kiroCredentialSourceChip('').split(':').first), findsNothing);
+    expect(find.text(enL10n.kiroCredentialSourceChip('Builder ID')), findsNothing);
   });
 
   testWidgets('kiro link authorization dialog removes code copy action', (tester) async {
@@ -130,30 +130,30 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(FilledButton, ruL10n.connectAccountButton));
+    await tester.tap(find.widgetWithText(FilledButton, enL10n.connectAccountButton));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(ruL10n.accountProviderKiro));
+    await tester.tap(find.text(enL10n.accountProviderKiro));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
+    await tester.tap(find.widgetWithText(FilledButton, enL10n.continueButton));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
     final dialog = find.byType(AlertDialog);
 
     expect(dialog, findsOneWidget);
-    expect(find.text(ruL10n.kiroLinkAuthDialogTitle), findsOneWidget);
-    expect(find.text(ruL10n.kiroLinkAuthUserCodeLabel), findsOneWidget);
+    expect(find.text(enL10n.kiroLinkAuthDialogTitle), findsOneWidget);
+    expect(find.text(enL10n.kiroLinkAuthUserCodeLabel), findsOneWidget);
     expect(
       find.descendant(
         of: dialog,
-        matching: find.widgetWithText(TextButton, ruL10n.kiroLinkAuthOpenLinkButton),
+        matching: find.widgetWithText(TextButton, enL10n.kiroLinkAuthOpenLinkButton),
       ),
       findsOneWidget,
     );
     expect(
-      find.descendant(of: dialog, matching: find.widgetWithText(FilledButton, ruL10n.cancelButton)),
+      find.descendant(of: dialog, matching: find.widgetWithText(FilledButton, enL10n.cancelButton)),
       findsOneWidget,
     );
     expect(find.descendant(of: dialog, matching: find.byType(TextButton)), findsOneWidget);
@@ -212,13 +212,13 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      await tester.tap(find.widgetWithText(FilledButton, ruL10n.connectAccountButton));
+      await tester.tap(find.widgetWithText(FilledButton, enL10n.connectAccountButton));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(ruL10n.accountProviderKiro));
+      await tester.tap(find.text(enL10n.accountProviderKiro));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
+      await tester.tap(find.widgetWithText(FilledButton, enL10n.continueButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
@@ -275,13 +275,13 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(FilledButton, ruL10n.connectAccountButton));
+    await tester.tap(find.widgetWithText(FilledButton, enL10n.connectAccountButton));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(ruL10n.accountProviderKiro));
+    await tester.tap(find.text(enL10n.accountProviderKiro));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
+    await tester.tap(find.widgetWithText(FilledButton, enL10n.continueButton));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
@@ -297,7 +297,7 @@ void main() {
     expect(stopCalls, 1);
   });
 
-  testWidgets('builds the accounts page with the English locale enabled', (tester) async {
+  testWidgets('builds the accounts page with the Russian locale enabled', (tester) async {
     final bootstrap = await _createBootstrap();
     final service = _FakeKiroLinkAuthService(
       request: KiroLinkAuthRequest(
@@ -322,13 +322,13 @@ void main() {
     });
 
     await tester.pumpWidget(
-      _TestApp(bootstrap: bootstrap, kiroLinkAuthService: service, locale: const Locale('en')),
+      _TestApp(bootstrap: bootstrap, kiroLinkAuthService: service, locale: const Locale('ru')),
     );
     await tester.pump();
     await tester.pump();
 
-    expect(find.text(enL10n.accountsTitle), findsOneWidget);
-    expect(find.text(enL10n.accountsEmptyTitle), findsOneWidget);
+    expect(find.text(ruL10n.accountsTitle), findsOneWidget);
+    expect(find.text(ruL10n.accountsEmptyTitle), findsOneWidget);
   });
 }
 
@@ -355,7 +355,7 @@ class _TestApp extends StatelessWidget {
           androidAuthKeepAliveProvider.overrideWithValue(androidAuthKeepAlive!),
       ],
       child: MaterialApp(
-        locale: locale,
+        locale: locale ?? const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const Scaffold(body: AccountsPage()),

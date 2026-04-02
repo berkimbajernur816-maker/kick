@@ -9,7 +9,7 @@ void main() {
           {
             'content': {
               'parts': [
-                {'text': 'Привет!'},
+                {'text': 'Hello!'},
               ],
             },
           },
@@ -23,7 +23,7 @@ void main() {
           {
             'content': {
               'parts': [
-                {'text': 'Привет! Чем я могу вам помочь?'},
+                {'text': 'Hello! How can I help you?'},
               ],
             },
           },
@@ -50,9 +50,9 @@ void main() {
       previousToolCallCount: OpenAiResponseMapper.currentToolCallCount(firstPayload),
     );
 
-    expect(((firstEvents[1]['choices'] as List).single as Map)['delta'], {'content': 'Привет!'});
+    expect(((firstEvents[1]['choices'] as List).single as Map)['delta'], {'content': 'Hello!'});
     expect(((secondEvents.single['choices'] as List).single as Map)['delta'], {
-      'content': ' Чем я могу вам помочь?',
+      'content': ' How can I help you?',
     });
   });
 
@@ -63,7 +63,7 @@ void main() {
           {
             'content': {
               'parts': [
-                {'text': 'Привет!'},
+                {'text': 'Hello!'},
               ],
             },
           },
@@ -77,7 +77,7 @@ void main() {
           {
             'content': {
               'parts': [
-                {'text': 'Привет! Чем я могу вам помочь?'},
+                {'text': 'Hello! How can I help you?'},
               ],
             },
           },
@@ -106,8 +106,8 @@ void main() {
       previousToolCallArguments: OpenAiResponseMapper.currentToolCallArguments(firstPayload),
     );
 
-    expect(firstEvents[3]['delta'], 'Привет!');
-    expect(secondEvents.single['delta'], ' Чем я могу вам помочь?');
+    expect(firstEvents[3]['delta'], 'Hello!');
+    expect(secondEvents.single['delta'], ' How can I help you?');
   });
 
   test('chat stream trims suffix-prefix overlap between continuation passes', () {

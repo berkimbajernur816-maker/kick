@@ -20,8 +20,8 @@ import 'package:kick/proxy/engine/proxy_controller.dart';
 import 'package:kick/proxy/gemini/gemini_oauth_service.dart';
 
 void main() {
-  final ruL10n = lookupKickLocalizations(const Locale('ru'));
   final enL10n = lookupKickLocalizations(const Locale('en'));
+  final ruL10n = lookupKickLocalizations(const Locale('ru'));
 
   testWidgets('shows update banner on home page when update is available', (tester) async {
     final bootstrap = await _createBootstrap();
@@ -45,8 +45,8 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AppUpdateBanner), findsOneWidget);
-    expect(find.text(ruL10n.aboutUpdateAvailableTitle), findsOneWidget);
-    expect(find.text(ruL10n.aboutOpenReleaseButton), findsOneWidget);
+    expect(find.text(enL10n.aboutUpdateAvailableTitle), findsOneWidget);
+    expect(find.text(enL10n.aboutOpenReleaseButton), findsOneWidget);
   });
 
   testWidgets('hides update banner on home page when no update is available', (tester) async {
@@ -71,7 +71,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AppUpdateBanner), findsNothing);
-    expect(find.text(ruL10n.aboutUpdateAvailableTitle), findsNothing);
+    expect(find.text(enL10n.aboutUpdateAvailableTitle), findsNothing);
   });
 
   testWidgets('shows onboarding when there are no active accounts', (tester) async {
@@ -95,8 +95,8 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text(ruL10n.connectAccountShortButton), findsOneWidget);
-    expect(find.text(ruL10n.homeOnboardingTitle), findsOneWidget);
+    expect(find.text(enL10n.connectAccountShortButton), findsOneWidget);
+    expect(find.text(enL10n.homeOnboardingTitle), findsOneWidget);
   });
 
   testWidgets('shows localhost endpoint for loopback proxy access', (tester) async {
@@ -151,7 +151,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('builds the home page with the English locale enabled', (tester) async {
+  testWidgets('builds the home page with the Russian locale enabled', (tester) async {
     final bootstrap = await _createBootstrap();
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
@@ -161,7 +161,7 @@ void main() {
     await tester.pumpWidget(
       _TestApp(
         bootstrap: bootstrap,
-        locale: const Locale('en'),
+        locale: const Locale('ru'),
         updateInfo: const AppUpdateInfo(
           currentVersion: '1.0.2',
           latestVersion: '1.0.2',
@@ -173,8 +173,8 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text(enL10n.homeTitle), findsOneWidget);
-    expect(find.text(enL10n.homeOnboardingTitle), findsOneWidget);
+    expect(find.text(ruL10n.homeTitle), findsOneWidget);
+    expect(find.text(ruL10n.homeOnboardingTitle), findsOneWidget);
   });
 }
 
@@ -201,7 +201,7 @@ class _TestApp extends StatelessWidget {
         appUpdateQueryProvider.overrideWith((ref) => updateInfo),
       ],
       child: MaterialApp(
-        locale: locale,
+        locale: locale ?? const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const Scaffold(body: HomePage()),

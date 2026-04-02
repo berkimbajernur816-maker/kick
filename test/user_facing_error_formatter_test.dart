@@ -8,7 +8,7 @@ import 'package:kick/l10n/kick_localizations.dart';
 import 'package:kick/proxy/gemini/gemini_code_assist_client.dart';
 
 void main() {
-  final l10n = lookupKickLocalizations(const Locale('ru'));
+  final l10n = lookupKickLocalizations(const Locale('en'));
 
   test('formats account verification errors distinctly', () {
     final message = formatUserFacingError(

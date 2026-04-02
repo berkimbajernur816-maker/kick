@@ -12,6 +12,7 @@ import '../../l10n/kick_localizations.dart';
 import '../app_state/providers.dart';
 import '../shared/kick_surfaces.dart';
 import 'log_export_service.dart';
+import 'log_message_localizer.dart';
 
 class LogsPage extends ConsumerStatefulWidget {
   const LogsPage({super.key});
@@ -373,7 +374,9 @@ class _LogsPageState extends ConsumerState<LogsPage> {
   }
 
   Future<void> _copyLogEntry(AppLogEntry entry) async {
-    await Clipboard.setData(ClipboardData(text: _formatLogEntryForClipboard(entry)));
+    await Clipboard.setData(
+      ClipboardData(text: _formatLogEntryForClipboard(context.l10n, entry)),
+    );
     if (!mounted) {
       return;
     }
@@ -457,7 +460,10 @@ class _LogCard extends StatelessWidget {
     final formatter = DateFormat('dd.MM.yyyy HH:mm:ss', context.l10n.localeName);
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final sanitizedMessage = LogSanitizer.sanitizeText(entry.message);
+    final sanitizedMessage = localizeLogMessage(
+      context.l10n,
+      LogSanitizer.sanitizeText(entry.message),
+    );
     final sanitizedPayload = LogSanitizer.formatPayloadForDisplay(entry.maskedPayload);
     final levelColor = switch (entry.level) {
       AppLogLevel.warning => scheme.tertiary,
@@ -569,20 +575,21 @@ IconData _logLevelIcon(AppLogLevel level) {
   };
 }
 
-String _formatLogEntryForClipboard(AppLogEntry entry) {
-  final sanitizedMessage = LogSanitizer.sanitizeText(entry.message);
+String _formatLogEntryForClipboard(KickLocalizations l10n, AppLogEntry entry) {
+  final sanitizedMessage = localizeLogMessage(l10n, LogSanitizer.sanitizeText(entry.message));
   final sanitizedPayload = LogSanitizer.formatPayloadForDisplay(entry.maskedPayload);
   final buffer = StringBuffer()
-    ..writeln('[${entry.level.name.toUpperCase()}] ${entry.category}')
-    ..writeln('Time: ${entry.timestamp.toIso8601String()}')
+    ..writeln('[${_logLevelLabel(l10n, entry.level)}] ${entry.category}')
+    ..writeln('${l10n.logsExportTimestampLabel}: ${entry.timestamp.toIso8601String()}')
     ..writeln(sanitizedMessage);
 
   if (entry.route?.trim().isNotEmpty == true) {
-    buffer.writeln('Route: ${entry.route}');
+    buffer.writeln('${l10n.logsExportRouteLabel}: ${entry.route}');
   }
   if (sanitizedPayload?.trim().isNotEmpty == true) {
     buffer
       ..writeln()
+      ..writeln('${l10n.logsExportMaskedPayloadLabel}:')
       ..writeln(sanitizedPayload);
   }
 

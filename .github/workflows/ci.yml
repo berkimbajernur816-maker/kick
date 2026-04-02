@@ -47,6 +47,13 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate localizations
+        run: flutter gen-l10n
+
+      - name: Verify generated localizations are up to date
+        shell: bash
+        run: git diff --exit-code -- lib/l10n/generated
+
       - name: Analyze project
         run: flutter analyze
 
@@ -71,6 +78,10 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: flutter pub get
+
+      - name: Generate localizations
+        shell: pwsh
+        run: flutter gen-l10n
 
       - name: Run golden tests
         shell: pwsh
@@ -101,6 +112,10 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: flutter pub get
+
+      - name: Generate localizations
+        shell: pwsh
+        run: flutter gen-l10n
 
       - name: Build Windows release
         shell: pwsh
@@ -158,6 +173,9 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Build Android debug APK
         run: flutter build apk --debug

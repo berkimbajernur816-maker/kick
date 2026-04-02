@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kick/core/errors/user_facing_error_formatter.dart';
 import 'package:kick/data/models/account_profile.dart';
@@ -7,7 +8,7 @@ import 'package:kick/l10n/kick_localizations.dart';
 import 'package:kick/proxy/gemini/gemini_code_assist_client.dart';
 
 void main() {
-  final l10n = lookupKickLocalizations();
+  final l10n = lookupKickLocalizations(const Locale('ru'));
 
   test('formats account verification errors distinctly', () {
     final message = formatUserFacingError(
@@ -140,6 +141,21 @@ void main() {
     expect(message, l10n.errorGoogleAuthTimedOut);
   });
 
+  test('maps Google OAuth browser launch failures to a dedicated user-facing error', () {
+    final message = formatUserFacingMessage(l10n, 'Could not open the browser for Google OAuth.');
+
+    expect(message, l10n.errorGoogleAuthBrowserOpenFailed);
+  });
+
+  test('maps Google OAuth callback failures to a dedicated user-facing error', () {
+    final message = formatUserFacingMessage(
+      l10n,
+      'Google OAuth did not return an authorization code.',
+    );
+
+    expect(message, l10n.errorGoogleAuthFailed);
+  });
+
   test('keeps generic network errors mapped to the network message', () {
     final message = formatUserFacingMessage(
       l10n,
@@ -178,5 +194,23 @@ void main() {
     );
 
     expect(message, l10n.errorKiroServiceUnavailable);
+  });
+
+  test('maps Kiro link authorization startup failures to a dedicated user-facing error', () {
+    final message = formatUserFacingMessage(
+      l10n,
+      'Kiro Builder ID client registration failed (500).',
+    );
+
+    expect(message, l10n.errorKiroAuthStartFailed);
+  });
+
+  test('maps Kiro link authorization timeout failures to a dedicated user-facing error', () {
+    final message = formatUserFacingError(
+      l10n,
+      TimeoutException('Kiro link authorization timed out.'),
+    );
+
+    expect(message, l10n.errorKiroAuthTimedOut);
   });
 }

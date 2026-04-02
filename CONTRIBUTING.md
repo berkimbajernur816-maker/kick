@@ -43,4 +43,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-windows-inst
 
 ## Generated files
 
-- После изменений в `lib/l10n/app_ru.arb` обновляйте локализации через `flutter gen-l10n`
+- После изменений в любом `lib/l10n/app_*.arb` обновляйте локализации через `flutter gen-l10n`
+- Канонический исходник локализации находится в `lib/l10n/app_en.arb`
+- Настройка Weblate и правила для переводов описаны в `docs/localization.md`

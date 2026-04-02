@@ -57,8 +57,32 @@ String formatUserFacingMessage(KickLocalizations l10n, String rawMessage) {
   if (lower.contains('google oauth timed out')) {
     return l10n.errorGoogleAuthTimedOut;
   }
+  if (lower.contains('could not open the browser for google oauth')) {
+    return l10n.errorGoogleAuthBrowserOpenFailed;
+  }
+  if (lower.contains('google oauth state mismatch') ||
+      lower.contains('google oauth did not return an authorization code') ||
+      lower.contains('google oauth error:')) {
+    return l10n.errorGoogleAuthFailed;
+  }
   if (_looksLikeGoogleAccountVerificationError(lower)) {
     return l10n.errorGoogleAccountVerificationRequired;
+  }
+  if (_looksLikeKiroLinkAuthorizationStartError(lower)) {
+    return l10n.errorKiroAuthStartFailed;
+  }
+  if (lower.contains('kiro link authorization was canceled')) {
+    return l10n.errorKiroAuthCancelled;
+  }
+  if (lower.contains('kiro link authorization timed out')) {
+    return l10n.errorKiroAuthTimedOut;
+  }
+  if (lower.contains('kiro link authorization was rejected')) {
+    return l10n.errorKiroAuthRejected;
+  }
+  if (lower.contains('kiro builder id refresh metadata is incomplete') ||
+      lower.contains('kiro token refresh succeeded without an access token')) {
+    return l10n.errorKiroAuthExpired;
   }
   if (_looksLikeTermsOfServiceViolationError(lower)) {
     return l10n.errorGoogleTermsOfServiceViolation;
@@ -200,6 +224,13 @@ bool _looksLikeQuotaError(String message) {
       message.contains('quota') ||
       message.contains('rate limit') ||
       message.contains('too many requests');
+}
+
+bool _looksLikeKiroLinkAuthorizationStartError(String message) {
+  return message.contains('kiro builder id client registration failed') ||
+      message.contains('kiro builder id returned incomplete client credentials') ||
+      message.contains('kiro link authorization could not be started') ||
+      message.contains('kiro link authorization returned incomplete device authorization data');
 }
 
 bool _looksLikeQuotaExhaustedError(String message) {

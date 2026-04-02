@@ -1,5 +1,5 @@
 {
-  "@@locale": "ru",
+  "@@locale": "en",
   "appTitle": "KiCk",
   "shellSubtitle": "Локальный прокси для Gemini CLI и Kiro",
   "connectGoogleAccountTitle": "Подключить Google-аккаунт",
@@ -712,3 +712,4 @@
     }
   }
 }
+

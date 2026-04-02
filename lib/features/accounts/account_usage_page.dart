@@ -267,7 +267,7 @@ class _UsageAccountCard extends StatelessWidget {
             children: [
               KickBadge(
                 label: account.projectId.trim().isEmpty
-                    ? '${l10n.projectIdLabel}: auto'
+                    ? l10n.projectIdAutoChip
                     : l10n.projectIdChip(account.projectId),
                 leading: const Icon(Icons.badge_rounded),
               ),

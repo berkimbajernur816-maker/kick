@@ -2,24 +2,26 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:kick/data/models/oauth_tokens.dart';
 import 'package:kick/data/repositories/secret_store.dart';
+import 'package:kick/l10n/kick_localizations.dart';
 import 'package:kick/proxy/gemini/gemini_oauth_service.dart';
 import 'package:test/test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'support/real_http_client.dart';
 
-void main() {
-  OAuthTokens sampleTokens({String accessToken = 'access-token'}) => OAuthTokens(
-    accessToken: accessToken,
-    refreshToken: 'refresh-token',
-    expiry: DateTime.now().add(const Duration(hours: 1)),
-    tokenType: 'Bearer',
-    scope: null,
-  );
+OAuthTokens sampleTokens({String accessToken = 'access-token'}) => OAuthTokens(
+  accessToken: accessToken,
+  refreshToken: 'refresh-token',
+  expiry: DateTime.now().add(const Duration(hours: 1)),
+  tokenType: 'Bearer',
+  scope: null,
+);
 
+void main() {
   test('uses in-app browser on Android and survives stray loopback requests', () async {
     final launchedModes = <LaunchMode>[];
     var browserFlow = Future<void>.value();
@@ -50,6 +52,7 @@ void main() {
           avatarUrl: 'https://example.com/avatar.png',
         );
       },
+      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
     );
 
     final result = await service.authenticate();
@@ -88,6 +91,7 @@ void main() {
           googleSubjectId: 'fallback-subject',
         );
       },
+      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
     );
 
     final result = await service.authenticate();
@@ -109,6 +113,7 @@ void main() {
         redirectUri = Uri.parse(url.queryParameters['redirect_uri']!);
         return true;
       },
+      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
       authorizationTimeout: const Duration(milliseconds: 20),
     );
 
@@ -141,6 +146,7 @@ void main() {
           return http.Response('{}', 200);
         },
       ]),
+      localizationsProvider: () => lookupKickLocalizations(const Locale('ru')),
     );
 
     await expectLater(
@@ -154,9 +160,34 @@ void main() {
       ),
     );
   });
+
+  test('renders the OAuth callback page with the provided locale tag', () async {
+    var browserFlow = Future<void>.value();
+
+    final service = GeminiOAuthService(
+      secretStore: const SecretStore(),
+      launchUrlDelegate: (url, {required mode}) async {
+        final redirectUri = Uri.parse(url.queryParameters['redirect_uri']!);
+        final state = url.queryParameters['state']!;
+        browserFlow = _simulateStateMismatchCallback(redirectUri: redirectUri, state: state);
+        return true;
+      },
+      exchangeCodeForTokens: ({required code, required redirectUri, required codeVerifier}) async {
+        return sampleTokens();
+      },
+      fetchProfile: (accessToken) async {
+        return const GoogleAccountProfile(email: 'user@example.com', displayName: 'Test User');
+      },
+      localizationsProvider: () => lookupKickLocalizations(const Locale('en')),
+    );
+
+    await expectLater(service.authenticate(), throwsA(isA<StateError>()));
+    await browserFlow;
+  });
 }
 
 Future<void> _simulateBrowserFlow({required Uri redirectUri, required String state}) async {
+  final l10n = lookupKickLocalizations(const Locale('ru'));
   final strayResponse = await _fetchUri(redirectUri.replace(path: '/'), followRedirects: false);
   expect(strayResponse.statusCode, HttpStatus.movedPermanently);
   expect(
@@ -168,8 +199,9 @@ Future<void> _simulateBrowserFlow({required Uri redirectUri, required String sta
     redirectUri.replace(queryParameters: {'state': state, 'code': 'oauth-code'}),
   );
   expect(callbackResponse.statusCode, HttpStatus.ok);
-  expect(callbackResponse.body, contains('Успешная авторизация'));
-  expect(callbackResponse.body, contains('Вы можете закрыть вкладку.'));
+  expect(callbackResponse.body, contains('<html lang="ru">'));
+  expect(callbackResponse.body, contains(l10n.oauthPageTitleSuccess));
+  expect(callbackResponse.body, contains(l10n.oauthPageCloseTabMessage));
 }
 
 Future<void> _simulateCallback({required Uri redirectUri, required String state}) async {
@@ -177,6 +209,17 @@ Future<void> _simulateCallback({required Uri redirectUri, required String state}
     redirectUri.replace(queryParameters: {'state': state, 'code': 'oauth-code'}),
   );
   expect(callbackResponse.statusCode, HttpStatus.ok);
+}
+
+Future<void> _simulateStateMismatchCallback({
+  required Uri redirectUri,
+  required String state,
+}) async {
+  final callbackResponse = await _fetchUri(
+    redirectUri.replace(queryParameters: {'state': '${state}_invalid', 'code': 'oauth-code'}),
+  );
+  expect(callbackResponse.statusCode, HttpStatus.ok);
+  expect(callbackResponse.body, contains('<html lang="en">'));
 }
 
 Future<_ResponseSnapshot> _fetchUri(Uri uri, {bool followRedirects = true}) async {

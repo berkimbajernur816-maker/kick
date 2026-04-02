@@ -103,6 +103,7 @@ class _TestApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        locale: const Locale('ru'),
         theme: KickThemeData.build(KickSchemes.light),
         darkTheme: KickThemeData.build(KickSchemes.dark),
         themeMode: themeMode,

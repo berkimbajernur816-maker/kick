@@ -78,8 +78,7 @@ class KiroLinkAuthService {
     );
     if (registrationResponse.statusCode >= 400) {
       throw StateError(
-        'Не удалось зарегистрировать Kiro Builder ID клиент '
-        '(${registrationResponse.statusCode}).',
+        'Kiro Builder ID client registration failed (${registrationResponse.statusCode}).',
       );
     }
 
@@ -87,7 +86,7 @@ class KiroLinkAuthService {
     final clientId = (registration['clientId'] as String? ?? '').trim();
     final clientSecret = (registration['clientSecret'] as String? ?? '').trim();
     if (clientId.isEmpty || clientSecret.isEmpty) {
-      throw StateError('Kiro Builder ID не вернул clientId/clientSecret.');
+      throw StateError('Kiro Builder ID returned incomplete client credentials.');
     }
 
     final deviceAuthorizationResponse = await _postJson(
@@ -96,7 +95,7 @@ class KiroLinkAuthService {
     );
     if (deviceAuthorizationResponse.statusCode >= 400) {
       throw StateError(
-        'Не удалось запустить Kiro авторизацию по ссылке '
+        'Kiro link authorization could not be started '
         '(${deviceAuthorizationResponse.statusCode}).',
       );
     }
@@ -112,7 +111,7 @@ class KiroLinkAuthService {
         userCode.isEmpty ||
         verificationUri.isEmpty ||
         verificationUriComplete.isEmpty) {
-      throw StateError('Kiro Builder ID вернул неполные данные авторизации.');
+      throw StateError('Kiro link authorization returned incomplete device authorization data.');
     }
 
     return KiroLinkAuthRequest(
@@ -138,7 +137,7 @@ class KiroLinkAuthService {
     var nextDelay = request.interval;
     while (DateTime.now().isBefore(request.expiresAt)) {
       if (isCancelled?.call() == true) {
-        throw StateError('Авторизация Kiro была отменена.');
+        throw StateError('Kiro link authorization was canceled.');
       }
 
       final response = await _postJson(
@@ -190,16 +189,18 @@ class KiroLinkAuthService {
         continue;
       }
       if (error == 'expired_token') {
-        throw TimeoutException('Авторизация Kiro по ссылке истекла.');
+        throw TimeoutException('Kiro link authorization timed out.');
       }
 
       final description = (payload['error_description'] as String? ?? '').trim();
       throw StateError(
-        description.isNotEmpty ? description : 'Kiro отклонил авторизацию по ссылке.',
+        description.isNotEmpty
+            ? 'Kiro link authorization was rejected. $description'
+            : 'Kiro link authorization was rejected.',
       );
     }
 
-    throw TimeoutException('Авторизация Kiro по ссылке истекла.');
+    throw TimeoutException('Kiro link authorization timed out.');
   }
 
   void dispose() {

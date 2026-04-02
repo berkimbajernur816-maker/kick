@@ -15,11 +15,14 @@ import 'package:kick/features/app_state/providers.dart';
 import 'package:kick/features/home/home_page.dart';
 import 'package:kick/features/settings/app_update_checker.dart';
 import 'package:kick/features/shared/app_update_banner.dart';
-import 'package:kick/l10n/generated/app_localizations.dart';
+import 'package:kick/l10n/kick_localizations.dart';
 import 'package:kick/proxy/engine/proxy_controller.dart';
 import 'package:kick/proxy/gemini/gemini_oauth_service.dart';
 
 void main() {
+  final ruL10n = lookupKickLocalizations(const Locale('ru'));
+  final enL10n = lookupKickLocalizations(const Locale('en'));
+
   testWidgets('shows update banner on home page when update is available', (tester) async {
     final bootstrap = await _createBootstrap();
     addTearDown(() async {
@@ -42,8 +45,8 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AppUpdateBanner), findsOneWidget);
-    expect(find.text('Доступно обновление'), findsOneWidget);
-    expect(find.text('Открыть релиз'), findsOneWidget);
+    expect(find.text(ruL10n.aboutUpdateAvailableTitle), findsOneWidget);
+    expect(find.text(ruL10n.aboutOpenReleaseButton), findsOneWidget);
   });
 
   testWidgets('hides update banner on home page when no update is available', (tester) async {
@@ -68,7 +71,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AppUpdateBanner), findsNothing);
-    expect(find.text('Доступно обновление'), findsNothing);
+    expect(find.text(ruL10n.aboutUpdateAvailableTitle), findsNothing);
   });
 
   testWidgets('shows onboarding when there are no active accounts', (tester) async {
@@ -92,8 +95,8 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Подключить аккаунт'), findsOneWidget);
-    expect(find.text('С чего начать'), findsOneWidget);
+    expect(find.text(ruL10n.connectAccountShortButton), findsOneWidget);
+    expect(find.text(ruL10n.homeOnboardingTitle), findsOneWidget);
   });
 
   testWidgets('shows localhost endpoint for loopback proxy access', (tester) async {
@@ -147,14 +150,45 @@ void main() {
     expect(button.onPressed, isNull);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
+
+  testWidgets('builds the home page with the English locale enabled', (tester) async {
+    final bootstrap = await _createBootstrap();
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await bootstrap.dispose();
+    });
+
+    await tester.pumpWidget(
+      _TestApp(
+        bootstrap: bootstrap,
+        locale: const Locale('en'),
+        updateInfo: const AppUpdateInfo(
+          currentVersion: '1.0.2',
+          latestVersion: '1.0.2',
+          releaseUrl: 'https://example.com/releases/tag/v1.0.2',
+          hasUpdate: false,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text(enL10n.homeTitle), findsOneWidget);
+    expect(find.text(enL10n.homeOnboardingTitle), findsOneWidget);
+  });
 }
 
 class _TestApp extends StatelessWidget {
-  _TestApp({required this.bootstrap, required this.updateInfo, ProxyRuntimeState? proxyState})
-    : proxyState = proxyState ?? ProxyRuntimeState.initial();
+  _TestApp({
+    required this.bootstrap,
+    required this.updateInfo,
+    this.locale,
+    ProxyRuntimeState? proxyState,
+  }) : proxyState = proxyState ?? ProxyRuntimeState.initial();
 
   final AppBootstrap bootstrap;
   final AppUpdateInfo updateInfo;
+  final Locale? locale;
   final ProxyRuntimeState proxyState;
 
   @override
@@ -167,6 +201,7 @@ class _TestApp extends StatelessWidget {
         appUpdateQueryProvider.overrideWith((ref) => updateInfo),
       ],
       child: MaterialApp(
+        locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const Scaffold(body: HomePage()),

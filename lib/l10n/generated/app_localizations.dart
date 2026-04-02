@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_en.dart';
 import 'app_localizations_ru.dart';
 
 // ignore_for_file: type=lint
@@ -90,2213 +91,2309 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('ru')];
+  static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('ru')];
 
   /// No description provided for @appTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk'**
   String get appTitle;
 
   /// No description provided for @shellSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Локальный прокси для Gemini CLI и Kiro'**
   String get shellSubtitle;
 
   /// No description provided for @connectGoogleAccountTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключить Google-аккаунт'**
   String get connectGoogleAccountTitle;
 
   /// No description provided for @homeTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Главная'**
   String get homeTitle;
 
   /// No description provided for @proxyRunningStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запущен'**
   String get proxyRunningStatus;
 
   /// No description provided for @proxyStoppedStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Остановлен'**
   String get proxyStoppedStatus;
 
   /// No description provided for @embeddedProxyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Прокси-сервер'**
   String get embeddedProxyTitle;
 
   /// No description provided for @proxyAddress.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Адрес: {host}:{port}'**
   String proxyAddress(String host, int port);
 
   /// No description provided for @proxyEndpointTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Адрес прокси'**
   String get proxyEndpointTitle;
 
   /// No description provided for @activeAccounts.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Активных аккаунтов: {count}'**
   String activeAccounts(int count);
 
   /// No description provided for @stopProxyButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Остановить'**
   String get stopProxyButton;
 
   /// No description provided for @startProxyButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запустить'**
   String get startProxyButton;
 
   /// No description provided for @openAccountsButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть окно с аккаунтами'**
   String get openAccountsButton;
 
   /// No description provided for @connectAccountShortButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключить аккаунт'**
   String get connectAccountShortButton;
 
   /// No description provided for @uptimeTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Время работы'**
   String get uptimeTitle;
 
   /// No description provided for @uptimeNotStarted.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Еще не запущен'**
   String get uptimeNotStarted;
 
   /// No description provided for @uptimeValue.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'{hours} ч {minutes} мин {seconds} сек'**
   String uptimeValue(int hours, int minutes, int seconds);
 
   /// No description provided for @versionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Версия'**
   String get versionTitle;
 
   /// No description provided for @apiKeyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'API-ключ'**
   String get apiKeyTitle;
 
   /// No description provided for @apiKeyDisabledValue.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не требуется'**
   String get apiKeyDisabledValue;
 
   /// No description provided for @changeApiKeyLinkLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Изменить API-ключ'**
   String get changeApiKeyLinkLabel;
 
   /// No description provided for @loadingValue.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Загрузка...'**
   String get loadingValue;
 
   /// No description provided for @lastErrorTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Последняя ошибка'**
   String get lastErrorTitle;
 
   /// No description provided for @openLogsButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть логи'**
   String get openLogsButton;
 
   /// No description provided for @accountsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунты'**
   String get accountsTitle;
 
   /// No description provided for @accountsSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключайте аккаунты Gemini CLI и Kiro и управляйте ими'**
   String get accountsSubtitle;
 
   /// No description provided for @addButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Добавить'**
   String get addButton;
 
   /// No description provided for @accountsEmptyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунтов пока нет'**
   String get accountsEmptyTitle;
 
   /// No description provided for @accountsEmptyMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключите хотя бы один аккаунт Gemini CLI или Kiro'**
   String get accountsEmptyMessage;
 
   /// No description provided for @connectAccountButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключить аккаунт'**
   String get connectAccountButton;
 
   /// No description provided for @connectAccountDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключить аккаунт'**
   String get connectAccountDialogTitle;
 
   /// No description provided for @connectAccountProviderPickerTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Выберите провайдера'**
   String get connectAccountProviderPickerTitle;
 
   /// No description provided for @accountsLoadErrorTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось загрузить аккаунты'**
   String get accountsLoadErrorTitle;
 
   /// No description provided for @accountProviderLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Тип аккаунта'**
   String get accountProviderLabel;
 
   /// No description provided for @accountProviderGemini.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Gemini CLI'**
   String get accountProviderGemini;
 
   /// No description provided for @accountProviderGeminiCli.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Gemini CLI'**
   String get accountProviderGeminiCli;
 
   /// No description provided for @accountProviderKiro.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Kiro'**
   String get accountProviderKiro;
 
   /// No description provided for @kiroBuilderIdStartUrlLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Ссылка Builder ID'**
   String get kiroBuilderIdStartUrlLabel;
 
   /// No description provided for @kiroBuilderIdStartUrlHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обычно менять не нужно.'**
   String get kiroBuilderIdStartUrlHelperText;
 
   /// No description provided for @kiroRegionLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Регион AWS'**
   String get kiroRegionLabel;
 
   /// No description provided for @kiroRegionHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обычно оставьте значение us-east-1.'**
   String get kiroRegionHelperText;
 
   /// No description provided for @kiroCredentialSourceChip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Источник: {value}'**
   String kiroCredentialSourceChip(String value);
 
   /// No description provided for @projectIdChip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'PROJECT_ID: {projectId}'**
   String projectIdChip(String projectId);
 
+  /// No description provided for @projectIdAutoChip.
+  ///
+  /// In en, this message translates to:
+  /// **'PROJECT_ID: auto'**
+  String get projectIdAutoChip;
+
   /// No description provided for @priorityChip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Приоритет: {priorityLabel}'**
   String priorityChip(String priorityLabel);
 
   /// No description provided for @accountCoolingDownStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'На паузе'**
   String get accountCoolingDownStatus;
 
   /// No description provided for @accountReadyStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Готов к работе'**
   String get accountReadyStatus;
 
   /// No description provided for @accountDisabledStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Выключен'**
   String get accountDisabledStatus;
 
   /// No description provided for @unsupportedModelsList.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не использовать для моделей: {models}'**
   String unsupportedModelsList(String models);
 
   /// No description provided for @editAccountTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Редактирование аккаунта'**
   String get editAccountTitle;
 
   /// No description provided for @editButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Редактировать'**
   String get editButton;
 
   /// No description provided for @reauthorizeAccountTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Переподключить аккаунт'**
   String get reauthorizeAccountTitle;
 
   /// No description provided for @reauthorizeButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Переподключить'**
   String get reauthorizeButton;
 
   /// No description provided for @accountProjectCheckButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверить доступ к проекту'**
   String get accountProjectCheckButton;
 
   /// No description provided for @accountProjectCheckInProgressMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверка...'**
   String get accountProjectCheckInProgressMessage;
 
   /// No description provided for @accountProjectCheckSuccessTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Доступ к проекту подтвержден'**
   String get accountProjectCheckSuccessTitle;
 
   /// No description provided for @accountProjectCheckSuccessMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk смог выполнить тестовый запрос к Google для этого аккаунта и проекта'**
   String get accountProjectCheckSuccessMessage;
 
+  /// Shown in the successful project diagnostics dialog after the project check completes.
+  ///
+  /// In en, this message translates to:
+  /// **'Модель: {model}'**
+  String accountProjectCheckModelValue(String model);
+
+  /// Shown in the successful project diagnostics dialog when Google returns a trace identifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Trace ID: {traceId}'**
+  String accountProjectCheckTraceIdValue(String traceId);
+
   /// No description provided for @accountProjectCheckFailureTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось проверить'**
   String get accountProjectCheckFailureTitle;
 
   /// No description provided for @resetCooldownTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сбросить состояние'**
   String get resetCooldownTooltip;
 
   /// No description provided for @clearCooldownAction.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Снять паузу'**
   String get clearCooldownAction;
 
   /// No description provided for @deleteTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Удалить'**
   String get deleteTooltip;
 
   /// No description provided for @accountUsageOpenTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимиты'**
   String get accountUsageOpenTooltip;
 
   /// No description provided for @moreButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Еще'**
   String get moreButton;
 
   /// No description provided for @deleteAccountDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Удалить аккаунт?'**
   String get deleteAccountDialogTitle;
 
   /// No description provided for @deleteAccountDialogMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунт {label} будет удален из KiCk. При необходимости его можно подключить снова позже.'**
   String deleteAccountDialogMessage(String label);
 
   /// No description provided for @deleteAccountConfirmButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Удалить аккаунт'**
   String get deleteAccountConfirmButton;
 
   /// No description provided for @accountUsageTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимиты аккаунта'**
   String get accountUsageTitle;
 
   /// No description provided for @accountUsageProviderLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Авторизация Gemini CLI (OAuth)'**
   String get accountUsageProviderLabel;
 
   /// No description provided for @accountUsageRefreshTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обновить'**
   String get accountUsageRefreshTooltip;
 
   /// No description provided for @accountUsageStatusHealthy.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Доступен'**
   String get accountUsageStatusHealthy;
 
   /// No description provided for @accountUsageStatusCoolingDown.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Ограничен'**
   String get accountUsageStatusCoolingDown;
 
   /// No description provided for @accountUsageStatusLowQuota.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимит заканчивается'**
   String get accountUsageStatusLowQuota;
 
   /// No description provided for @accountUsageStatusDisabled.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Выключен'**
   String get accountUsageStatusDisabled;
 
   /// No description provided for @accountQuotaWarningStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимит заканчивается'**
   String get accountQuotaWarningStatus;
 
   /// No description provided for @accountBanCheckPendingStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверяем бан'**
   String get accountBanCheckPendingStatus;
 
   /// No description provided for @accountBanCheckPendingMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google вернул RESOURCE_EXHAUSTED без времени сброса'**
   String get accountBanCheckPendingMessage;
 
   /// No description provided for @accountTermsOfServiceStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Бан подтвержден'**
   String get accountTermsOfServiceStatus;
 
   /// No description provided for @accountTermsOfServiceMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google подтвердил блокировку этого аккаунта за нарушение ToS. Аккаунт выведен из ротации.'**
   String get accountTermsOfServiceMessage;
 
   /// No description provided for @accountUsageLoadErrorTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось загрузить данные по лимитам'**
   String get accountUsageLoadErrorTitle;
 
   /// No description provided for @accountUsageRetryButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Повторить'**
   String get accountUsageRetryButton;
 
   /// No description provided for @accountUsageVerifyAccountButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подтвердить в Google'**
   String get accountUsageVerifyAccountButton;
 
   /// No description provided for @accountSubmitAppealButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подать апелляцию'**
   String get accountSubmitAppealButton;
 
   /// No description provided for @openGoogleCloudButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть Google Cloud'**
   String get openGoogleCloudButton;
 
   /// No description provided for @accountUsageVerificationOpenFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось открыть страницу подтверждения в Google'**
   String get accountUsageVerificationOpenFailedMessage;
 
   /// No description provided for @accountErrorActionOpenFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось открыть страницу Google'**
   String get accountErrorActionOpenFailedMessage;
 
   /// No description provided for @accountUsageEmptyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Данные по лимитам недоступны'**
   String get accountUsageEmptyTitle;
 
   /// No description provided for @accountUsageEmptyMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google не прислал данные по лимитам для этого аккаунта'**
   String get accountUsageEmptyMessage;
 
   /// No description provided for @accountUsageUnavailableTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимиты для этого аккаунта недоступны'**
   String get accountUsageUnavailableTitle;
 
   /// No description provided for @accountUsageUnavailableMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Страница лимитов пока работает только для аккаунтов Gemini CLI.'**
   String get accountUsageUnavailableMessage;
 
   /// No description provided for @accountUsageMissingTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунт не найден'**
   String get accountUsageMissingTitle;
 
   /// No description provided for @accountUsageMissingSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Информация по лимитам'**
   String get accountUsageMissingSubtitle;
 
   /// No description provided for @accountUsageMissingMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Возможно, аккаунт уже удален или список еще не успел обновиться'**
   String get accountUsageMissingMessage;
 
   /// No description provided for @accountUsageResetsAt.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сбросится {time}'**
   String accountUsageResetsAt(String time);
 
   /// No description provided for @accountUsageResetUnknown.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Время следующего сброса неизвестно'**
   String get accountUsageResetUnknown;
 
   /// No description provided for @accountUsageLastUpdated.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Данные обновлены: {time}'**
   String accountUsageLastUpdated(String time);
 
   /// No description provided for @accountUsageModelCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Моделей: {count}'**
   String accountUsageModelCount(int count);
 
   /// No description provided for @accountUsageAttentionCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Низкий остаток: {count}'**
   String accountUsageAttentionCount(int count);
 
   /// No description provided for @accountUsageCriticalCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Почти исчерпано: {count}'**
   String accountUsageCriticalCount(int count);
 
   /// No description provided for @accountUsageHealthyCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'В норме: {count}'**
   String accountUsageHealthyCount(int count);
 
   /// No description provided for @accountUsageTokenType.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Тип лимита: {value}'**
   String accountUsageTokenType(String value);
 
   /// No description provided for @accountUsageUsedPercent.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Израсходовано {value}%'**
   String accountUsageUsedPercent(String value);
 
   /// No description provided for @accountUsageBucketHealthy.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Достаточно'**
   String get accountUsageBucketHealthy;
 
   /// No description provided for @accountUsageBucketLow.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Заканчивается'**
   String get accountUsageBucketLow;
 
   /// No description provided for @accountUsageBucketCritical.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Почти исчерпано'**
   String get accountUsageBucketCritical;
 
   /// No description provided for @settingsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Настройки'**
   String get settingsTitle;
 
   /// No description provided for @settingsSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сеть, оформление, API-ключ и работа прокси'**
   String get settingsSubtitle;
 
   /// No description provided for @themeLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Тема'**
   String get themeLabel;
 
   /// No description provided for @themeModeSystem.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Системная'**
   String get themeModeSystem;
 
   /// No description provided for @themeModeLight.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Светлая'**
   String get themeModeLight;
 
   /// No description provided for @themeModeDark.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Тёмная'**
   String get themeModeDark;
 
   /// No description provided for @dynamicThemeTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Динамическая тема'**
   String get dynamicThemeTitle;
 
   /// No description provided for @dynamicThemeSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Использовать динамические цвета системы'**
   String get dynamicThemeSubtitle;
 
   /// No description provided for @settingsAppearanceSectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Оформление и поведение'**
   String get settingsAppearanceSectionTitle;
 
   /// No description provided for @settingsAppearanceSectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Тема, логи и работа приложения'**
   String get settingsAppearanceSectionSummary;
 
   /// No description provided for @settingsNetworkSectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сеть'**
   String get settingsNetworkSectionTitle;
 
   /// No description provided for @settingsNetworkSectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Хост, порт и доступ из локальной сети'**
   String get settingsNetworkSectionSummary;
 
   /// No description provided for @settingsReliabilitySectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Повторы и лимиты'**
   String get settingsReliabilitySectionTitle;
 
   /// No description provided for @settingsReliabilitySectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Автоповторы и реакция на ограничения API'**
   String get settingsReliabilitySectionSummary;
 
   /// No description provided for @settingsAccessSectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Доступ и запуск'**
   String get settingsAccessSectionTitle;
 
   /// No description provided for @settingsAccessSectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'API-ключ и запуск приложения'**
   String get settingsAccessSectionSummary;
 
   /// No description provided for @apiKeyRequiredTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Требовать API-ключ'**
   String get apiKeyRequiredTitle;
 
   /// No description provided for @apiKeyRequiredSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Если выключить, запросы будут приниматься без Bearer-токена'**
   String get apiKeyRequiredSubtitle;
 
   /// No description provided for @windowsTrayTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сворачивать в трей'**
   String get windowsTrayTitle;
 
   /// No description provided for @windowsTraySubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'При закрытии окно не завершает работу, а скрывает KiCk в системный трей'**
   String get windowsTraySubtitle;
 
   /// No description provided for @windowsLaunchAtStartupTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запускать вместе с Windows'**
   String get windowsLaunchAtStartupTitle;
 
   /// No description provided for @windowsLaunchAtStartupSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk будет автоматически запускаться при входе в систему'**
   String get windowsLaunchAtStartupSubtitle;
 
   /// No description provided for @windowsTrayNotificationTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk продолжает работать'**
   String get windowsTrayNotificationTitle;
 
   /// No description provided for @windowsTrayNotificationBody.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Приложение свернуто в системный трей'**
   String get windowsTrayNotificationBody;
 
   /// No description provided for @settingsModelsSectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Модели'**
   String get settingsModelsSectionTitle;
 
   /// No description provided for @settingsModelsSectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Пользовательские ID моделей'**
   String get settingsModelsSectionSummary;
 
   /// No description provided for @settingsGoogleSectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Поиск Google (только Gemini CLI)'**
   String get settingsGoogleSectionTitle;
 
   /// No description provided for @settingsGoogleSectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Веб-поиск Google и параметры Gemini CLI'**
   String get settingsGoogleSectionSummary;
 
   /// No description provided for @settingsBackupSectionTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Резервная копия и восстановление'**
   String get settingsBackupSectionTitle;
 
   /// No description provided for @settingsBackupSectionSummary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Перенос настроек и аккаунтов между устройствами'**
   String get settingsBackupSectionSummary;
 
   /// No description provided for @settingsBackupInfoTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'В резервную копию попадут настройки, API-ключ и OAuth-токены'**
   String get settingsBackupInfoTitle;
 
   /// No description provided for @settingsBackupInfoSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Храните файл в безопасном месте! После восстановления текущие настройки и список аккаунтов будут полностью заменены.'**
   String get settingsBackupInfoSubtitle;
 
   /// No description provided for @hostLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Хост'**
   String get hostLabel;
 
   /// No description provided for @hostHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обычно localhost'**
   String get hostHelperText;
 
   /// No description provided for @hostRequiredError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Укажите адрес хоста'**
   String get hostRequiredError;
 
   /// No description provided for @hostInvalidError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Адрес не должен содержать пробелы'**
   String get hostInvalidError;
 
   /// No description provided for @hostLanDisabledError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Чтобы использовать 0.0.0.0, включите доступ из локальной сети'**
   String get hostLanDisabledError;
 
   /// No description provided for @portLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Порт'**
   String get portLabel;
 
   /// No description provided for @portHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'По умолчанию 3000'**
   String get portHelperText;
 
   /// No description provided for @portInvalidError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Укажите порт от 1 до 65535'**
   String get portInvalidError;
 
   /// No description provided for @allowLanTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Доступ из локальной сети и Docker'**
   String get allowLanTitle;
 
   /// No description provided for @allowLanSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Прокси будет слушать 0.0.0.0 и станет доступен из локальной сети и контейнеров'**
   String get allowLanSubtitle;
 
   /// No description provided for @androidBackgroundRuntimeTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Работа в фоне на Android'**
   String get androidBackgroundRuntimeTitle;
 
   /// No description provided for @androidBackgroundRuntimeSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Нужно, чтобы прокси не останавливался при сворачивании приложения'**
   String get androidBackgroundRuntimeSubtitle;
 
   /// No description provided for @requestRetriesLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Количество повторов запросов к Google'**
   String get requestRetriesLabel;
 
   /// No description provided for @requestRetriesHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сколько раз KiCk повторит запрос после временной ошибки'**
   String get requestRetriesHelperText;
 
   /// No description provided for @requestRetriesInvalidError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Укажите число от 0 до 20'**
   String get requestRetriesInvalidError;
 
   /// No description provided for @retry429DelayLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Интервал повтора для 429'**
   String get retry429DelayLabel;
 
   /// No description provided for @retry429DelayHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Интервал, с которым прокси повторяет запрос при ошибке 429'**
   String get retry429DelayHelperText;
 
   /// No description provided for @retry429DelayInvalidError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Укажите число от 1 до 3600'**
   String get retry429DelayInvalidError;
 
   /// No description provided for @mark429AsUnhealthyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Временно выводить аккаунт из ротации при ошибке 429'**
   String get mark429AsUnhealthyTitle;
 
   /// No description provided for @mark429AsUnhealthySubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'После ошибки 429 KiCk пометит аккаунт как временно недоступный и переключится на другой'**
   String get mark429AsUnhealthySubtitle;
 
   /// No description provided for @loggingLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Логирование'**
   String get loggingLabel;
 
   /// No description provided for @loggingQuiet.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Минимальное'**
   String get loggingQuiet;
 
   /// No description provided for @loggingNormal.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Стандартное'**
   String get loggingNormal;
 
   /// No description provided for @loggingVerbose.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подробное'**
   String get loggingVerbose;
 
   /// No description provided for @logRetentionLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимит записей лога'**
   String get logRetentionLabel;
 
   /// No description provided for @logRetentionHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Когда лимит достигнут, самые старые записи будут автоматически удаляться'**
   String get logRetentionHelperText;
 
   /// No description provided for @logRetentionInvalidError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Укажите число от {min} до {max}'**
   String logRetentionInvalidError(int min, int max);
 
   /// No description provided for @unsafeRawLoggingTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сырые логи отладки'**
   String get unsafeRawLoggingTitle;
 
   /// No description provided for @unsafeRawLoggingSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сохраняет содержимое запросов и ответов. Включайте только для отладки!'**
   String get unsafeRawLoggingSubtitle;
 
   /// No description provided for @defaultGoogleWebSearchTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Включать веб-поиск по умолчанию'**
   String get defaultGoogleWebSearchTitle;
 
   /// No description provided for @defaultGoogleWebSearchSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk будет автоматически использовать Google Поиск, если клиент не передал явное переопределение параметров, а в запросе нет вызовов функций'**
   String get defaultGoogleWebSearchSubtitle;
 
   /// No description provided for @renderGoogleGroundingInMessageTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Показывать цитаты и источники в ответе'**
   String get renderGoogleGroundingInMessageTitle;
 
   /// No description provided for @renderGoogleGroundingInMessageSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Если отключить, ссылки на источники останутся в метаданных и не будут добавляться в сам текст ответа'**
   String get renderGoogleGroundingInMessageSubtitle;
 
   /// No description provided for @customModelsLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Пользовательские ID моделей'**
   String get customModelsLabel;
 
   /// No description provided for @customModelsHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'По одному ID на строку, например google/... или kiro/...'**
   String get customModelsHelperText;
 
   /// No description provided for @settingsSavingStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сохраняем изменения...'**
   String get settingsSavingStatus;
 
   /// No description provided for @settingsSavedStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Изменения сохранены'**
   String get settingsSavedStatus;
 
   /// No description provided for @settingsValidationStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверьте поля с ошибками'**
   String get settingsValidationStatus;
 
   /// No description provided for @settingsSaveFailedStatus.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось сохранить изменения'**
   String get settingsSaveFailedStatus;
 
   /// No description provided for @settingsBackupExportButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сохранить резервную копию'**
   String get settingsBackupExportButton;
 
   /// No description provided for @settingsBackupImportButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Восстановить резервную копию'**
   String get settingsBackupImportButton;
 
   /// No description provided for @settingsBackupExportOptionsDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Экспорт резервной копии'**
   String get settingsBackupExportOptionsDialogTitle;
 
   /// No description provided for @settingsBackupExportDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Куда сохранить резервную копию?'**
   String get settingsBackupExportDialogTitle;
 
   /// No description provided for @settingsBackupImportDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Выберите файл резервной копии'**
   String get settingsBackupImportDialogTitle;
 
   /// No description provided for @settingsBackupExportConfirmButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Продолжить'**
   String get settingsBackupExportConfirmButton;
 
   /// No description provided for @settingsBackupProtectWithPasswordLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Защитить файл паролем (рекомендуется)'**
   String get settingsBackupProtectWithPasswordLabel;
 
   /// No description provided for @settingsBackupProtectWithPasswordSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Шифрует резервную копию, чтобы токены и ключи нельзя было прочитать без пароля'**
   String get settingsBackupProtectWithPasswordSubtitle;
 
   /// No description provided for @settingsBackupPasswordLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Пароль'**
   String get settingsBackupPasswordLabel;
 
   /// No description provided for @settingsBackupPasswordConfirmLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подтвердите пароль'**
   String get settingsBackupPasswordConfirmLabel;
 
   /// No description provided for @settingsBackupPasswordHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запомните этот пароль: без него зашифрованную резервную копию восстановить нельзя!'**
   String get settingsBackupPasswordHelperText;
 
   /// No description provided for @settingsBackupPasswordsDoNotMatch.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Пароли не совпадают'**
   String get settingsBackupPasswordsDoNotMatch;
 
   /// No description provided for @settingsBackupUnprotectedWarning.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Внимание! Ваши токены и ключи будут сохранены в открытом виде. Любой, кто получит этот файл, получит доступ к вашим данным.'**
   String get settingsBackupUnprotectedWarning;
 
   /// No description provided for @settingsBackupRestoreDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Восстановить конфигурацию?'**
   String get settingsBackupRestoreDialogTitle;
 
   /// No description provided for @settingsBackupRestoreDialogMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Текущие настройки, API-ключ и список аккаунтов будут заменены данными из этой резервной копии. Это действие нельзя отменить.'**
   String get settingsBackupRestoreDialogMessage;
 
   /// No description provided for @settingsBackupRestoreConfirmButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Восстановить'**
   String get settingsBackupRestoreConfirmButton;
 
   /// No description provided for @settingsBackupPasswordDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Введите пароль резервной копии'**
   String get settingsBackupPasswordDialogTitle;
 
   /// No description provided for @settingsBackupPasswordDialogMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Файл {fileName} защищен паролем. Введите пароль, чтобы продолжить восстановление.'**
   String settingsBackupPasswordDialogMessage(String fileName);
 
   /// No description provided for @settingsBackupPasswordDialogInvalidMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось расшифровать файл {fileName}. Проверьте пароль и попробуйте снова.'**
   String settingsBackupPasswordDialogInvalidMessage(String fileName);
 
   /// No description provided for @settingsBackupPasswordConfirmButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Расшифровать'**
   String get settingsBackupPasswordConfirmButton;
 
   /// No description provided for @settingsBackupExportedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Резервная копия сохранена в файл {fileName}'**
   String settingsBackupExportedMessage(String fileName);
 
   /// No description provided for @settingsBackupRestoredMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Конфигурация восстановлена. Аккаунтов: {accountCount}'**
   String settingsBackupRestoredMessage(int accountCount);
 
   /// No description provided for @settingsBackupRestoredMissingTokensMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Конфигурация восстановлена. Аккаунтов: {accountCount}, без токенов: {missingCount}'**
   String settingsBackupRestoredMissingTokensMessage(int accountCount, int missingCount);
 
   /// No description provided for @settingsBackupExportFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось сохранить резервную копию: {error}'**
   String settingsBackupExportFailedMessage(String error);
 
   /// No description provided for @settingsBackupRestoreFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось восстановить резервную копию: {error}'**
   String settingsBackupRestoreFailedMessage(String error);
 
   /// No description provided for @settingsBackupInvalidMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Файл резервной копии поврежден или имеет неподдерживаемый формат'**
   String get settingsBackupInvalidMessage;
 
   /// No description provided for @settingsBackupUnsupportedVersionMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Эта резервная копия создана в более новой версии KiCk и пока не поддерживается'**
   String get settingsBackupUnsupportedVersionMessage;
 
   /// No description provided for @settingsBackupReadFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось прочитать выбранную резервную копию'**
   String get settingsBackupReadFailedMessage;
 
   /// No description provided for @settingsBackupPasswordRequiredMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Для этой резервной копии нужен пароль'**
   String get settingsBackupPasswordRequiredMessage;
 
   /// No description provided for @settingsLoadErrorTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось загрузить настройки'**
   String get settingsLoadErrorTitle;
 
   /// No description provided for @aboutTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'О программе'**
   String get aboutTitle;
 
   /// No description provided for @aboutMenuSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Версия, обновления и аналитика'**
   String get aboutMenuSubtitle;
 
   /// No description provided for @aboutDescription.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Локальный OpenAI-совместимый прокси для Gemini CLI и Kiro в нативном Flutter-приложении'**
   String get aboutDescription;
 
   /// No description provided for @aboutUpdatesTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обновления'**
   String get aboutUpdatesTitle;
 
   /// No description provided for @aboutUpdatesChecking.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверяем обновления на GitHub...'**
   String get aboutUpdatesChecking;
 
   /// No description provided for @aboutUpdateAvailableTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Доступно обновление'**
   String get aboutUpdateAvailableTitle;
 
   /// No description provided for @aboutUpdateAvailableMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Доступна версия {latestVersion}. Сейчас у вас установлена {currentVersion}.'**
   String aboutUpdateAvailableMessage(String latestVersion, String currentVersion);
 
   /// No description provided for @aboutUpToDateTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обновлений нет'**
   String get aboutUpToDateTitle;
 
   /// No description provided for @aboutUpToDateMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'У вас установлена актуальная версия: {currentVersion}.'**
   String aboutUpToDateMessage(String currentVersion);
 
   /// No description provided for @aboutUpdateCheckFailedTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось проверить обновления'**
   String get aboutUpdateCheckFailedTitle;
 
   /// No description provided for @aboutUpdateCheckFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось получить информацию о релизах с GitHub.'**
   String get aboutUpdateCheckFailedMessage;
 
   /// No description provided for @aboutOpenReleaseButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть релиз'**
   String get aboutOpenReleaseButton;
 
   /// No description provided for @aboutRetryUpdateCheckButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверить еще раз'**
   String get aboutRetryUpdateCheckButton;
 
   /// No description provided for @aboutAnalyticsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аналитика'**
   String get aboutAnalyticsTitle;
 
   /// No description provided for @aboutAnalyticsSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Анонимная статистика использования помогает улучшать KiCk.'**
   String get aboutAnalyticsSubtitle;
 
   /// No description provided for @copyProxyEndpointTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Скопировать адрес прокси'**
   String get copyProxyEndpointTooltip;
 
   /// No description provided for @proxyEndpointCopiedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Адрес прокси скопирован'**
   String get proxyEndpointCopiedMessage;
 
   /// No description provided for @copyApiKeyTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Скопировать API-ключ'**
   String get copyApiKeyTooltip;
 
   /// No description provided for @apiKeyCopiedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'API-ключ скопирован'**
   String get apiKeyCopiedMessage;
 
   /// No description provided for @homeOnboardingTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'С чего начать'**
   String get homeOnboardingTitle;
 
   /// No description provided for @homeOnboardingSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Небольшая подсказка для первого запуска'**
   String get homeOnboardingSubtitle;
 
   /// No description provided for @homeOnboardingAccountsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключите аккаунт'**
   String get homeOnboardingAccountsTitle;
 
   /// No description provided for @homeOnboardingAccountsMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Без активного аккаунта Gemini CLI или Kiro KiCk не сможет обрабатывать запросы.'**
   String get homeOnboardingAccountsMessage;
 
   /// No description provided for @homeOnboardingEndpointTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Проверьте адрес прокси'**
   String get homeOnboardingEndpointTitle;
 
   /// No description provided for @homeOnboardingEndpointMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Когда все будет готово, используйте адрес {endpoint} в своем клиенте.'**
   String homeOnboardingEndpointMessage(String endpoint);
 
   /// No description provided for @homeOnboardingStartTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запустите прокси'**
   String get homeOnboardingStartTitle;
 
   /// No description provided for @homeOnboardingStartMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'После запуска KiCk начнет принимать запросы на этом устройстве.'**
   String get homeOnboardingStartMessage;
 
   /// No description provided for @homeOnboardingFooter.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Если аккаунт уже подключен, просто включите его на экране аккаунтов и вернитесь сюда.'**
   String get homeOnboardingFooter;
 
   /// No description provided for @apiKeyRegeneratedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Новый API-ключ сохранен'**
   String get apiKeyRegeneratedMessage;
 
   /// No description provided for @regenerateApiKeyAction.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Создать новый API-ключ'**
   String get regenerateApiKeyAction;
 
   /// No description provided for @regenerateApiKeyDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Создать новый API-ключ?'**
   String get regenerateApiKeyDialogTitle;
 
   /// No description provided for @regenerateApiKeyDialogMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Старый ключ будет сразу отозван. Всем подключенным клиентам понадобится новый ключ для работы.'**
   String get regenerateApiKeyDialogMessage;
 
   /// No description provided for @regenerateApiKeyConfirmButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сгенерировать'**
   String get regenerateApiKeyConfirmButton;
 
   /// No description provided for @trayOpenWindowAction.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть окно'**
   String get trayOpenWindowAction;
 
   /// No description provided for @trayHideToTrayAction.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Свернуть в трей'**
   String get trayHideToTrayAction;
 
   /// No description provided for @trayExitAction.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Выйти'**
   String get trayExitAction;
 
   /// No description provided for @noActiveAccountsWarning.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Нет активных аккаунтов. Прокси запустится, но не сможет обрабатывать запросы, пока вы не добавите или не включите хотя бы один аккаунт.'**
   String get noActiveAccountsWarning;
 
   /// No description provided for @pinWindowTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Закрепить окно поверх остальных'**
   String get pinWindowTooltip;
 
   /// No description provided for @unpinWindowTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Убрать закрепление окна'**
   String get unpinWindowTooltip;
 
   /// No description provided for @welcomeTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Добро пожаловать в KiCk'**
   String get welcomeTitle;
 
   /// No description provided for @welcomeSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk помогает запустить локальный прокси для Gemini CLI и Kiro без терминала и лишних настроек.'**
   String get welcomeSubtitle;
 
   /// No description provided for @welcomeStepAccountsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подключите аккаунт'**
   String get welcomeStepAccountsTitle;
 
   /// No description provided for @welcomeStepAccountsMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Это можно сделать на экране аккаунтов. Можно подключить Gemini CLI или Kiro.'**
   String get welcomeStepAccountsMessage;
 
   /// No description provided for @welcomeStepHomeTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Откройте главную'**
   String get welcomeStepHomeTitle;
 
   /// No description provided for @welcomeStepHomeMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'На главной всегда видны адрес прокси, API-ключ и кнопка запуска.'**
   String get welcomeStepHomeMessage;
 
   /// No description provided for @welcomeUsageTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Важно знать'**
   String get welcomeUsageTitle;
 
   /// No description provided for @welcomeUsageMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'KiCk предназначен для личного, учебного и исследовательского использования.'**
   String get welcomeUsageMessage;
 
   /// No description provided for @welcomeAnalyticsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Анонимная аналитика'**
   String get welcomeAnalyticsTitle;
 
   /// No description provided for @welcomeAnalyticsSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Помогает понять, где KiCk работает хорошо, а где его стоит улучшить.'**
   String get welcomeAnalyticsSubtitle;
 
   /// No description provided for @welcomeRepositoryLinkLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Подробнее о проекте'**
   String get welcomeRepositoryLinkLabel;
 
   /// No description provided for @logsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Логи'**
   String get logsTitle;
 
   /// No description provided for @logsSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'История запросов и ошибок'**
   String get logsSubtitle;
 
   /// No description provided for @logsSearchHint.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Поиск по маршруту или сообщению'**
   String get logsSearchHint;
 
   /// No description provided for @logsRefreshButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обновить'**
   String get logsRefreshButton;
 
   /// No description provided for @logsClearButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Очистить'**
   String get logsClearButton;
 
   /// No description provided for @logsClearDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Очистить логи?'**
   String get logsClearDialogTitle;
 
   /// No description provided for @logsClearDialogMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Все записи будут удалены из KiCk. Это действие нельзя отменить.'**
   String get logsClearDialogMessage;
 
   /// No description provided for @logsClearConfirmButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Очистить'**
   String get logsClearConfirmButton;
 
   /// No description provided for @logsLevelAll.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Все уровни'**
   String get logsLevelAll;
 
   /// No description provided for @logsLevelInfo.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Инфо'**
   String get logsLevelInfo;
 
   /// No description provided for @logsLevelWarning.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Предупреждения'**
   String get logsLevelWarning;
 
   /// No description provided for @logsLevelError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Ошибки'**
   String get logsLevelError;
 
   /// No description provided for @logsCategoryAll.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Все категории'**
   String get logsCategoryAll;
 
   /// No description provided for @logsCategoryFilterTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Категории'**
   String get logsCategoryFilterTitle;
 
   /// No description provided for @logsPayloadShowButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Показать payload'**
   String get logsPayloadShowButton;
 
   /// No description provided for @logsPayloadHideButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Скрыть payload'**
   String get logsPayloadHideButton;
 
   /// No description provided for @logsCopyEntryButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Копировать'**
   String get logsCopyEntryButton;
 
   /// No description provided for @logsCopiedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запись лога скопирована'**
   String get logsCopiedMessage;
 
   /// No description provided for @logsFilteredEmptyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'По текущим фильтрам ничего не найдено'**
   String get logsFilteredEmptyTitle;
 
   /// No description provided for @logsFilteredEmptyMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Попробуйте убрать часть фильтров или изменить поиск.'**
   String get logsFilteredEmptyMessage;
 
   /// No description provided for @logsEntryLevelInfo.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Инфо'**
   String get logsEntryLevelInfo;
 
   /// No description provided for @logsEntryLevelWarning.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Предупреждение'**
   String get logsEntryLevelWarning;
 
   /// No description provided for @logsEntryLevelError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Ошибка'**
   String get logsEntryLevelError;
 
   /// No description provided for @logsTotalCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Всего: {count}'**
   String logsTotalCount(int count);
 
   /// No description provided for @logsFilteredCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'После фильтра: {count}'**
   String logsFilteredCount(int count);
 
   /// No description provided for @logsLoadedCount.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Загружено: {count}'**
   String logsLoadedCount(int count);
 
   /// No description provided for @logsEmptyTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Логи пусты'**
   String get logsEmptyTitle;
 
   /// No description provided for @logsLoadErrorTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось загрузить логи'**
   String get logsLoadErrorTitle;
 
   /// No description provided for @logsExportTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сохранить все логи по текущим фильтрам'**
   String get logsExportTooltip;
 
   /// No description provided for @logsExportDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Куда сохранить логи?'**
   String get logsExportDialogTitle;
 
   /// No description provided for @logsShareTooltip.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Поделиться всеми логами по текущим фильтрам'**
   String get logsShareTooltip;
 
   /// No description provided for @logsLoadMoreButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Загрузить еще'**
   String get logsLoadMoreButton;
 
   /// No description provided for @logsNothingToExportMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Нет логов для сохранения'**
   String get logsNothingToExportMessage;
 
   /// No description provided for @logsExportedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Логи сохранены в файл {fileName}'**
   String logsExportedMessage(String fileName);
 
   /// No description provided for @logsExportFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось сохранить логи: {error}'**
   String logsExportFailedMessage(String error);
 
   /// No description provided for @logsShareFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось поделиться логами: {error}'**
   String logsShareFailedMessage(String error);
 
   /// No description provided for @accountDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунт'**
   String get accountDialogTitle;
 
   /// No description provided for @accountDialogBasicsTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Основное'**
   String get accountDialogBasicsTitle;
 
   /// No description provided for @accountDialogBasicsSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Поля для подключения выбранного типа аккаунта'**
   String get accountDialogBasicsSubtitle;
 
   /// No description provided for @accountDialogAdvancedTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Расширенные настройки'**
   String get accountDialogAdvancedTitle;
 
   /// No description provided for @accountDialogAdvancedSubtitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Приоритет и ограничения по моделям'**
   String get accountDialogAdvancedSubtitle;
 
   /// No description provided for @accountDialogAdvancedHint.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Если не хочется настраивать вручную, этот блок можно оставить как есть.'**
   String get accountDialogAdvancedHint;
 
   /// No description provided for @projectIdLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'PROJECT_ID'**
   String get projectIdLabel;
 
   /// No description provided for @projectIdHint.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'my-google-cloud-project'**
   String get projectIdHint;
 
   /// No description provided for @projectIdConsoleLinkLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Где посмотреть ID проекта'**
   String get projectIdConsoleLinkLabel;
 
   /// No description provided for @projectIdRequiredError.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Укажите ID проекта'**
   String get projectIdRequiredError;
 
   /// No description provided for @projectIdLookupFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось открыть Google Cloud Console.'**
   String get projectIdLookupFailedMessage;
 
   /// No description provided for @accountNameLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Название аккаунта'**
   String get accountNameLabel;
 
   /// No description provided for @accountNameHint.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Например, основной аккаунт'**
   String get accountNameHint;
 
   /// No description provided for @accountNameHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Если оставить поле пустым, KiCk подставит имя аккаунта.'**
   String get accountNameHelperText;
 
   /// No description provided for @priorityLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Приоритет'**
   String get priorityLabel;
 
   /// No description provided for @priorityHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сначала используются основные аккаунты. Аккаунты с одинаковым приоритетом чередуются.'**
   String get priorityHelperText;
 
   /// No description provided for @priorityLevelPrimary.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Основной'**
   String get priorityLevelPrimary;
 
   /// No description provided for @priorityLevelNormal.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Обычный'**
   String get priorityLevelNormal;
 
   /// No description provided for @priorityLevelReserve.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Резервный'**
   String get priorityLevelReserve;
 
   /// No description provided for @blockedModelsLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Недоступные модели'**
   String get blockedModelsLabel;
 
   /// No description provided for @blockedModelsHelperText.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'По одному ID на строку, например google/... или kiro/...'**
   String get blockedModelsHelperText;
 
   /// No description provided for @kiroLinkAuthDialogTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Авторизация Kiro'**
   String get kiroLinkAuthDialogTitle;
 
   /// No description provided for @kiroLinkAuthDialogMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Откройте ссылку, войдите через AWS Builder ID и подтвердите вход для Kiro. Код нужен только для сверки, вводить его не нужно. KiCk сам дождётся завершения.'**
   String get kiroLinkAuthDialogMessage;
 
   /// No description provided for @kiroLinkAuthUserCodeLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Код для сверки'**
   String get kiroLinkAuthUserCodeLabel;
 
   /// No description provided for @kiroLinkAuthVerificationUrlLabel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Ссылка для входа'**
   String get kiroLinkAuthVerificationUrlLabel;
 
   /// No description provided for @kiroLinkAuthWaitingMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Ждём, пока вы подтвердите вход в браузере...'**
   String get kiroLinkAuthWaitingMessage;
 
   /// No description provided for @kiroLinkAuthOpenLinkButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть ссылку'**
   String get kiroLinkAuthOpenLinkButton;
 
   /// No description provided for @kiroLinkAuthOpenLinkAgainButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Открыть ещё раз'**
   String get kiroLinkAuthOpenLinkAgainButton;
 
   /// No description provided for @kiroLinkAuthOpenLinkFailedMessage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось открыть ссылку для входа в Kiro.'**
   String get kiroLinkAuthOpenLinkFailedMessage;
 
   /// No description provided for @cancelButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Отмена'**
   String get cancelButton;
 
   /// No description provided for @continueButton.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Продолжить'**
   String get continueButton;
 
   /// No description provided for @navHome.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Главная'**
   String get navHome;
 
   /// No description provided for @navAccounts.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунты'**
   String get navAccounts;
 
   /// No description provided for @navSettings.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Настройки'**
   String get navSettings;
 
   /// No description provided for @navLogs.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Логи'**
   String get navLogs;
 
   /// No description provided for @runtimeChannelName.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Прокси KiCk в фоне'**
   String get runtimeChannelName;
 
   /// No description provided for @runtimeChannelDescription.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Поддерживает работу прокси в фоновом режиме'**
   String get runtimeChannelDescription;
 
   /// No description provided for @runtimeNotificationTitle.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Прокси KiCk запущен'**
   String get runtimeNotificationTitle;
 
   /// No description provided for @runtimeNotificationReturn.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Нажмите, чтобы вернуться в приложение'**
   String get runtimeNotificationReturn;
 
   /// No description provided for @runtimeNotificationManage.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Нажмите, чтобы открыть аккаунты и настройки'**
   String get runtimeNotificationManage;
 
   /// No description provided for @runtimeNotificationActive.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Прокси активен'**
   String get runtimeNotificationActive;
 
+  /// No description provided for @oauthPageTitleError.
+  ///
+  /// In en, this message translates to:
+  /// **'Ошибка авторизации'**
+  String get oauthPageTitleError;
+
+  /// No description provided for @oauthPageTitleSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Успешная авторизация'**
+  String get oauthPageTitleSuccess;
+
+  /// No description provided for @oauthPageStateMismatchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Несоответствие состояний. Вы можете закрыть эту вкладку.'**
+  String get oauthPageStateMismatchMessage;
+
+  /// No description provided for @oauthPageGoogleErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Google вернул ошибку. Вы можете закрыть эту вкладку.'**
+  String get oauthPageGoogleErrorMessage;
+
+  /// No description provided for @oauthPageCodeMissingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Код не получен. Вы можете закрыть эту вкладку.'**
+  String get oauthPageCodeMissingMessage;
+
+  /// No description provided for @oauthPageCloseTabMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Вы можете закрыть вкладку.'**
+  String get oauthPageCloseTabMessage;
+
+  /// No description provided for @accountDisplayNameFallbackGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google-аккаунт'**
+  String get accountDisplayNameFallbackGoogle;
+
   /// No description provided for @errorNetworkUnavailable.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не удалось связаться с серверами Google. Проверьте интернет и попробуйте снова.'**
   String get errorNetworkUnavailable;
 
   /// No description provided for @errorGoogleServiceUnavailable.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сервис Google временно недоступен. Повторите попытку позже.'**
   String get errorGoogleServiceUnavailable;
 
   /// No description provided for @errorInvalidServiceResponse.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сервер вернул непонятный ответ. Попробуйте еще раз.'**
   String get errorInvalidServiceResponse;
 
+  /// No description provided for @errorGoogleAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Авторизация Google завершилась с ошибкой. Попробуйте снова.'**
+  String get errorGoogleAuthFailed;
+
   /// No description provided for @errorGoogleAuthTimedOut.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Авторизация Google не завершилась вовремя. Вернитесь в приложение и попробуйте снова. Если это повторяется на Android, отключите для KiCk ограничения батареи.'**
   String get errorGoogleAuthTimedOut;
 
+  /// No description provided for @errorGoogleAuthBrowserOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Не удалось открыть браузер для авторизации Google. Попробуйте снова.'**
+  String get errorGoogleAuthBrowserOpenFailed;
+
   /// No description provided for @errorUnknown.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Произошла неизвестная ошибка. Попробуйте снова.'**
   String get errorUnknown;
 
   /// No description provided for @errorOauthTokensMissing.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Для этого аккаунта не найдены токены авторизации. Переподключите аккаунт.'**
   String get errorOauthTokensMissing;
 
   /// No description provided for @errorAccountNotFound.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Аккаунт не найден. Возможно, он уже был удалён.'**
   String get errorAccountNotFound;
 
   /// No description provided for @errorPortAlreadyInUse.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Этот порт уже занят другим приложением. Выберите другой порт в настройках.'**
   String get errorPortAlreadyInUse;
 
   /// No description provided for @errorPermissionDenied.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Не хватило системных разрешений для запуска. Проверьте настройки приложения и повторите попытку.'**
   String get errorPermissionDenied;
 
   /// No description provided for @errorGoogleRateLimitedRetry.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google временно ограничил запросы для этого аккаунта. Попробуйте снова через {retryHint}.'**
   String errorGoogleRateLimitedRetry(String retryHint);
 
   /// No description provided for @errorGoogleRateLimitedLater.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google временно ограничил запросы для этого аккаунта. Попробуйте снова позже.'**
   String get errorGoogleRateLimitedLater;
 
   /// No description provided for @errorKiroAuthExpired.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сессия Kiro истекла. Войдите заново и попробуйте снова.'**
   String get errorKiroAuthExpired;
 
+  /// No description provided for @errorKiroAuthStartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Не удалось запустить авторизацию Kiro. Попробуйте снова позже.'**
+  String get errorKiroAuthStartFailed;
+
+  /// No description provided for @errorKiroAuthCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Авторизация Kiro была отменена.'**
+  String get errorKiroAuthCancelled;
+
+  /// No description provided for @errorKiroAuthTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Время ожидания авторизации Kiro истекло. Попробуйте снова.'**
+  String get errorKiroAuthTimedOut;
+
+  /// No description provided for @errorKiroAuthRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Kiro отклонил авторизацию. Попробуйте начать вход заново.'**
+  String get errorKiroAuthRejected;
+
   /// No description provided for @errorKiroRateLimitedRetry.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Kiro временно ограничил запросы. Попробуйте снова через {retryHint}.'**
   String errorKiroRateLimitedRetry(String retryHint);
 
   /// No description provided for @errorKiroRateLimitedLater.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Kiro временно ограничил запросы. Попробуйте снова позже.'**
   String get errorKiroRateLimitedLater;
 
   /// No description provided for @errorKiroServiceUnavailable.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сервис Kiro временно недоступен. Повторите попытку позже.'**
   String get errorKiroServiceUnavailable;
 
   /// No description provided for @errorGoogleAccountVerificationRequired.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google просит подтвердить этот аккаунт. Откройте страницу подтверждения и войдите под тем же Google-аккаунтом.'**
   String get errorGoogleAccountVerificationRequired;
 
   /// No description provided for @errorGoogleProjectIdMissing.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google не смог определить корректный ID проекта для этого аккаунта или запроса. Проверьте ID проекта в настройках аккаунта и при необходимости переподключите его.'**
   String get errorGoogleProjectIdMissing;
 
   /// No description provided for @errorGoogleProjectApiDisabled.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Gemini for Google Cloud API отключен для этого проекта. Откройте Google Cloud, включите API для нужного ID проекта и повторите проверку.'**
   String get errorGoogleProjectApiDisabled;
 
   /// No description provided for @errorGoogleProjectInvalid.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google отклонил этот ID проекта. Проверьте, что указали существующий проект и что у аккаунта есть доступ именно к нему.'**
   String get errorGoogleProjectInvalid;
 
   /// No description provided for @errorGoogleProjectAccessDenied.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google отклонил запрос для этого проекта или аккаунта. Проверьте ID проекта, выбранный аккаунт и убедитесь, что Gemini Code Assist включен именно для этого проекта.'**
   String get errorGoogleProjectAccessDenied;
 
   /// No description provided for @errorAuthExpired.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Срок действия авторизации истек или она стала недействительной. Переподключите аккаунт и попробуйте снова.'**
   String get errorAuthExpired;
 
   /// No description provided for @errorGoogleCapacity.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сервера Google временно перегружены. Повторите попытку чуть позже.'**
   String get errorGoogleCapacity;
 
   /// No description provided for @errorUnsupportedModel.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Выбранная модель сейчас недоступна для этого аккаунта.'**
   String get errorUnsupportedModel;
 
   /// No description provided for @errorInvalidJson.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запрос имеет неверный формат JSON.'**
   String get errorInvalidJson;
 
   /// No description provided for @errorUnexpectedResponse.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Сервис вернул неожиданный ответ. Повторите попытку.'**
   String get errorUnexpectedResponse;
 
   /// No description provided for @errorQuotaExhausted.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимит этого аккаунта исчерпан. Дождитесь сброса или используйте другой аккаунт.'**
   String get errorQuotaExhausted;
 
   /// No description provided for @errorQuotaExhaustedRetry.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Лимит этого аккаунта исчерпан. Попробуйте снова через {retryHint} или используйте другой аккаунт.'**
   String errorQuotaExhaustedRetry(String retryHint);
 
   /// No description provided for @errorQuotaExhaustedNoResetHint.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google вернул RESOURCE_EXHAUSTED без времени сброса. KiCk отдельно проверит этот аккаунт; если ошибка повторяется, используйте другой аккаунт'**
   String get errorQuotaExhaustedNoResetHint;
 
   /// No description provided for @errorGoogleTermsOfServiceViolation.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google отключил этот аккаунт за нарушение ToS. Подайте апелляцию или используйте другой аккаунт.'**
   String get errorGoogleTermsOfServiceViolation;
 
   /// No description provided for @errorInvalidRequestRejected.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Запрос имеет неверный формат и был отклонён.'**
   String get errorInvalidRequestRejected;
 
   /// No description provided for @errorReasoningConfigRejected.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'Google отклонил параметры reasoning/thinking для этой модели. Включите автоматический режим размышлений (reasoning).'**
   String get errorReasoningConfigRejected;
 
   /// No description provided for @durationFewSeconds.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'несколько секунд'**
   String get durationFewSeconds;
 
   /// No description provided for @durationSeconds.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'{seconds} сек'**
   String durationSeconds(int seconds);
 
   /// No description provided for @durationMinutes.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'{minutes} мин'**
   String durationMinutes(int minutes);
 
   /// No description provided for @durationMinutesSeconds.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'{minutes} мин {seconds} сек'**
   String durationMinutesSeconds(int minutes, int seconds);
 
   /// No description provided for @durationHours.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'{hours} ч'**
   String durationHours(int hours);
 
   /// No description provided for @durationHoursMinutes.
   ///
-  /// In ru, this message translates to:
+  /// In en, this message translates to:
   /// **'{hours} ч {minutes} мин'**
   String durationHoursMinutes(int hours, int minutes);
 }
@@ -2310,7 +2407,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['ru'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'ru'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -2319,6 +2416,8 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
     case 'ru':
       return AppLocalizationsRu();
   }

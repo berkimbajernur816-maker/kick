@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/oauth_tokens.dart';
 import '../../data/repositories/secret_store.dart';
+import '../../l10n/kick_localizations.dart';
 import 'gemini_auth_constants.dart';
 
 typedef OAuthUrlLauncher = Future<bool> Function(Uri url, {required LaunchMode mode});
@@ -62,6 +63,7 @@ class GeminiOAuthService {
     PlatformCheck? isAndroid,
     CodeExchangeHandler? exchangeCodeForTokens,
     ProfileFetcher? fetchProfile,
+    KickLocalizations Function()? localizationsProvider,
     Duration authorizationTimeout = const Duration(minutes: 5),
     Duration requestTimeout = const Duration(seconds: 15),
   }) : _secretStore = secretStore,
@@ -71,6 +73,7 @@ class GeminiOAuthService {
        _isAndroid = isAndroid ?? _defaultIsAndroid,
        _exchangeCodeForTokensDelegate = exchangeCodeForTokens,
        _fetchProfileDelegate = fetchProfile,
+       _localizationsProvider = localizationsProvider ?? lookupKickLocalizations,
        _authorizationTimeout = authorizationTimeout,
        _requestTimeout = requestTimeout > Duration.zero
            ? requestTimeout
@@ -83,6 +86,7 @@ class GeminiOAuthService {
   final PlatformCheck _isAndroid;
   final CodeExchangeHandler? _exchangeCodeForTokensDelegate;
   final ProfileFetcher? _fetchProfileDelegate;
+  final KickLocalizations Function() _localizationsProvider;
   final Duration _authorizationTimeout;
   final Duration _requestTimeout;
 
@@ -108,15 +112,17 @@ class GeminiOAuthService {
         }
 
         final params = request.uri.queryParameters;
+        final l10n = _localizationsProvider();
         if (params['state'] != state) {
           await _respondHtml(
             request,
-            title: 'Ошибка авторизации',
-            message: 'Несоответствие состояний. Вы можете закрыть эту вкладку.',
+            l10n: l10n,
+            title: l10n.oauthPageTitleError,
+            message: l10n.oauthPageStateMismatchMessage,
             isSuccess: false,
           );
           if (!completer.isCompleted) {
-            completer.completeError(StateError('OAuth state mismatch. Please try again.'));
+            completer.completeError(StateError('Google OAuth state mismatch.'));
           }
           return;
         }
@@ -124,8 +130,9 @@ class GeminiOAuthService {
         if (params.containsKey('error')) {
           await _respondHtml(
             request,
-            title: 'Ошибка авторизации',
-            message: 'Google вернул ошибку. Вы можете закрыть эту вкладку.',
+            l10n: l10n,
+            title: l10n.oauthPageTitleError,
+            message: l10n.oauthPageGoogleErrorMessage,
             isSuccess: false,
           );
           if (!completer.isCompleted) {
@@ -143,20 +150,24 @@ class GeminiOAuthService {
         if (code == null || code.isEmpty) {
           await _respondHtml(
             request,
-            title: 'Ошибка авторизации',
-            message: 'Код не получен. Вы можете закрыть эту вкладку.',
+            l10n: l10n,
+            title: l10n.oauthPageTitleError,
+            message: l10n.oauthPageCodeMissingMessage,
             isSuccess: false,
           );
           if (!completer.isCompleted) {
-            completer.completeError(StateError('No authorization code received from Google.'));
+            completer.completeError(
+              StateError('Google OAuth did not return an authorization code.'),
+            );
           }
           return;
         }
 
         await _respondHtml(
           request,
-          title: 'Успешная авторизация',
-          message: 'Вы можете закрыть вкладку.',
+          l10n: l10n,
+          title: l10n.oauthPageTitleSuccess,
+          message: l10n.oauthPageCloseTabMessage,
           isSuccess: true,
         );
         if (!completer.isCompleted) {
@@ -309,12 +320,13 @@ class GeminiOAuthService {
     }
 
     final payload = jsonDecode(response.body) as Map<String, dynamic>;
+    final l10n = _localizationsProvider();
     final email = (payload['email'] as String? ?? '').trim();
     final displayName = (payload['name'] as String? ?? '').trim().isNotEmpty
         ? (payload['name'] as String).trim()
         : email.isNotEmpty
         ? email
-        : 'Google account';
+        : l10n.accountDisplayNameFallbackGoogle;
     return GoogleAccountProfile(
       email: email,
       displayName: displayName,
@@ -351,14 +363,16 @@ class GeminiOAuthService {
 
   Future<void> _respondHtml(
     HttpRequest request, {
+    required KickLocalizations l10n,
     required String title,
     required String message,
     required bool isSuccess,
   }) async {
+    final htmlLang = l10n.localeName.replaceAll('_', '-');
     request.response.headers.contentType = ContentType.html;
     request.response.write('''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="$htmlLang">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

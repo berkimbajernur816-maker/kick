@@ -16,7 +16,7 @@ import 'package:kick/data/repositories/secret_store.dart';
 import 'package:kick/data/repositories/settings_repository.dart';
 import 'package:kick/features/accounts/accounts_page.dart';
 import 'package:kick/features/app_state/providers.dart';
-import 'package:kick/l10n/generated/app_localizations.dart';
+import 'package:kick/l10n/kick_localizations.dart';
 import 'package:kick/proxy/engine/proxy_controller.dart';
 import 'package:kick/proxy/gemini/gemini_oauth_service.dart';
 import 'package:kick/proxy/kiro/kiro_auth_source.dart';
@@ -24,6 +24,9 @@ import 'package:kick/proxy/kiro/kiro_link_auth_service.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
+  final ruL10n = lookupKickLocalizations(const Locale('ru'));
+  final enL10n = lookupKickLocalizations(const Locale('en'));
+
   testWidgets('kiro account card does not show source badge', (tester) async {
     final bootstrap = await _createBootstrap(
       initialAccounts: [
@@ -76,8 +79,8 @@ void main() {
 
     expect(find.text('Kiro'), findsWidgets);
     expect(find.text('AWS Builder ID'), findsOneWidget);
-    expect(find.textContaining('Источник:'), findsNothing);
-    expect(find.text('Источник: Builder ID'), findsNothing);
+    expect(find.textContaining(ruL10n.kiroCredentialSourceChip('').split(':').first), findsNothing);
+    expect(find.text(ruL10n.kiroCredentialSourceChip('Builder ID')), findsNothing);
   });
 
   testWidgets('kiro link authorization dialog removes code copy action', (tester) async {
@@ -127,19 +130,19 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Подключить аккаунт'));
+    await tester.tap(find.widgetWithText(FilledButton, ruL10n.connectAccountButton));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Kiro'));
+    await tester.tap(find.text(ruL10n.accountProviderKiro));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Продолжить'));
+    await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
-    expect(find.text('Авторизация Kiro'), findsOneWidget);
-    expect(find.text('Код для сверки'), findsOneWidget);
-    expect(find.textContaining('вводить его не нужно'), findsOneWidget);
+    expect(find.text(ruL10n.kiroLinkAuthDialogTitle), findsOneWidget);
+    expect(find.text(ruL10n.kiroLinkAuthUserCodeLabel), findsOneWidget);
+    expect(find.text(ruL10n.kiroLinkAuthDialogMessage), findsOneWidget);
     expect(find.text('Скопировать код'), findsNothing);
   });
 
@@ -195,13 +198,13 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Подключить аккаунт'));
+      await tester.tap(find.widgetWithText(FilledButton, ruL10n.connectAccountButton));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Kiro'));
+      await tester.tap(find.text(ruL10n.accountProviderKiro));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Продолжить'));
+      await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
@@ -258,13 +261,13 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Подключить аккаунт'));
+    await tester.tap(find.widgetWithText(FilledButton, ruL10n.connectAccountButton));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Kiro'));
+    await tester.tap(find.text(ruL10n.accountProviderKiro));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Продолжить'));
+    await tester.tap(find.widgetWithText(FilledButton, ruL10n.continueButton));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
@@ -279,6 +282,40 @@ void main() {
     expect(find.text(l10n.kiroLinkAuthDialogTitle), findsNothing);
     expect(stopCalls, 1);
   });
+
+  testWidgets('builds the accounts page with the English locale enabled', (tester) async {
+    final bootstrap = await _createBootstrap();
+    final service = _FakeKiroLinkAuthService(
+      request: KiroLinkAuthRequest(
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        deviceCode: 'device-code',
+        userCode: 'PSZF-PDMS',
+        verificationUri: 'https://view.awsapps.com/start/#/device',
+        verificationUriComplete: 'https://view.awsapps.com/start/#/device?user_code=PSZF-PDMS',
+        interval: const Duration(seconds: 1),
+        expiresAt: DateTime.now().add(const Duration(minutes: 5)),
+        region: defaultKiroRegion,
+        startUrl: defaultKiroBuilderIdStartUrl,
+      ),
+      completion: Completer<KiroAuthSourceSnapshot>().future,
+    );
+
+    addTearDown(() async {
+      service.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
+      await bootstrap.dispose();
+    });
+
+    await tester.pumpWidget(
+      _TestApp(bootstrap: bootstrap, kiroLinkAuthService: service, locale: const Locale('en')),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text(enL10n.accountsTitle), findsOneWidget);
+    expect(find.text(enL10n.accountsEmptyTitle), findsOneWidget);
+  });
 }
 
 class _TestApp extends StatelessWidget {
@@ -286,11 +323,13 @@ class _TestApp extends StatelessWidget {
     required this.bootstrap,
     required this.kiroLinkAuthService,
     this.androidAuthKeepAlive,
+    this.locale,
   });
 
   final AppBootstrap bootstrap;
   final KiroLinkAuthService kiroLinkAuthService;
   final AndroidAuthKeepAlive? androidAuthKeepAlive;
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
@@ -302,6 +341,7 @@ class _TestApp extends StatelessWidget {
           androidAuthKeepAliveProvider.overrideWithValue(androidAuthKeepAlive!),
       ],
       child: MaterialApp(
+        locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const Scaffold(body: AccountsPage()),

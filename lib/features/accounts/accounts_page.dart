@@ -248,7 +248,7 @@ class _AccountCard extends ConsumerWidget {
               if (account.provider != AccountProvider.kiro)
                 KickBadge(
                   label: account.projectId.trim().isEmpty
-                      ? '${l10n.projectIdLabel}: auto'
+                      ? l10n.projectIdAutoChip
                       : l10n.projectIdChip(account.projectId),
                   leading: const Icon(Icons.badge_rounded),
                 ),
@@ -616,9 +616,10 @@ Future<void> _diagnoseProject(BuildContext context, WidgetRef ref, AccountProfil
         content: Text(
           [
             l10n.accountProjectCheckSuccessMessage,
-            'PROJECT_ID: ${snapshot.projectId}',
-            'Model: ${snapshot.modelVersion ?? snapshot.modelId}',
-            if (snapshot.traceId?.trim().isNotEmpty == true) 'Trace ID: ${snapshot.traceId}',
+            l10n.projectIdChip(snapshot.projectId),
+            l10n.accountProjectCheckModelValue(snapshot.modelVersion ?? snapshot.modelId),
+            if (snapshot.traceId?.trim().isNotEmpty == true)
+              l10n.accountProjectCheckTraceIdValue(snapshot.traceId!),
           ].join('\n\n'),
         ),
         actions: [

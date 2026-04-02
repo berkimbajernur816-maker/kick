@@ -1,13 +1,13 @@
 {
   "@@locale": "en",
   "appTitle": "KiCk",
-  "shellSubtitle": "Локальный прокси для Gemini CLI и Kiro",
-  "connectGoogleAccountTitle": "Подключить Google-аккаунт",
-  "homeTitle": "Главная",
-  "proxyRunningStatus": "Запущен",
-  "proxyStoppedStatus": "Остановлен",
-  "embeddedProxyTitle": "Прокси-сервер",
-  "proxyAddress": "Адрес: {host}:{port}",
+  "shellSubtitle": "Local proxy for Gemini CLI and Kiro",
+  "connectGoogleAccountTitle": "Connect Google account",
+  "homeTitle": "Home",
+  "proxyRunningStatus": "Running",
+  "proxyStoppedStatus": "Stopped",
+  "embeddedProxyTitle": "Proxy server",
+  "proxyAddress": "Address: {host}:{port}",
   "@proxyAddress": {
     "placeholders": {
       "host": {
@@ -18,8 +18,8 @@
       }
     }
   },
-  "proxyEndpointTitle": "Адрес прокси",
-  "activeAccounts": "Активных аккаунтов: {count}",
+  "proxyEndpointTitle": "Proxy address",
+  "activeAccounts": "Active accounts: {count}",
   "@activeAccounts": {
     "placeholders": {
       "count": {
@@ -27,13 +27,13 @@
       }
     }
   },
-  "stopProxyButton": "Остановить",
-  "startProxyButton": "Запустить",
-  "openAccountsButton": "Открыть окно с аккаунтами",
-  "connectAccountShortButton": "Подключить аккаунт",
-  "uptimeTitle": "Время работы",
-  "uptimeNotStarted": "Еще не запущен",
-  "uptimeValue": "{hours} ч {minutes} мин {seconds} сек",
+  "stopProxyButton": "Stop",
+  "startProxyButton": "Start",
+  "openAccountsButton": "Open accounts window",
+  "connectAccountShortButton": "Connect account",
+  "uptimeTitle": "Uptime",
+  "uptimeNotStarted": "Not started yet",
+  "uptimeValue": "{hours} h {minutes} min {seconds} sec",
   "@uptimeValue": {
     "placeholders": {
       "hours": {
@@ -47,31 +47,31 @@
       }
     }
   },
-  "versionTitle": "Версия",
-  "apiKeyTitle": "API-ключ",
-  "apiKeyDisabledValue": "Не требуется",
-  "changeApiKeyLinkLabel": "Изменить API-ключ",
-  "loadingValue": "Загрузка...",
-  "lastErrorTitle": "Последняя ошибка",
-  "openLogsButton": "Открыть логи",
-  "accountsTitle": "Аккаунты",
-  "accountsSubtitle": "Подключайте аккаунты Gemini CLI и Kiro и управляйте ими",
-  "addButton": "Добавить",
-  "accountsEmptyTitle": "Аккаунтов пока нет",
-  "accountsEmptyMessage": "Подключите хотя бы один аккаунт Gemini CLI или Kiro",
-  "connectAccountButton": "Подключить аккаунт",
-  "connectAccountDialogTitle": "Подключить аккаунт",
-  "connectAccountProviderPickerTitle": "Выберите провайдера",
-  "accountsLoadErrorTitle": "Не удалось загрузить аккаунты",
-  "accountProviderLabel": "Тип аккаунта",
+  "versionTitle": "Version",
+  "apiKeyTitle": "API key",
+  "apiKeyDisabledValue": "Not required",
+  "changeApiKeyLinkLabel": "Change API key",
+  "loadingValue": "Loading...",
+  "lastErrorTitle": "Last error",
+  "openLogsButton": "Open logs",
+  "accountsTitle": "Accounts",
+  "accountsSubtitle": "Connect Gemini CLI and Kiro accounts and manage them",
+  "addButton": "Add",
+  "accountsEmptyTitle": "No accounts yet",
+  "accountsEmptyMessage": "Connect at least one Gemini CLI or Kiro account",
+  "connectAccountButton": "Connect account",
+  "connectAccountDialogTitle": "Connect account",
+  "connectAccountProviderPickerTitle": "Select provider",
+  "accountsLoadErrorTitle": "Failed to load accounts",
+  "accountProviderLabel": "Account type",
   "accountProviderGemini": "Gemini CLI",
   "accountProviderGeminiCli": "Gemini CLI",
   "accountProviderKiro": "Kiro",
-  "kiroBuilderIdStartUrlLabel": "Ссылка Builder ID",
-  "kiroBuilderIdStartUrlHelperText": "Обычно менять не нужно.",
-  "kiroRegionLabel": "Регион AWS",
-  "kiroRegionHelperText": "Обычно оставьте значение us-east-1.",
-  "kiroCredentialSourceChip": "Источник: {value}",
+  "kiroBuilderIdStartUrlLabel": "Builder ID URL",
+  "kiroBuilderIdStartUrlHelperText": "You usually don't need to change this.",
+  "kiroRegionLabel": "AWS region",
+  "kiroRegionHelperText": "Usually keep us-east-1.",
+  "kiroCredentialSourceChip": "Source: {value}",
   "@kiroCredentialSourceChip": {
     "placeholders": {
       "value": {
@@ -88,7 +88,7 @@
     }
   },
   "projectIdAutoChip": "PROJECT_ID: auto",
-  "priorityChip": "Приоритет: {priorityLabel}",
+  "priorityChip": "Priority: {priorityLabel}",
   "@priorityChip": {
     "placeholders": {
       "priorityLabel": {
@@ -96,10 +96,10 @@
       }
     }
   },
-  "accountCoolingDownStatus": "На паузе",
-  "accountReadyStatus": "Готов к работе",
-  "accountDisabledStatus": "Выключен",
-  "unsupportedModelsList": "Не использовать для моделей: {models}",
+  "accountCoolingDownStatus": "Cooling down",
+  "accountReadyStatus": "Ready",
+  "accountDisabledStatus": "Disabled",
+  "unsupportedModelsList": "Do not use for models: {models}",
   "@unsupportedModelsList": {
     "placeholders": {
       "models": {
@@ -107,15 +107,15 @@
       }
     }
   },
-  "editAccountTitle": "Редактирование аккаунта",
-  "editButton": "Редактировать",
-  "reauthorizeAccountTitle": "Переподключить аккаунт",
-  "reauthorizeButton": "Переподключить",
-  "accountProjectCheckButton": "Проверить доступ к проекту",
-  "accountProjectCheckInProgressMessage": "Проверка...",
-  "accountProjectCheckSuccessTitle": "Доступ к проекту подтвержден",
-  "accountProjectCheckSuccessMessage": "KiCk смог выполнить тестовый запрос к Google для этого аккаунта и проекта",
-  "accountProjectCheckModelValue": "Модель: {model}",
+  "editAccountTitle": "Edit account",
+  "editButton": "Edit",
+  "reauthorizeAccountTitle": "Reconnect account",
+  "reauthorizeButton": "Reconnect",
+  "accountProjectCheckButton": "Check project access",
+  "accountProjectCheckInProgressMessage": "Checking...",
+  "accountProjectCheckSuccessTitle": "Project access confirmed",
+  "accountProjectCheckSuccessMessage": "KiCk successfully made a test request to Google for this account and project",
+  "accountProjectCheckModelValue": "Model: {model}",
   "@accountProjectCheckModelValue": {
     "description": "Shown in the successful project diagnostics dialog after the project check completes.",
     "placeholders": {
@@ -133,14 +133,14 @@
       }
     }
   },
-  "accountProjectCheckFailureTitle": "Не удалось проверить",
-  "resetCooldownTooltip": "Сбросить состояние",
-  "clearCooldownAction": "Снять паузу",
-  "deleteTooltip": "Удалить",
-  "accountUsageOpenTooltip": "Лимиты",
-  "moreButton": "Еще",
-  "deleteAccountDialogTitle": "Удалить аккаунт?",
-  "deleteAccountDialogMessage": "Аккаунт {label} будет удален из KiCk. При необходимости его можно подключить снова позже.",
+  "accountProjectCheckFailureTitle": "Check failed",
+  "resetCooldownTooltip": "Reset status",
+  "clearCooldownAction": "Clear cooldown",
+  "deleteTooltip": "Delete",
+  "accountUsageOpenTooltip": "Quotas",
+  "moreButton": "More",
+  "deleteAccountDialogTitle": "Delete account?",
+  "deleteAccountDialogMessage": "Account {label} will be removed from KiCk. You can reconnect it later if needed.",
   "@deleteAccountDialogMessage": {
     "placeholders": {
       "label": {
@@ -148,34 +148,34 @@
       }
     }
   },
-  "deleteAccountConfirmButton": "Удалить аккаунт",
-  "accountUsageTitle": "Лимиты аккаунта",
-  "accountUsageProviderLabel": "Авторизация Gemini CLI (OAuth)",
-  "accountUsageRefreshTooltip": "Обновить",
-  "accountUsageStatusHealthy": "Доступен",
-  "accountUsageStatusCoolingDown": "Ограничен",
-  "accountUsageStatusLowQuota": "Лимит заканчивается",
-  "accountUsageStatusDisabled": "Выключен",
-  "accountQuotaWarningStatus": "Лимит заканчивается",
-  "accountBanCheckPendingStatus": "Проверяем бан",
-  "accountBanCheckPendingMessage": "Google вернул RESOURCE_EXHAUSTED без времени сброса",
-  "accountTermsOfServiceStatus": "Бан подтвержден",
-  "accountTermsOfServiceMessage": "Google подтвердил блокировку этого аккаунта за нарушение ToS. Аккаунт выведен из ротации.",
-  "accountUsageLoadErrorTitle": "Не удалось загрузить данные по лимитам",
-  "accountUsageRetryButton": "Повторить",
-  "accountUsageVerifyAccountButton": "Подтвердить в Google",
-  "accountSubmitAppealButton": "Подать апелляцию",
-  "openGoogleCloudButton": "Открыть Google Cloud",
-  "accountUsageVerificationOpenFailedMessage": "Не удалось открыть страницу подтверждения в Google",
-  "accountErrorActionOpenFailedMessage": "Не удалось открыть страницу Google",
-  "accountUsageEmptyTitle": "Данные по лимитам недоступны",
-  "accountUsageEmptyMessage": "Google не прислал данные по лимитам для этого аккаунта",
-  "accountUsageUnavailableTitle": "Лимиты для этого аккаунта недоступны",
-  "accountUsageUnavailableMessage": "Страница лимитов пока работает только для аккаунтов Gemini CLI.",
-  "accountUsageMissingTitle": "Аккаунт не найден",
-  "accountUsageMissingSubtitle": "Информация по лимитам",
-  "accountUsageMissingMessage": "Возможно, аккаунт уже удален или список еще не успел обновиться",
-  "accountUsageResetsAt": "Сбросится {time}",
+  "deleteAccountConfirmButton": "Delete account",
+  "accountUsageTitle": "Account quotas",
+  "accountUsageProviderLabel": "Gemini CLI authorization (OAuth)",
+  "accountUsageRefreshTooltip": "Refresh",
+  "accountUsageStatusHealthy": "Available",
+  "accountUsageStatusCoolingDown": "Limited",
+  "accountUsageStatusLowQuota": "Running low",
+  "accountUsageStatusDisabled": "Disabled",
+  "accountQuotaWarningStatus": "Running low",
+  "accountBanCheckPendingStatus": "Checking ban status",
+  "accountBanCheckPendingMessage": "Google returned RESOURCE_EXHAUSTED without a reset time",
+  "accountTermsOfServiceStatus": "Ban confirmed",
+  "accountTermsOfServiceMessage": "Google confirmed this account was blocked for violating the ToS. The account has been removed from rotation.",
+  "accountUsageLoadErrorTitle": "Failed to load quota data",
+  "accountUsageRetryButton": "Retry",
+  "accountUsageVerifyAccountButton": "Verify in Google",
+  "accountSubmitAppealButton": "Submit appeal",
+  "openGoogleCloudButton": "Open Google Cloud",
+  "accountUsageVerificationOpenFailedMessage": "Failed to open the verification page in Google",
+  "accountErrorActionOpenFailedMessage": "Failed to open the Google page",
+  "accountUsageEmptyTitle": "Quota data unavailable",
+  "accountUsageEmptyMessage": "Google did not provide quota data for this account",
+  "accountUsageUnavailableTitle": "Quotas are unavailable for this account",
+  "accountUsageUnavailableMessage": "The quotas page currently works only for Gemini CLI accounts.",
+  "accountUsageMissingTitle": "Account not found",
+  "accountUsageMissingSubtitle": "Quota information",
+  "accountUsageMissingMessage": "The account may already have been deleted, or the list has not refreshed yet",
+  "accountUsageResetsAt": "Resets at {time}",
   "@accountUsageResetsAt": {
     "placeholders": {
       "time": {
@@ -183,8 +183,8 @@
       }
     }
   },
-  "accountUsageResetUnknown": "Время следующего сброса неизвестно",
-  "accountUsageLastUpdated": "Данные обновлены: {time}",
+  "accountUsageResetUnknown": "The next reset time is unknown",
+  "accountUsageLastUpdated": "Data updated: {time}",
   "@accountUsageLastUpdated": {
     "placeholders": {
       "time": {
@@ -192,7 +192,7 @@
       }
     }
   },
-  "accountUsageModelCount": "Моделей: {count}",
+  "accountUsageModelCount": "Models: {count}",
   "@accountUsageModelCount": {
     "placeholders": {
       "count": {
@@ -200,7 +200,7 @@
       }
     }
   },
-  "accountUsageAttentionCount": "Низкий остаток: {count}",
+  "accountUsageAttentionCount": "Low remaining: {count}",
   "@accountUsageAttentionCount": {
     "placeholders": {
       "count": {
@@ -208,7 +208,7 @@
       }
     }
   },
-  "accountUsageCriticalCount": "Почти исчерпано: {count}",
+  "accountUsageCriticalCount": "Nearly exhausted: {count}",
   "@accountUsageCriticalCount": {
     "placeholders": {
       "count": {
@@ -216,7 +216,7 @@
       }
     }
   },
-  "accountUsageHealthyCount": "В норме: {count}",
+  "accountUsageHealthyCount": "Healthy: {count}",
   "@accountUsageHealthyCount": {
     "placeholders": {
       "count": {
@@ -224,7 +224,7 @@
       }
     }
   },
-  "accountUsageTokenType": "Тип лимита: {value}",
+  "accountUsageTokenType": "Quota type: {value}",
   "@accountUsageTokenType": {
     "placeholders": {
       "value": {
@@ -232,7 +232,7 @@
       }
     }
   },
-  "accountUsageUsedPercent": "Израсходовано {value}%",
+  "accountUsageUsedPercent": "Used {value}%",
   "@accountUsageUsedPercent": {
     "placeholders": {
       "value": {
@@ -240,68 +240,68 @@
       }
     }
   },
-  "accountUsageBucketHealthy": "Достаточно",
-  "accountUsageBucketLow": "Заканчивается",
-  "accountUsageBucketCritical": "Почти исчерпано",
-  "settingsTitle": "Настройки",
-  "settingsSubtitle": "Сеть, оформление, API-ключ и работа прокси",
-  "themeLabel": "Тема",
-  "themeModeSystem": "Системная",
-  "themeModeLight": "Светлая",
-  "themeModeDark": "Тёмная",
-  "dynamicThemeTitle": "Динамическая тема",
-  "dynamicThemeSubtitle": "Использовать динамические цвета системы",
-  "settingsAppearanceSectionTitle": "Оформление и поведение",
-  "settingsAppearanceSectionSummary": "Тема, логи и работа приложения",
-  "settingsNetworkSectionTitle": "Сеть",
-  "settingsNetworkSectionSummary": "Хост, порт и доступ из локальной сети",
-  "settingsReliabilitySectionTitle": "Повторы и лимиты",
-  "settingsReliabilitySectionSummary": "Автоповторы и реакция на ограничения API",
-  "settingsAccessSectionTitle": "Доступ и запуск",
-  "settingsAccessSectionSummary": "API-ключ и запуск приложения",
-  "apiKeyRequiredTitle": "Требовать API-ключ",
-  "apiKeyRequiredSubtitle": "Если выключить, запросы будут приниматься без Bearer-токена",
-  "windowsTrayTitle": "Сворачивать в трей",
-  "windowsTraySubtitle": "При закрытии окно не завершает работу, а скрывает KiCk в системный трей",
-  "windowsLaunchAtStartupTitle": "Запускать вместе с Windows",
-  "windowsLaunchAtStartupSubtitle": "KiCk будет автоматически запускаться при входе в систему",
-  "windowsTrayNotificationTitle": "KiCk продолжает работать",
-  "windowsTrayNotificationBody": "Приложение свернуто в системный трей",
-  "settingsModelsSectionTitle": "Модели",
-  "settingsModelsSectionSummary": "Пользовательские ID моделей",
-  "settingsGoogleSectionTitle": "Поиск Google (только Gemini CLI)",
-  "settingsGoogleSectionSummary": "Веб-поиск Google и параметры Gemini CLI",
-  "settingsBackupSectionTitle": "Резервная копия и восстановление",
-  "settingsBackupSectionSummary": "Перенос настроек и аккаунтов между устройствами",
-  "settingsBackupInfoTitle": "В резервную копию попадут настройки, API-ключ и OAuth-токены",
-  "settingsBackupInfoSubtitle": "Храните файл в безопасном месте! После восстановления текущие настройки и список аккаунтов будут полностью заменены.",
-  "hostLabel": "Хост",
-  "hostHelperText": "Обычно localhost",
-  "hostRequiredError": "Укажите адрес хоста",
-  "hostInvalidError": "Адрес не должен содержать пробелы",
-  "hostLanDisabledError": "Чтобы использовать 0.0.0.0, включите доступ из локальной сети",
-  "portLabel": "Порт",
-  "portHelperText": "По умолчанию 3000",
-  "portInvalidError": "Укажите порт от 1 до 65535",
-  "allowLanTitle": "Доступ из локальной сети и Docker",
-  "allowLanSubtitle": "Прокси будет слушать 0.0.0.0 и станет доступен из локальной сети и контейнеров",
-  "androidBackgroundRuntimeTitle": "Работа в фоне на Android",
-  "androidBackgroundRuntimeSubtitle": "Нужно, чтобы прокси не останавливался при сворачивании приложения",
-  "requestRetriesLabel": "Количество повторов запросов к Google",
-  "requestRetriesHelperText": "Сколько раз KiCk повторит запрос после временной ошибки",
-  "requestRetriesInvalidError": "Укажите число от 0 до 20",
-  "retry429DelayLabel": "Интервал повтора для 429",
-  "retry429DelayHelperText": "Интервал, с которым прокси повторяет запрос при ошибке 429",
-  "retry429DelayInvalidError": "Укажите число от 1 до 3600",
-  "mark429AsUnhealthyTitle": "Временно выводить аккаунт из ротации при ошибке 429",
-  "mark429AsUnhealthySubtitle": "После ошибки 429 KiCk пометит аккаунт как временно недоступный и переключится на другой",
-  "loggingLabel": "Логирование",
-  "loggingQuiet": "Минимальное",
-  "loggingNormal": "Стандартное",
-  "loggingVerbose": "Подробное",
-  "logRetentionLabel": "Лимит записей лога",
-  "logRetentionHelperText": "Когда лимит достигнут, самые старые записи будут автоматически удаляться",
-  "logRetentionInvalidError": "Укажите число от {min} до {max}",
+  "accountUsageBucketHealthy": "Enough",
+  "accountUsageBucketLow": "Running low",
+  "accountUsageBucketCritical": "Nearly exhausted",
+  "settingsTitle": "Settings",
+  "settingsSubtitle": "Network, appearance, API key, and proxy behavior",
+  "themeLabel": "Theme",
+  "themeModeSystem": "System",
+  "themeModeLight": "Light",
+  "themeModeDark": "Dark",
+  "dynamicThemeTitle": "Dynamic theme",
+  "dynamicThemeSubtitle": "Use system dynamic colors",
+  "settingsAppearanceSectionTitle": "Appearance and behavior",
+  "settingsAppearanceSectionSummary": "Theme, logs, and app behavior",
+  "settingsNetworkSectionTitle": "Network",
+  "settingsNetworkSectionSummary": "Host, port, and local network access",
+  "settingsReliabilitySectionTitle": "Retries and limits",
+  "settingsReliabilitySectionSummary": "Auto-retries and handling API limits",
+  "settingsAccessSectionTitle": "Access and startup",
+  "settingsAccessSectionSummary": "API key and app startup",
+  "apiKeyRequiredTitle": "Require API key",
+  "apiKeyRequiredSubtitle": "If disabled, requests will be accepted without a Bearer token",
+  "windowsTrayTitle": "Minimize to tray",
+  "windowsTraySubtitle": "Closing the window will not stop KiCk, it will hide it to the system tray",
+  "windowsLaunchAtStartupTitle": "Launch with Windows",
+  "windowsLaunchAtStartupSubtitle": "KiCk will start automatically when you sign in",
+  "windowsTrayNotificationTitle": "KiCk is still running",
+  "windowsTrayNotificationBody": "The app has been minimized to the system tray",
+  "settingsModelsSectionTitle": "Models",
+  "settingsModelsSectionSummary": "Custom model IDs",
+  "settingsGoogleSectionTitle": "Google Search (Gemini CLI only)",
+  "settingsGoogleSectionSummary": "Google web search and Gemini CLI settings",
+  "settingsBackupSectionTitle": "Backup and restore",
+  "settingsBackupSectionSummary": "Transfer settings and accounts between devices",
+  "settingsBackupInfoTitle": "The backup will include settings, the API key, and OAuth tokens",
+  "settingsBackupInfoSubtitle": "Keep the file in a safe place! Restoring will completely replace your current settings and account list.",
+  "hostLabel": "Host",
+  "hostHelperText": "Usually localhost",
+  "hostRequiredError": "Enter a host address",
+  "hostInvalidError": "The address must not contain spaces",
+  "hostLanDisabledError": "To use 0.0.0.0, enable local network access",
+  "portLabel": "Port",
+  "portHelperText": "Default is 3000",
+  "portInvalidError": "Enter a port from 1 to 65535",
+  "allowLanTitle": "Local network and Docker access",
+  "allowLanSubtitle": "The proxy will listen on 0.0.0.0 and be accessible from the local network and containers",
+  "androidBackgroundRuntimeTitle": "Background operation on Android",
+  "androidBackgroundRuntimeSubtitle": "Required so the proxy does not stop when the app is minimized",
+  "requestRetriesLabel": "Number of request retries to Google",
+  "requestRetriesHelperText": "How many times KiCk will retry a request after a temporary error",
+  "requestRetriesInvalidError": "Enter a number from 0 to 20",
+  "retry429DelayLabel": "Retry interval for 429",
+  "retry429DelayHelperText": "The interval at which the proxy retries a request after a 429 error",
+  "retry429DelayInvalidError": "Enter a number from 1 to 3600",
+  "mark429AsUnhealthyTitle": "Temporarily remove the account from rotation on a 429 error",
+  "mark429AsUnhealthySubtitle": "After a 429 error, KiCk will mark the account as temporarily unavailable and switch to another one",
+  "loggingLabel": "Logging",
+  "loggingQuiet": "Minimal",
+  "loggingNormal": "Standard",
+  "loggingVerbose": "Verbose",
+  "logRetentionLabel": "Log entry limit",
+  "logRetentionHelperText": "When the limit is reached, the oldest entries will be removed automatically",
+  "logRetentionInvalidError": "Enter a number from {min} to {max}",
   "@logRetentionInvalidError": {
     "placeholders": {
       "min": {
@@ -312,36 +312,36 @@
       }
     }
   },
-  "unsafeRawLoggingTitle": "Сырые логи отладки",
-  "unsafeRawLoggingSubtitle": "Сохраняет содержимое запросов и ответов. Включайте только для отладки!",
-  "defaultGoogleWebSearchTitle": "Включать веб-поиск по умолчанию",
-  "defaultGoogleWebSearchSubtitle": "KiCk будет автоматически использовать Google Поиск, если клиент не передал явное переопределение параметров, а в запросе нет вызовов функций",
-  "renderGoogleGroundingInMessageTitle": "Показывать цитаты и источники в ответе",
-  "renderGoogleGroundingInMessageSubtitle": "Если отключить, ссылки на источники останутся в метаданных и не будут добавляться в сам текст ответа",
-  "customModelsLabel": "Пользовательские ID моделей",
-  "customModelsHelperText": "По одному ID на строку, например google/... или kiro/...",
-  "settingsSavingStatus": "Сохраняем изменения...",
-  "settingsSavedStatus": "Изменения сохранены",
-  "settingsValidationStatus": "Проверьте поля с ошибками",
-  "settingsSaveFailedStatus": "Не удалось сохранить изменения",
-  "settingsBackupExportButton": "Сохранить резервную копию",
-  "settingsBackupImportButton": "Восстановить резервную копию",
-  "settingsBackupExportOptionsDialogTitle": "Экспорт резервной копии",
-  "settingsBackupExportDialogTitle": "Куда сохранить резервную копию?",
-  "settingsBackupImportDialogTitle": "Выберите файл резервной копии",
-  "settingsBackupExportConfirmButton": "Продолжить",
-  "settingsBackupProtectWithPasswordLabel": "Защитить файл паролем (рекомендуется)",
-  "settingsBackupProtectWithPasswordSubtitle": "Шифрует резервную копию, чтобы токены и ключи нельзя было прочитать без пароля",
-  "settingsBackupPasswordLabel": "Пароль",
-  "settingsBackupPasswordConfirmLabel": "Подтвердите пароль",
-  "settingsBackupPasswordHelperText": "Запомните этот пароль: без него зашифрованную резервную копию восстановить нельзя!",
-  "settingsBackupPasswordsDoNotMatch": "Пароли не совпадают",
-  "settingsBackupUnprotectedWarning": "Внимание! Ваши токены и ключи будут сохранены в открытом виде. Любой, кто получит этот файл, получит доступ к вашим данным.",
-  "settingsBackupRestoreDialogTitle": "Восстановить конфигурацию?",
-  "settingsBackupRestoreDialogMessage": "Текущие настройки, API-ключ и список аккаунтов будут заменены данными из этой резервной копии. Это действие нельзя отменить.",
-  "settingsBackupRestoreConfirmButton": "Восстановить",
-  "settingsBackupPasswordDialogTitle": "Введите пароль резервной копии",
-  "settingsBackupPasswordDialogMessage": "Файл {fileName} защищен паролем. Введите пароль, чтобы продолжить восстановление.",
+  "unsafeRawLoggingTitle": "Raw debug logs",
+  "unsafeRawLoggingSubtitle": "Stores the contents of requests and responses. Enable only for debugging!",
+  "defaultGoogleWebSearchTitle": "Enable web search by default",
+  "defaultGoogleWebSearchSubtitle": "KiCk will automatically use Google Search if the client did not explicitly override parameters and the request contains no function calls",
+  "renderGoogleGroundingInMessageTitle": "Show citations and sources in the response",
+  "renderGoogleGroundingInMessageSubtitle": "If disabled, source links will remain in metadata and will not be added to the response text itself",
+  "customModelsLabel": "Custom model IDs",
+  "customModelsHelperText": "One ID per line, for example google/... or kiro/...",
+  "settingsSavingStatus": "Saving changes...",
+  "settingsSavedStatus": "Changes saved",
+  "settingsValidationStatus": "Check the fields with errors",
+  "settingsSaveFailedStatus": "Failed to save changes",
+  "settingsBackupExportButton": "Save backup",
+  "settingsBackupImportButton": "Restore backup",
+  "settingsBackupExportOptionsDialogTitle": "Export backup",
+  "settingsBackupExportDialogTitle": "Where should the backup be saved?",
+  "settingsBackupImportDialogTitle": "Select a backup file",
+  "settingsBackupExportConfirmButton": "Continue",
+  "settingsBackupProtectWithPasswordLabel": "Protect the file with a password (recommended)",
+  "settingsBackupProtectWithPasswordSubtitle": "Encrypts the backup so tokens and keys cannot be read without the password",
+  "settingsBackupPasswordLabel": "Password",
+  "settingsBackupPasswordConfirmLabel": "Confirm password",
+  "settingsBackupPasswordHelperText": "Remember this password: without it, the encrypted backup cannot be restored!",
+  "settingsBackupPasswordsDoNotMatch": "Passwords do not match",
+  "settingsBackupUnprotectedWarning": "Warning! Your tokens and keys will be saved in plain text. Anyone who gets this file will gain access to your data.",
+  "settingsBackupRestoreDialogTitle": "Restore configuration?",
+  "settingsBackupRestoreDialogMessage": "Current settings, the API key, and the account list will be replaced with data from this backup. This action cannot be undone.",
+  "settingsBackupRestoreConfirmButton": "Restore",
+  "settingsBackupPasswordDialogTitle": "Enter the backup password",
+  "settingsBackupPasswordDialogMessage": "The file {fileName} is password-protected. Enter the password to continue restoring.",
   "@settingsBackupPasswordDialogMessage": {
     "placeholders": {
       "fileName": {
@@ -349,7 +349,7 @@
       }
     }
   },
-  "settingsBackupPasswordDialogInvalidMessage": "Не удалось расшифровать файл {fileName}. Проверьте пароль и попробуйте снова.",
+  "settingsBackupPasswordDialogInvalidMessage": "Failed to decrypt the file {fileName}. Check the password and try again.",
   "@settingsBackupPasswordDialogInvalidMessage": {
     "placeholders": {
       "fileName": {
@@ -357,8 +357,8 @@
       }
     }
   },
-  "settingsBackupPasswordConfirmButton": "Расшифровать",
-  "settingsBackupExportedMessage": "Резервная копия сохранена в файл {fileName}",
+  "settingsBackupPasswordConfirmButton": "Decrypt",
+  "settingsBackupExportedMessage": "Backup saved to file {fileName}",
   "@settingsBackupExportedMessage": {
     "placeholders": {
       "fileName": {
@@ -366,7 +366,7 @@
       }
     }
   },
-  "settingsBackupRestoredMessage": "Конфигурация восстановлена. Аккаунтов: {accountCount}",
+  "settingsBackupRestoredMessage": "Configuration restored. Accounts: {accountCount}",
   "@settingsBackupRestoredMessage": {
     "placeholders": {
       "accountCount": {
@@ -374,7 +374,7 @@
       }
     }
   },
-  "settingsBackupRestoredMissingTokensMessage": "Конфигурация восстановлена. Аккаунтов: {accountCount}, без токенов: {missingCount}",
+  "settingsBackupRestoredMissingTokensMessage": "Configuration restored. Accounts: {accountCount}, without tokens: {missingCount}",
   "@settingsBackupRestoredMissingTokensMessage": {
     "placeholders": {
       "accountCount": {
@@ -385,7 +385,7 @@
       }
     }
   },
-  "settingsBackupExportFailedMessage": "Не удалось сохранить резервную копию: {error}",
+  "settingsBackupExportFailedMessage": "Failed to save backup: {error}",
   "@settingsBackupExportFailedMessage": {
     "placeholders": {
       "error": {
@@ -393,7 +393,7 @@
       }
     }
   },
-  "settingsBackupRestoreFailedMessage": "Не удалось восстановить резервную копию: {error}",
+  "settingsBackupRestoreFailedMessage": "Failed to restore backup: {error}",
   "@settingsBackupRestoreFailedMessage": {
     "placeholders": {
       "error": {
@@ -401,18 +401,18 @@
       }
     }
   },
-  "settingsBackupInvalidMessage": "Файл резервной копии поврежден или имеет неподдерживаемый формат",
-  "settingsBackupUnsupportedVersionMessage": "Эта резервная копия создана в более новой версии KiCk и пока не поддерживается",
-  "settingsBackupReadFailedMessage": "Не удалось прочитать выбранную резервную копию",
-  "settingsBackupPasswordRequiredMessage": "Для этой резервной копии нужен пароль",
-  "settingsLoadErrorTitle": "Не удалось загрузить настройки",
-  "aboutTitle": "О программе",
-  "aboutMenuSubtitle": "Версия, обновления и аналитика",
-  "aboutDescription": "Локальный OpenAI-совместимый прокси для Gemini CLI и Kiro в нативном Flutter-приложении",
-  "aboutUpdatesTitle": "Обновления",
-  "aboutUpdatesChecking": "Проверяем обновления на GitHub...",
-  "aboutUpdateAvailableTitle": "Доступно обновление",
-  "aboutUpdateAvailableMessage": "Доступна версия {latestVersion}. Сейчас у вас установлена {currentVersion}.",
+  "settingsBackupInvalidMessage": "The backup file is corrupted or has an unsupported format",
+  "settingsBackupUnsupportedVersionMessage": "This backup was created in a newer version of KiCk and is not supported yet",
+  "settingsBackupReadFailedMessage": "Failed to read the selected backup",
+  "settingsBackupPasswordRequiredMessage": "A password is required for this backup",
+  "settingsLoadErrorTitle": "Failed to load settings",
+  "aboutTitle": "About",
+  "aboutMenuSubtitle": "Version, updates, and analytics",
+  "aboutDescription": "A local OpenAI-compatible proxy for Gemini CLI and Kiro in a native Flutter app",
+  "aboutUpdatesTitle": "Updates",
+  "aboutUpdatesChecking": "Checking for updates on GitHub...",
+  "aboutUpdateAvailableTitle": "Update available",
+  "aboutUpdateAvailableMessage": "Version {latestVersion} is available. You currently have {currentVersion} installed.",
   "@aboutUpdateAvailableMessage": {
     "placeholders": {
       "latestVersion": {
@@ -423,8 +423,8 @@
       }
     }
   },
-  "aboutUpToDateTitle": "Обновлений нет",
-  "aboutUpToDateMessage": "У вас установлена актуальная версия: {currentVersion}.",
+  "aboutUpToDateTitle": "Up to date",
+  "aboutUpToDateMessage": "You have the latest version installed: {currentVersion}.",
   "@aboutUpToDateMessage": {
     "placeholders": {
       "currentVersion": {
@@ -432,22 +432,22 @@
       }
     }
   },
-  "aboutUpdateCheckFailedTitle": "Не удалось проверить обновления",
-  "aboutUpdateCheckFailedMessage": "Не удалось получить информацию о релизах с GitHub.",
-  "aboutOpenReleaseButton": "Открыть релиз",
-  "aboutRetryUpdateCheckButton": "Проверить еще раз",
-  "aboutAnalyticsTitle": "Аналитика",
-  "aboutAnalyticsSubtitle": "Анонимная статистика использования помогает улучшать KiCk.",
-  "copyProxyEndpointTooltip": "Скопировать адрес прокси",
-  "proxyEndpointCopiedMessage": "Адрес прокси скопирован",
-  "copyApiKeyTooltip": "Скопировать API-ключ",
-  "apiKeyCopiedMessage": "API-ключ скопирован",
-  "homeOnboardingTitle": "С чего начать",
-  "homeOnboardingSubtitle": "Небольшая подсказка для первого запуска",
-  "homeOnboardingAccountsTitle": "Подключите аккаунт",
-  "homeOnboardingAccountsMessage": "Без активного аккаунта Gemini CLI или Kiro KiCk не сможет обрабатывать запросы.",
-  "homeOnboardingEndpointTitle": "Проверьте адрес прокси",
-  "homeOnboardingEndpointMessage": "Когда все будет готово, используйте адрес {endpoint} в своем клиенте.",
+  "aboutUpdateCheckFailedTitle": "Failed to check for updates",
+  "aboutUpdateCheckFailedMessage": "Failed to get release information from GitHub.",
+  "aboutOpenReleaseButton": "Open release",
+  "aboutRetryUpdateCheckButton": "Check again",
+  "aboutAnalyticsTitle": "Analytics",
+  "aboutAnalyticsSubtitle": "Anonymous usage statistics help improve KiCk.",
+  "copyProxyEndpointTooltip": "Copy proxy address",
+  "proxyEndpointCopiedMessage": "Proxy address copied",
+  "copyApiKeyTooltip": "Copy API key",
+  "apiKeyCopiedMessage": "API key copied",
+  "homeOnboardingTitle": "Getting started",
+  "homeOnboardingSubtitle": "A quick guide for the first launch",
+  "homeOnboardingAccountsTitle": "Connect an account",
+  "homeOnboardingAccountsMessage": "Without an active Gemini CLI or Kiro account, KiCk will not be able to process requests.",
+  "homeOnboardingEndpointTitle": "Check the proxy address",
+  "homeOnboardingEndpointMessage": "When everything is ready, use the address {endpoint} in your client.",
   "@homeOnboardingEndpointMessage": {
     "placeholders": {
       "endpoint": {
@@ -455,55 +455,55 @@
       }
     }
   },
-  "homeOnboardingStartTitle": "Запустите прокси",
-  "homeOnboardingStartMessage": "После запуска KiCk начнет принимать запросы на этом устройстве.",
-  "homeOnboardingFooter": "Если аккаунт уже подключен, просто включите его на экране аккаунтов и вернитесь сюда.",
-  "apiKeyRegeneratedMessage": "Новый API-ключ сохранен",
-  "regenerateApiKeyAction": "Создать новый API-ключ",
-  "regenerateApiKeyDialogTitle": "Создать новый API-ключ?",
-  "regenerateApiKeyDialogMessage": "Старый ключ будет сразу отозван. Всем подключенным клиентам понадобится новый ключ для работы.",
-  "regenerateApiKeyConfirmButton": "Сгенерировать",
-  "trayOpenWindowAction": "Открыть окно",
-  "trayHideToTrayAction": "Свернуть в трей",
-  "trayExitAction": "Выйти",
-  "noActiveAccountsWarning": "Нет активных аккаунтов. Прокси запустится, но не сможет обрабатывать запросы, пока вы не добавите или не включите хотя бы один аккаунт.",
-  "pinWindowTooltip": "Закрепить окно поверх остальных",
-  "unpinWindowTooltip": "Убрать закрепление окна",
-  "welcomeTitle": "Добро пожаловать в KiCk",
-  "welcomeSubtitle": "KiCk помогает запустить локальный прокси для Gemini CLI и Kiro без терминала и лишних настроек.",
-  "welcomeStepAccountsTitle": "Подключите аккаунт",
-  "welcomeStepAccountsMessage": "Это можно сделать на экране аккаунтов. Можно подключить Gemini CLI или Kiro.",
-  "welcomeStepHomeTitle": "Откройте главную",
-  "welcomeStepHomeMessage": "На главной всегда видны адрес прокси, API-ключ и кнопка запуска.",
-  "welcomeUsageTitle": "Важно знать",
-  "welcomeUsageMessage": "KiCk предназначен для личного, учебного и исследовательского использования.",
-  "welcomeAnalyticsTitle": "Анонимная аналитика",
-  "welcomeAnalyticsSubtitle": "Помогает понять, где KiCk работает хорошо, а где его стоит улучшить.",
-  "welcomeRepositoryLinkLabel": "Подробнее о проекте",
-  "logsTitle": "Логи",
-  "logsSubtitle": "История запросов и ошибок",
-  "logsSearchHint": "Поиск по маршруту или сообщению",
-  "logsRefreshButton": "Обновить",
-  "logsClearButton": "Очистить",
-  "logsClearDialogTitle": "Очистить логи?",
-  "logsClearDialogMessage": "Все записи будут удалены из KiCk. Это действие нельзя отменить.",
-  "logsClearConfirmButton": "Очистить",
-  "logsLevelAll": "Все уровни",
-  "logsLevelInfo": "Инфо",
-  "logsLevelWarning": "Предупреждения",
-  "logsLevelError": "Ошибки",
-  "logsCategoryAll": "Все категории",
-  "logsCategoryFilterTitle": "Категории",
-  "logsPayloadShowButton": "Показать payload",
-  "logsPayloadHideButton": "Скрыть payload",
-  "logsCopyEntryButton": "Копировать",
-  "logsCopiedMessage": "Запись лога скопирована",
-  "logsFilteredEmptyTitle": "По текущим фильтрам ничего не найдено",
-  "logsFilteredEmptyMessage": "Попробуйте убрать часть фильтров или изменить поиск.",
-  "logsEntryLevelInfo": "Инфо",
-  "logsEntryLevelWarning": "Предупреждение",
-  "logsEntryLevelError": "Ошибка",
-  "logsTotalCount": "Всего: {count}",
+  "homeOnboardingStartTitle": "Start the proxy",
+  "homeOnboardingStartMessage": "After startup, KiCk will begin accepting requests on this device.",
+  "homeOnboardingFooter": "If an account is already connected, just enable it on the accounts screen and come back here.",
+  "apiKeyRegeneratedMessage": "New API key saved",
+  "regenerateApiKeyAction": "Create new API key",
+  "regenerateApiKeyDialogTitle": "Create a new API key?",
+  "regenerateApiKeyDialogMessage": "The old key will be revoked immediately. All connected clients will need the new key to keep working.",
+  "regenerateApiKeyConfirmButton": "Generate",
+  "trayOpenWindowAction": "Open window",
+  "trayHideToTrayAction": "Minimize to tray",
+  "trayExitAction": "Exit",
+  "noActiveAccountsWarning": "No active accounts. The proxy will start, but it will not be able to process requests until you add or enable at least one account.",
+  "pinWindowTooltip": "Pin window on top",
+  "unpinWindowTooltip": "Unpin window",
+  "welcomeTitle": "Welcome to KiCk",
+  "welcomeSubtitle": "KiCk helps you run a local proxy for Gemini CLI and Kiro without terminal commands or extra setup.",
+  "welcomeStepAccountsTitle": "Connect an account",
+  "welcomeStepAccountsMessage": "You can do this on the accounts screen. You can connect Gemini CLI or Kiro.",
+  "welcomeStepHomeTitle": "Open Home",
+  "welcomeStepHomeMessage": "Home always shows the proxy address, API key, and the start button.",
+  "welcomeUsageTitle": "Important to know",
+  "welcomeUsageMessage": "KiCk is intended for personal, educational, and research use.",
+  "welcomeAnalyticsTitle": "Anonymous analytics",
+  "welcomeAnalyticsSubtitle": "Helps understand where KiCk works well and where it should be improved.",
+  "welcomeRepositoryLinkLabel": "Learn more about the project",
+  "logsTitle": "Logs",
+  "logsSubtitle": "Request and error history",
+  "logsSearchHint": "Search by route or message",
+  "logsRefreshButton": "Refresh",
+  "logsClearButton": "Clear",
+  "logsClearDialogTitle": "Clear logs?",
+  "logsClearDialogMessage": "All entries will be removed from KiCk. This action cannot be undone.",
+  "logsClearConfirmButton": "Clear",
+  "logsLevelAll": "All levels",
+  "logsLevelInfo": "Info",
+  "logsLevelWarning": "Warnings",
+  "logsLevelError": "Errors",
+  "logsCategoryAll": "All categories",
+  "logsCategoryFilterTitle": "Categories",
+  "logsPayloadShowButton": "Show payload",
+  "logsPayloadHideButton": "Hide payload",
+  "logsCopyEntryButton": "Copy",
+  "logsCopiedMessage": "Log entry copied",
+  "logsFilteredEmptyTitle": "Nothing found for the current filters",
+  "logsFilteredEmptyMessage": "Try removing some filters or changing the search.",
+  "logsEntryLevelInfo": "Info",
+  "logsEntryLevelWarning": "Warning",
+  "logsEntryLevelError": "Error",
+  "logsTotalCount": "Total: {count}",
   "@logsTotalCount": {
     "placeholders": {
       "count": {
@@ -511,7 +511,7 @@
       }
     }
   },
-  "logsFilteredCount": "После фильтра: {count}",
+  "logsFilteredCount": "After filtering: {count}",
   "@logsFilteredCount": {
     "placeholders": {
       "count": {
@@ -519,7 +519,7 @@
       }
     }
   },
-  "logsLoadedCount": "Загружено: {count}",
+  "logsLoadedCount": "Loaded: {count}",
   "@logsLoadedCount": {
     "placeholders": {
       "count": {
@@ -527,14 +527,14 @@
       }
     }
   },
-  "logsEmptyTitle": "Логи пусты",
-  "logsLoadErrorTitle": "Не удалось загрузить логи",
-  "logsExportTooltip": "Сохранить все логи по текущим фильтрам",
-  "logsExportDialogTitle": "Куда сохранить логи?",
-  "logsShareTooltip": "Поделиться всеми логами по текущим фильтрам",
-  "logsLoadMoreButton": "Загрузить еще",
-  "logsNothingToExportMessage": "Нет логов для сохранения",
-  "logsExportedMessage": "Логи сохранены в файл {fileName}",
+  "logsEmptyTitle": "Logs are empty",
+  "logsLoadErrorTitle": "Failed to load logs",
+  "logsExportTooltip": "Save all logs for the current filters",
+  "logsExportDialogTitle": "Where should the logs be saved?",
+  "logsShareTooltip": "Share all logs for the current filters",
+  "logsLoadMoreButton": "Load more",
+  "logsNothingToExportMessage": "No logs to save",
+  "logsExportedMessage": "Logs saved to file {fileName}",
   "@logsExportedMessage": {
     "placeholders": {
       "fileName": {
@@ -542,7 +542,7 @@
       }
     }
   },
-  "logsExportFailedMessage": "Не удалось сохранить логи: {error}",
+  "logsExportFailedMessage": "Failed to save logs: {error}",
   "@logsExportFailedMessage": {
     "placeholders": {
       "error": {
@@ -550,7 +550,7 @@
       }
     }
   },
-  "logsShareFailedMessage": "Не удалось поделиться логами: {error}",
+  "logsShareFailedMessage": "Failed to share logs: {error}",
   "@logsShareFailedMessage": {
     "placeholders": {
       "error": {
@@ -558,66 +558,66 @@
       }
     }
   },
-  "accountDialogTitle": "Аккаунт",
-  "accountDialogBasicsTitle": "Основное",
-  "accountDialogBasicsSubtitle": "Поля для подключения выбранного типа аккаунта",
-  "accountDialogAdvancedTitle": "Расширенные настройки",
-  "accountDialogAdvancedSubtitle": "Приоритет и ограничения по моделям",
-  "accountDialogAdvancedHint": "Если не хочется настраивать вручную, этот блок можно оставить как есть.",
+  "accountDialogTitle": "Account",
+  "accountDialogBasicsTitle": "Basics",
+  "accountDialogBasicsSubtitle": "Fields for connecting the selected account type",
+  "accountDialogAdvancedTitle": "Advanced settings",
+  "accountDialogAdvancedSubtitle": "Priority and model restrictions",
+  "accountDialogAdvancedHint": "If you don't want to configure it manually, you can leave this section as is.",
   "projectIdLabel": "PROJECT_ID",
   "projectIdHint": "my-google-cloud-project",
-  "projectIdConsoleLinkLabel": "Где посмотреть ID проекта",
-  "projectIdRequiredError": "Укажите ID проекта",
-  "projectIdLookupFailedMessage": "Не удалось открыть Google Cloud Console.",
-  "accountNameLabel": "Название аккаунта",
-  "accountNameHint": "Например, основной аккаунт",
-  "accountNameHelperText": "Если оставить поле пустым, KiCk подставит имя аккаунта.",
-  "priorityLabel": "Приоритет",
-  "priorityHelperText": "Сначала используются основные аккаунты. Аккаунты с одинаковым приоритетом чередуются.",
-  "priorityLevelPrimary": "Основной",
-  "priorityLevelNormal": "Обычный",
-  "priorityLevelReserve": "Резервный",
-  "blockedModelsLabel": "Недоступные модели",
-  "blockedModelsHelperText": "По одному ID на строку, например google/... или kiro/...",
-  "kiroLinkAuthDialogTitle": "Авторизация Kiro",
-  "kiroLinkAuthDialogMessage": "Откройте ссылку, войдите через AWS Builder ID и подтвердите вход для Kiro. Код нужен только для сверки, вводить его не нужно. KiCk сам дождётся завершения.",
-  "kiroLinkAuthUserCodeLabel": "Код для сверки",
-  "kiroLinkAuthVerificationUrlLabel": "Ссылка для входа",
-  "kiroLinkAuthWaitingMessage": "Ждём, пока вы подтвердите вход в браузере...",
-  "kiroLinkAuthOpenLinkButton": "Открыть ссылку",
-  "kiroLinkAuthOpenLinkAgainButton": "Открыть ещё раз",
-  "kiroLinkAuthOpenLinkFailedMessage": "Не удалось открыть ссылку для входа в Kiro.",
-  "cancelButton": "Отмена",
-  "continueButton": "Продолжить",
-  "navHome": "Главная",
-  "navAccounts": "Аккаунты",
-  "navSettings": "Настройки",
-  "navLogs": "Логи",
-  "runtimeChannelName": "Прокси KiCk в фоне",
-  "runtimeChannelDescription": "Поддерживает работу прокси в фоновом режиме",
-  "runtimeNotificationTitle": "Прокси KiCk запущен",
-  "runtimeNotificationReturn": "Нажмите, чтобы вернуться в приложение",
-  "runtimeNotificationManage": "Нажмите, чтобы открыть аккаунты и настройки",
-  "runtimeNotificationActive": "Прокси активен",
-  "oauthPageTitleError": "Ошибка авторизации",
-  "oauthPageTitleSuccess": "Успешная авторизация",
-  "oauthPageStateMismatchMessage": "Несоответствие состояний. Вы можете закрыть эту вкладку.",
-  "oauthPageGoogleErrorMessage": "Google вернул ошибку. Вы можете закрыть эту вкладку.",
-  "oauthPageCodeMissingMessage": "Код не получен. Вы можете закрыть эту вкладку.",
-  "oauthPageCloseTabMessage": "Вы можете закрыть вкладку.",
-  "accountDisplayNameFallbackGoogle": "Google-аккаунт",
-  "errorNetworkUnavailable": "Не удалось связаться с серверами Google. Проверьте интернет и попробуйте снова.",
-  "errorGoogleServiceUnavailable": "Сервис Google временно недоступен. Повторите попытку позже.",
-  "errorInvalidServiceResponse": "Сервер вернул непонятный ответ. Попробуйте еще раз.",
-  "errorGoogleAuthFailed": "Авторизация Google завершилась с ошибкой. Попробуйте снова.",
-  "errorGoogleAuthTimedOut": "Авторизация Google не завершилась вовремя. Вернитесь в приложение и попробуйте снова. Если это повторяется на Android, отключите для KiCk ограничения батареи.",
-  "errorGoogleAuthBrowserOpenFailed": "Не удалось открыть браузер для авторизации Google. Попробуйте снова.",
-  "errorUnknown": "Произошла неизвестная ошибка. Попробуйте снова.",
-  "errorOauthTokensMissing": "Для этого аккаунта не найдены токены авторизации. Переподключите аккаунт.",
-  "errorAccountNotFound": "Аккаунт не найден. Возможно, он уже был удалён.",
-  "errorPortAlreadyInUse": "Этот порт уже занят другим приложением. Выберите другой порт в настройках.",
-  "errorPermissionDenied": "Не хватило системных разрешений для запуска. Проверьте настройки приложения и повторите попытку.",
-  "errorGoogleRateLimitedRetry": "Google временно ограничил запросы для этого аккаунта. Попробуйте снова через {retryHint}.",
+  "projectIdConsoleLinkLabel": "Where to find the project ID",
+  "projectIdRequiredError": "Enter a project ID",
+  "projectIdLookupFailedMessage": "Failed to open Google Cloud Console.",
+  "accountNameLabel": "Account name",
+  "accountNameHint": "For example, main account",
+  "accountNameHelperText": "If you leave this field empty, KiCk will use the account name.",
+  "priorityLabel": "Priority",
+  "priorityHelperText": "Primary accounts are used first. Accounts with the same priority alternate.",
+  "priorityLevelPrimary": "Primary",
+  "priorityLevelNormal": "Normal",
+  "priorityLevelReserve": "Reserve",
+  "blockedModelsLabel": "Unavailable models",
+  "blockedModelsHelperText": "One ID per line, for example google/... or kiro/...",
+  "kiroLinkAuthDialogTitle": "Kiro authorization",
+  "kiroLinkAuthDialogMessage": "Open the link, sign in with AWS Builder ID, and confirm access for Kiro. The code is only for verification; you do not need to enter it. KiCk will wait for completion automatically.",
+  "kiroLinkAuthUserCodeLabel": "Verification code",
+  "kiroLinkAuthVerificationUrlLabel": "Sign-in link",
+  "kiroLinkAuthWaitingMessage": "Waiting for you to confirm sign-in in the browser...",
+  "kiroLinkAuthOpenLinkButton": "Open link",
+  "kiroLinkAuthOpenLinkAgainButton": "Open again",
+  "kiroLinkAuthOpenLinkFailedMessage": "Failed to open the sign-in link for Kiro.",
+  "cancelButton": "Cancel",
+  "continueButton": "Continue",
+  "navHome": "Home",
+  "navAccounts": "Accounts",
+  "navSettings": "Settings",
+  "navLogs": "Logs",
+  "runtimeChannelName": "KiCk proxy in background",
+  "runtimeChannelDescription": "Keeps the proxy running in the background",
+  "runtimeNotificationTitle": "KiCk proxy is running",
+  "runtimeNotificationReturn": "Tap to return to the app",
+  "runtimeNotificationManage": "Tap to open accounts and settings",
+  "runtimeNotificationActive": "Proxy is active",
+  "oauthPageTitleError": "Authorization error",
+  "oauthPageTitleSuccess": "Authorization successful",
+  "oauthPageStateMismatchMessage": "State mismatch. You can close this tab.",
+  "oauthPageGoogleErrorMessage": "Google returned an error. You can close this tab.",
+  "oauthPageCodeMissingMessage": "No code received. You can close this tab.",
+  "oauthPageCloseTabMessage": "You can close this tab.",
+  "accountDisplayNameFallbackGoogle": "Google account",
+  "errorNetworkUnavailable": "Could not reach Google's servers. Check your internet connection and try again.",
+  "errorGoogleServiceUnavailable": "Google service is temporarily unavailable. Please try again later.",
+  "errorInvalidServiceResponse": "The server returned an invalid response. Please try again.",
+  "errorGoogleAuthFailed": "Google authorization failed. Please try again.",
+  "errorGoogleAuthTimedOut": "Google authorization did not finish in time. Return to the app and try again. If this keeps happening on Android, disable battery restrictions for KiCk.",
+  "errorGoogleAuthBrowserOpenFailed": "Failed to open the browser for Google authorization. Please try again.",
+  "errorUnknown": "An unknown error occurred. Please try again.",
+  "errorOauthTokensMissing": "Authorization tokens for this account were not found. Reconnect the account.",
+  "errorAccountNotFound": "Account not found. It may already have been deleted.",
+  "errorPortAlreadyInUse": "This port is already in use by another app. Choose a different port in settings.",
+  "errorPermissionDenied": "The app does not have the required system permissions to start. Check app settings and try again.",
+  "errorGoogleRateLimitedRetry": "Google has temporarily rate-limited requests for this account. Try again in {retryHint}.",
   "@errorGoogleRateLimitedRetry": {
     "placeholders": {
       "retryHint": {
@@ -625,13 +625,13 @@
       }
     }
   },
-  "errorGoogleRateLimitedLater": "Google временно ограничил запросы для этого аккаунта. Попробуйте снова позже.",
-  "errorKiroAuthExpired": "Сессия Kiro истекла. Войдите заново и попробуйте снова.",
-  "errorKiroAuthStartFailed": "Не удалось запустить авторизацию Kiro. Попробуйте снова позже.",
-  "errorKiroAuthCancelled": "Авторизация Kiro была отменена.",
-  "errorKiroAuthTimedOut": "Время ожидания авторизации Kiro истекло. Попробуйте снова.",
-  "errorKiroAuthRejected": "Kiro отклонил авторизацию. Попробуйте начать вход заново.",
-  "errorKiroRateLimitedRetry": "Kiro временно ограничил запросы. Попробуйте снова через {retryHint}.",
+  "errorGoogleRateLimitedLater": "Google has temporarily rate-limited requests for this account. Try again later.",
+  "errorKiroAuthExpired": "Kiro session expired. Sign in again and try again.",
+  "errorKiroAuthStartFailed": "Failed to start Kiro authorization. Please try again later.",
+  "errorKiroAuthCancelled": "Kiro authorization was canceled.",
+  "errorKiroAuthTimedOut": "Kiro authorization timed out. Please try again.",
+  "errorKiroAuthRejected": "Kiro rejected the authorization. Try starting sign-in again.",
+  "errorKiroRateLimitedRetry": "Kiro has temporarily rate-limited requests. Try again in {retryHint}.",
   "@errorKiroRateLimitedRetry": {
     "placeholders": {
       "retryHint": {
@@ -639,20 +639,20 @@
       }
     }
   },
-  "errorKiroRateLimitedLater": "Kiro временно ограничил запросы. Попробуйте снова позже.",
-  "errorKiroServiceUnavailable": "Сервис Kiro временно недоступен. Повторите попытку позже.",
-  "errorGoogleAccountVerificationRequired": "Google просит подтвердить этот аккаунт. Откройте страницу подтверждения и войдите под тем же Google-аккаунтом.",
-  "errorGoogleProjectIdMissing": "Google не смог определить корректный ID проекта для этого аккаунта или запроса. Проверьте ID проекта в настройках аккаунта и при необходимости переподключите его.",
-  "errorGoogleProjectApiDisabled": "Gemini for Google Cloud API отключен для этого проекта. Откройте Google Cloud, включите API для нужного ID проекта и повторите проверку.",
-  "errorGoogleProjectInvalid": "Google отклонил этот ID проекта. Проверьте, что указали существующий проект и что у аккаунта есть доступ именно к нему.",
-  "errorGoogleProjectAccessDenied": "Google отклонил запрос для этого проекта или аккаунта. Проверьте ID проекта, выбранный аккаунт и убедитесь, что Gemini Code Assist включен именно для этого проекта.",
-  "errorAuthExpired": "Срок действия авторизации истек или она стала недействительной. Переподключите аккаунт и попробуйте снова.",
-  "errorGoogleCapacity": "Сервера Google временно перегружены. Повторите попытку чуть позже.",
-  "errorUnsupportedModel": "Выбранная модель сейчас недоступна для этого аккаунта.",
-  "errorInvalidJson": "Запрос имеет неверный формат JSON.",
-  "errorUnexpectedResponse": "Сервис вернул неожиданный ответ. Повторите попытку.",
-  "errorQuotaExhausted": "Лимит этого аккаунта исчерпан. Дождитесь сброса или используйте другой аккаунт.",
-  "errorQuotaExhaustedRetry": "Лимит этого аккаунта исчерпан. Попробуйте снова через {retryHint} или используйте другой аккаунт.",
+  "errorKiroRateLimitedLater": "Kiro has temporarily rate-limited requests. Try again later.",
+  "errorKiroServiceUnavailable": "Kiro service is temporarily unavailable. Please try again later.",
+  "errorGoogleAccountVerificationRequired": "Google asks you to verify this account. Open the verification page and sign in with the same Google account.",
+  "errorGoogleProjectIdMissing": "Google could not determine a valid project ID for this account or request. Check the project ID in the account settings and reconnect the account if necessary.",
+  "errorGoogleProjectApiDisabled": "Gemini for Google Cloud API is disabled for this project. Open Google Cloud, enable the API for the correct project ID, and run the check again.",
+  "errorGoogleProjectInvalid": "Google rejected this project ID. Make sure you entered an existing project and that the account has access to it.",
+  "errorGoogleProjectAccessDenied": "Google rejected the request for this project or account. Check the project ID and selected account, and make sure Gemini Code Assist is enabled for this project.",
+  "errorAuthExpired": "Authorization has expired or is no longer valid. Reconnect the account and try again.",
+  "errorGoogleCapacity": "Google servers are temporarily overloaded. Please try again a little later.",
+  "errorUnsupportedModel": "The selected model is currently unavailable for this account.",
+  "errorInvalidJson": "The request has an invalid JSON format.",
+  "errorUnexpectedResponse": "The service returned an unexpected response. Please try again.",
+  "errorQuotaExhausted": "This account's quota has been exhausted. Wait for a reset or use another account.",
+  "errorQuotaExhaustedRetry": "This account's quota has been exhausted. Try again in {retryHint} or use another account.",
   "@errorQuotaExhaustedRetry": {
     "placeholders": {
       "retryHint": {
@@ -660,12 +660,12 @@
       }
     }
   },
-  "errorQuotaExhaustedNoResetHint": "Google вернул RESOURCE_EXHAUSTED без времени сброса. KiCk отдельно проверит этот аккаунт; если ошибка повторяется, используйте другой аккаунт",
-  "errorGoogleTermsOfServiceViolation": "Google отключил этот аккаунт за нарушение ToS. Подайте апелляцию или используйте другой аккаунт.",
-  "errorInvalidRequestRejected": "Запрос имеет неверный формат и был отклонён.",
-  "errorReasoningConfigRejected": "Google отклонил параметры reasoning/thinking для этой модели. Включите автоматический режим размышлений (reasoning).",
-  "durationFewSeconds": "несколько секунд",
-  "durationSeconds": "{seconds} сек",
+  "errorQuotaExhaustedNoResetHint": "Google returned RESOURCE_EXHAUSTED without a reset time. KiCk will check this account separately; if the error repeats, use another account",
+  "errorGoogleTermsOfServiceViolation": "Google disabled this account for violating the ToS. Submit an appeal or use another account.",
+  "errorInvalidRequestRejected": "The request has an invalid format and was rejected.",
+  "errorReasoningConfigRejected": "Google rejected the reasoning/thinking parameters for this model. Enable automatic reasoning mode.",
+  "durationFewSeconds": "a few seconds",
+  "durationSeconds": "{seconds} sec",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -673,7 +673,7 @@
       }
     }
   },
-  "durationMinutes": "{minutes} мин",
+  "durationMinutes": "{minutes} min",
   "@durationMinutes": {
     "placeholders": {
       "minutes": {
@@ -681,7 +681,7 @@
       }
     }
   },
-  "durationMinutesSeconds": "{minutes} мин {seconds} сек",
+  "durationMinutesSeconds": "{minutes} min {seconds} sec",
   "@durationMinutesSeconds": {
     "placeholders": {
       "minutes": {
@@ -692,7 +692,7 @@
       }
     }
   },
-  "durationHours": "{hours} ч",
+  "durationHours": "{hours} h",
   "@durationHours": {
     "placeholders": {
       "hours": {
@@ -700,7 +700,7 @@
       }
     }
   },
-  "durationHoursMinutes": "{hours} ч {minutes} мин",
+  "durationHoursMinutes": "{hours} h {minutes} min",
   "@durationHoursMinutes": {
     "placeholders": {
       "hours": {

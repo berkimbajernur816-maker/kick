@@ -12,109 +12,109 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'KiCk';
 
   @override
-  String get shellSubtitle => 'Локальный прокси для Gemini CLI и Kiro';
+  String get shellSubtitle => 'Local proxy for Gemini CLI and Kiro';
 
   @override
-  String get connectGoogleAccountTitle => 'Подключить Google-аккаунт';
+  String get connectGoogleAccountTitle => 'Connect Google account';
 
   @override
-  String get homeTitle => 'Главная';
+  String get homeTitle => 'Home';
 
   @override
-  String get proxyRunningStatus => 'Запущен';
+  String get proxyRunningStatus => 'Running';
 
   @override
-  String get proxyStoppedStatus => 'Остановлен';
+  String get proxyStoppedStatus => 'Stopped';
 
   @override
-  String get embeddedProxyTitle => 'Прокси-сервер';
+  String get embeddedProxyTitle => 'Proxy server';
 
   @override
   String proxyAddress(String host, int port) {
-    return 'Адрес: $host:$port';
+    return 'Address: $host:$port';
   }
 
   @override
-  String get proxyEndpointTitle => 'Адрес прокси';
+  String get proxyEndpointTitle => 'Proxy address';
 
   @override
   String activeAccounts(int count) {
-    return 'Активных аккаунтов: $count';
+    return 'Active accounts: $count';
   }
 
   @override
-  String get stopProxyButton => 'Остановить';
+  String get stopProxyButton => 'Stop';
 
   @override
-  String get startProxyButton => 'Запустить';
+  String get startProxyButton => 'Start';
 
   @override
-  String get openAccountsButton => 'Открыть окно с аккаунтами';
+  String get openAccountsButton => 'Open accounts window';
 
   @override
-  String get connectAccountShortButton => 'Подключить аккаунт';
+  String get connectAccountShortButton => 'Connect account';
 
   @override
-  String get uptimeTitle => 'Время работы';
+  String get uptimeTitle => 'Uptime';
 
   @override
-  String get uptimeNotStarted => 'Еще не запущен';
+  String get uptimeNotStarted => 'Not started yet';
 
   @override
   String uptimeValue(int hours, int minutes, int seconds) {
-    return '$hours ч $minutes мин $seconds сек';
+    return '$hours h $minutes min $seconds sec';
   }
 
   @override
-  String get versionTitle => 'Версия';
+  String get versionTitle => 'Version';
 
   @override
-  String get apiKeyTitle => 'API-ключ';
+  String get apiKeyTitle => 'API key';
 
   @override
-  String get apiKeyDisabledValue => 'Не требуется';
+  String get apiKeyDisabledValue => 'Not required';
 
   @override
-  String get changeApiKeyLinkLabel => 'Изменить API-ключ';
+  String get changeApiKeyLinkLabel => 'Change API key';
 
   @override
-  String get loadingValue => 'Загрузка...';
+  String get loadingValue => 'Loading...';
 
   @override
-  String get lastErrorTitle => 'Последняя ошибка';
+  String get lastErrorTitle => 'Last error';
 
   @override
-  String get openLogsButton => 'Открыть логи';
+  String get openLogsButton => 'Open logs';
 
   @override
-  String get accountsTitle => 'Аккаунты';
+  String get accountsTitle => 'Accounts';
 
   @override
-  String get accountsSubtitle => 'Подключайте аккаунты Gemini CLI и Kiro и управляйте ими';
+  String get accountsSubtitle => 'Connect Gemini CLI and Kiro accounts and manage them';
 
   @override
-  String get addButton => 'Добавить';
+  String get addButton => 'Add';
 
   @override
-  String get accountsEmptyTitle => 'Аккаунтов пока нет';
+  String get accountsEmptyTitle => 'No accounts yet';
 
   @override
-  String get accountsEmptyMessage => 'Подключите хотя бы один аккаунт Gemini CLI или Kiro';
+  String get accountsEmptyMessage => 'Connect at least one Gemini CLI or Kiro account';
 
   @override
-  String get connectAccountButton => 'Подключить аккаунт';
+  String get connectAccountButton => 'Connect account';
 
   @override
-  String get connectAccountDialogTitle => 'Подключить аккаунт';
+  String get connectAccountDialogTitle => 'Connect account';
 
   @override
-  String get connectAccountProviderPickerTitle => 'Выберите провайдера';
+  String get connectAccountProviderPickerTitle => 'Select provider';
 
   @override
-  String get accountsLoadErrorTitle => 'Не удалось загрузить аккаунты';
+  String get accountsLoadErrorTitle => 'Failed to load accounts';
 
   @override
-  String get accountProviderLabel => 'Тип аккаунта';
+  String get accountProviderLabel => 'Account type';
 
   @override
   String get accountProviderGemini => 'Gemini CLI';
@@ -126,20 +126,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountProviderKiro => 'Kiro';
 
   @override
-  String get kiroBuilderIdStartUrlLabel => 'Ссылка Builder ID';
+  String get kiroBuilderIdStartUrlLabel => 'Builder ID URL';
 
   @override
-  String get kiroBuilderIdStartUrlHelperText => 'Обычно менять не нужно.';
+  String get kiroBuilderIdStartUrlHelperText => 'You usually don\'t need to change this.';
 
   @override
-  String get kiroRegionLabel => 'Регион AWS';
+  String get kiroRegionLabel => 'AWS region';
 
   @override
-  String get kiroRegionHelperText => 'Обычно оставьте значение us-east-1.';
+  String get kiroRegionHelperText => 'Usually keep us-east-1.';
 
   @override
   String kiroCredentialSourceChip(String value) {
-    return 'Источник: $value';
+    return 'Source: $value';
   }
 
   @override
@@ -152,51 +152,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String priorityChip(String priorityLabel) {
-    return 'Приоритет: $priorityLabel';
+    return 'Priority: $priorityLabel';
   }
 
   @override
-  String get accountCoolingDownStatus => 'На паузе';
+  String get accountCoolingDownStatus => 'Cooling down';
 
   @override
-  String get accountReadyStatus => 'Готов к работе';
+  String get accountReadyStatus => 'Ready';
 
   @override
-  String get accountDisabledStatus => 'Выключен';
+  String get accountDisabledStatus => 'Disabled';
 
   @override
   String unsupportedModelsList(String models) {
-    return 'Не использовать для моделей: $models';
+    return 'Do not use for models: $models';
   }
 
   @override
-  String get editAccountTitle => 'Редактирование аккаунта';
+  String get editAccountTitle => 'Edit account';
 
   @override
-  String get editButton => 'Редактировать';
+  String get editButton => 'Edit';
 
   @override
-  String get reauthorizeAccountTitle => 'Переподключить аккаунт';
+  String get reauthorizeAccountTitle => 'Reconnect account';
 
   @override
-  String get reauthorizeButton => 'Переподключить';
+  String get reauthorizeButton => 'Reconnect';
 
   @override
-  String get accountProjectCheckButton => 'Проверить доступ к проекту';
+  String get accountProjectCheckButton => 'Check project access';
 
   @override
-  String get accountProjectCheckInProgressMessage => 'Проверка...';
+  String get accountProjectCheckInProgressMessage => 'Checking...';
 
   @override
-  String get accountProjectCheckSuccessTitle => 'Доступ к проекту подтвержден';
+  String get accountProjectCheckSuccessTitle => 'Project access confirmed';
 
   @override
   String get accountProjectCheckSuccessMessage =>
-      'KiCk смог выполнить тестовый запрос к Google для этого аккаунта и проекта';
+      'KiCk successfully made a test request to Google for this account and project';
 
   @override
   String accountProjectCheckModelValue(String model) {
-    return 'Модель: $model';
+    return 'Model: $model';
   }
 
   @override
@@ -205,813 +205,814 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get accountProjectCheckFailureTitle => 'Не удалось проверить';
+  String get accountProjectCheckFailureTitle => 'Check failed';
 
   @override
-  String get resetCooldownTooltip => 'Сбросить состояние';
+  String get resetCooldownTooltip => 'Reset status';
 
   @override
-  String get clearCooldownAction => 'Снять паузу';
+  String get clearCooldownAction => 'Clear cooldown';
 
   @override
-  String get deleteTooltip => 'Удалить';
+  String get deleteTooltip => 'Delete';
 
   @override
-  String get accountUsageOpenTooltip => 'Лимиты';
+  String get accountUsageOpenTooltip => 'Quotas';
 
   @override
-  String get moreButton => 'Еще';
+  String get moreButton => 'More';
 
   @override
-  String get deleteAccountDialogTitle => 'Удалить аккаунт?';
+  String get deleteAccountDialogTitle => 'Delete account?';
 
   @override
   String deleteAccountDialogMessage(String label) {
-    return 'Аккаунт $label будет удален из KiCk. При необходимости его можно подключить снова позже.';
+    return 'Account $label will be removed from KiCk. You can reconnect it later if needed.';
   }
 
   @override
-  String get deleteAccountConfirmButton => 'Удалить аккаунт';
+  String get deleteAccountConfirmButton => 'Delete account';
 
   @override
-  String get accountUsageTitle => 'Лимиты аккаунта';
+  String get accountUsageTitle => 'Account quotas';
 
   @override
-  String get accountUsageProviderLabel => 'Авторизация Gemini CLI (OAuth)';
+  String get accountUsageProviderLabel => 'Gemini CLI authorization (OAuth)';
 
   @override
-  String get accountUsageRefreshTooltip => 'Обновить';
+  String get accountUsageRefreshTooltip => 'Refresh';
 
   @override
-  String get accountUsageStatusHealthy => 'Доступен';
+  String get accountUsageStatusHealthy => 'Available';
 
   @override
-  String get accountUsageStatusCoolingDown => 'Ограничен';
+  String get accountUsageStatusCoolingDown => 'Limited';
 
   @override
-  String get accountUsageStatusLowQuota => 'Лимит заканчивается';
+  String get accountUsageStatusLowQuota => 'Running low';
 
   @override
-  String get accountUsageStatusDisabled => 'Выключен';
+  String get accountUsageStatusDisabled => 'Disabled';
 
   @override
-  String get accountQuotaWarningStatus => 'Лимит заканчивается';
+  String get accountQuotaWarningStatus => 'Running low';
 
   @override
-  String get accountBanCheckPendingStatus => 'Проверяем бан';
+  String get accountBanCheckPendingStatus => 'Checking ban status';
 
   @override
-  String get accountBanCheckPendingMessage => 'Google вернул RESOURCE_EXHAUSTED без времени сброса';
+  String get accountBanCheckPendingMessage =>
+      'Google returned RESOURCE_EXHAUSTED without a reset time';
 
   @override
-  String get accountTermsOfServiceStatus => 'Бан подтвержден';
+  String get accountTermsOfServiceStatus => 'Ban confirmed';
 
   @override
   String get accountTermsOfServiceMessage =>
-      'Google подтвердил блокировку этого аккаунта за нарушение ToS. Аккаунт выведен из ротации.';
+      'Google confirmed this account was blocked for violating the ToS. The account has been removed from rotation.';
 
   @override
-  String get accountUsageLoadErrorTitle => 'Не удалось загрузить данные по лимитам';
+  String get accountUsageLoadErrorTitle => 'Failed to load quota data';
 
   @override
-  String get accountUsageRetryButton => 'Повторить';
+  String get accountUsageRetryButton => 'Retry';
 
   @override
-  String get accountUsageVerifyAccountButton => 'Подтвердить в Google';
+  String get accountUsageVerifyAccountButton => 'Verify in Google';
 
   @override
-  String get accountSubmitAppealButton => 'Подать апелляцию';
+  String get accountSubmitAppealButton => 'Submit appeal';
 
   @override
-  String get openGoogleCloudButton => 'Открыть Google Cloud';
+  String get openGoogleCloudButton => 'Open Google Cloud';
 
   @override
   String get accountUsageVerificationOpenFailedMessage =>
-      'Не удалось открыть страницу подтверждения в Google';
+      'Failed to open the verification page in Google';
 
   @override
-  String get accountErrorActionOpenFailedMessage => 'Не удалось открыть страницу Google';
+  String get accountErrorActionOpenFailedMessage => 'Failed to open the Google page';
 
   @override
-  String get accountUsageEmptyTitle => 'Данные по лимитам недоступны';
+  String get accountUsageEmptyTitle => 'Quota data unavailable';
 
   @override
-  String get accountUsageEmptyMessage => 'Google не прислал данные по лимитам для этого аккаунта';
+  String get accountUsageEmptyMessage => 'Google did not provide quota data for this account';
 
   @override
-  String get accountUsageUnavailableTitle => 'Лимиты для этого аккаунта недоступны';
+  String get accountUsageUnavailableTitle => 'Quotas are unavailable for this account';
 
   @override
   String get accountUsageUnavailableMessage =>
-      'Страница лимитов пока работает только для аккаунтов Gemini CLI.';
+      'The quotas page currently works only for Gemini CLI accounts.';
 
   @override
-  String get accountUsageMissingTitle => 'Аккаунт не найден';
+  String get accountUsageMissingTitle => 'Account not found';
 
   @override
-  String get accountUsageMissingSubtitle => 'Информация по лимитам';
+  String get accountUsageMissingSubtitle => 'Quota information';
 
   @override
   String get accountUsageMissingMessage =>
-      'Возможно, аккаунт уже удален или список еще не успел обновиться';
+      'The account may already have been deleted, or the list has not refreshed yet';
 
   @override
   String accountUsageResetsAt(String time) {
-    return 'Сбросится $time';
+    return 'Resets at $time';
   }
 
   @override
-  String get accountUsageResetUnknown => 'Время следующего сброса неизвестно';
+  String get accountUsageResetUnknown => 'The next reset time is unknown';
 
   @override
   String accountUsageLastUpdated(String time) {
-    return 'Данные обновлены: $time';
+    return 'Data updated: $time';
   }
 
   @override
   String accountUsageModelCount(int count) {
-    return 'Моделей: $count';
+    return 'Models: $count';
   }
 
   @override
   String accountUsageAttentionCount(int count) {
-    return 'Низкий остаток: $count';
+    return 'Low remaining: $count';
   }
 
   @override
   String accountUsageCriticalCount(int count) {
-    return 'Почти исчерпано: $count';
+    return 'Nearly exhausted: $count';
   }
 
   @override
   String accountUsageHealthyCount(int count) {
-    return 'В норме: $count';
+    return 'Healthy: $count';
   }
 
   @override
   String accountUsageTokenType(String value) {
-    return 'Тип лимита: $value';
+    return 'Quota type: $value';
   }
 
   @override
   String accountUsageUsedPercent(String value) {
-    return 'Израсходовано $value%';
+    return 'Used $value%';
   }
 
   @override
-  String get accountUsageBucketHealthy => 'Достаточно';
+  String get accountUsageBucketHealthy => 'Enough';
 
   @override
-  String get accountUsageBucketLow => 'Заканчивается';
+  String get accountUsageBucketLow => 'Running low';
 
   @override
-  String get accountUsageBucketCritical => 'Почти исчерпано';
+  String get accountUsageBucketCritical => 'Nearly exhausted';
 
   @override
-  String get settingsTitle => 'Настройки';
+  String get settingsTitle => 'Settings';
 
   @override
-  String get settingsSubtitle => 'Сеть, оформление, API-ключ и работа прокси';
+  String get settingsSubtitle => 'Network, appearance, API key, and proxy behavior';
 
   @override
-  String get themeLabel => 'Тема';
+  String get themeLabel => 'Theme';
 
   @override
-  String get themeModeSystem => 'Системная';
+  String get themeModeSystem => 'System';
 
   @override
-  String get themeModeLight => 'Светлая';
+  String get themeModeLight => 'Light';
 
   @override
-  String get themeModeDark => 'Тёмная';
+  String get themeModeDark => 'Dark';
 
   @override
-  String get dynamicThemeTitle => 'Динамическая тема';
+  String get dynamicThemeTitle => 'Dynamic theme';
 
   @override
-  String get dynamicThemeSubtitle => 'Использовать динамические цвета системы';
+  String get dynamicThemeSubtitle => 'Use system dynamic colors';
 
   @override
-  String get settingsAppearanceSectionTitle => 'Оформление и поведение';
+  String get settingsAppearanceSectionTitle => 'Appearance and behavior';
 
   @override
-  String get settingsAppearanceSectionSummary => 'Тема, логи и работа приложения';
+  String get settingsAppearanceSectionSummary => 'Theme, logs, and app behavior';
 
   @override
-  String get settingsNetworkSectionTitle => 'Сеть';
+  String get settingsNetworkSectionTitle => 'Network';
 
   @override
-  String get settingsNetworkSectionSummary => 'Хост, порт и доступ из локальной сети';
+  String get settingsNetworkSectionSummary => 'Host, port, and local network access';
 
   @override
-  String get settingsReliabilitySectionTitle => 'Повторы и лимиты';
+  String get settingsReliabilitySectionTitle => 'Retries and limits';
 
   @override
-  String get settingsReliabilitySectionSummary => 'Автоповторы и реакция на ограничения API';
+  String get settingsReliabilitySectionSummary => 'Auto-retries and handling API limits';
 
   @override
-  String get settingsAccessSectionTitle => 'Доступ и запуск';
+  String get settingsAccessSectionTitle => 'Access and startup';
 
   @override
-  String get settingsAccessSectionSummary => 'API-ключ и запуск приложения';
+  String get settingsAccessSectionSummary => 'API key and app startup';
 
   @override
-  String get apiKeyRequiredTitle => 'Требовать API-ключ';
+  String get apiKeyRequiredTitle => 'Require API key';
 
   @override
   String get apiKeyRequiredSubtitle =>
-      'Если выключить, запросы будут приниматься без Bearer-токена';
+      'If disabled, requests will be accepted without a Bearer token';
 
   @override
-  String get windowsTrayTitle => 'Сворачивать в трей';
+  String get windowsTrayTitle => 'Minimize to tray';
 
   @override
   String get windowsTraySubtitle =>
-      'При закрытии окно не завершает работу, а скрывает KiCk в системный трей';
+      'Closing the window will not stop KiCk, it will hide it to the system tray';
 
   @override
-  String get windowsLaunchAtStartupTitle => 'Запускать вместе с Windows';
+  String get windowsLaunchAtStartupTitle => 'Launch with Windows';
 
   @override
-  String get windowsLaunchAtStartupSubtitle =>
-      'KiCk будет автоматически запускаться при входе в систему';
+  String get windowsLaunchAtStartupSubtitle => 'KiCk will start automatically when you sign in';
 
   @override
-  String get windowsTrayNotificationTitle => 'KiCk продолжает работать';
+  String get windowsTrayNotificationTitle => 'KiCk is still running';
 
   @override
-  String get windowsTrayNotificationBody => 'Приложение свернуто в системный трей';
+  String get windowsTrayNotificationBody => 'The app has been minimized to the system tray';
 
   @override
-  String get settingsModelsSectionTitle => 'Модели';
+  String get settingsModelsSectionTitle => 'Models';
 
   @override
-  String get settingsModelsSectionSummary => 'Пользовательские ID моделей';
+  String get settingsModelsSectionSummary => 'Custom model IDs';
 
   @override
-  String get settingsGoogleSectionTitle => 'Поиск Google (только Gemini CLI)';
+  String get settingsGoogleSectionTitle => 'Google Search (Gemini CLI only)';
 
   @override
-  String get settingsGoogleSectionSummary => 'Веб-поиск Google и параметры Gemini CLI';
+  String get settingsGoogleSectionSummary => 'Google web search and Gemini CLI settings';
 
   @override
-  String get settingsBackupSectionTitle => 'Резервная копия и восстановление';
+  String get settingsBackupSectionTitle => 'Backup and restore';
 
   @override
-  String get settingsBackupSectionSummary => 'Перенос настроек и аккаунтов между устройствами';
+  String get settingsBackupSectionSummary => 'Transfer settings and accounts between devices';
 
   @override
   String get settingsBackupInfoTitle =>
-      'В резервную копию попадут настройки, API-ключ и OAuth-токены';
+      'The backup will include settings, the API key, and OAuth tokens';
 
   @override
   String get settingsBackupInfoSubtitle =>
-      'Храните файл в безопасном месте! После восстановления текущие настройки и список аккаунтов будут полностью заменены.';
+      'Keep the file in a safe place! Restoring will completely replace your current settings and account list.';
 
   @override
-  String get hostLabel => 'Хост';
+  String get hostLabel => 'Host';
 
   @override
-  String get hostHelperText => 'Обычно localhost';
+  String get hostHelperText => 'Usually localhost';
 
   @override
-  String get hostRequiredError => 'Укажите адрес хоста';
+  String get hostRequiredError => 'Enter a host address';
 
   @override
-  String get hostInvalidError => 'Адрес не должен содержать пробелы';
+  String get hostInvalidError => 'The address must not contain spaces';
 
   @override
-  String get hostLanDisabledError =>
-      'Чтобы использовать 0.0.0.0, включите доступ из локальной сети';
+  String get hostLanDisabledError => 'To use 0.0.0.0, enable local network access';
 
   @override
-  String get portLabel => 'Порт';
+  String get portLabel => 'Port';
 
   @override
-  String get portHelperText => 'По умолчанию 3000';
+  String get portHelperText => 'Default is 3000';
 
   @override
-  String get portInvalidError => 'Укажите порт от 1 до 65535';
+  String get portInvalidError => 'Enter a port from 1 to 65535';
 
   @override
-  String get allowLanTitle => 'Доступ из локальной сети и Docker';
+  String get allowLanTitle => 'Local network and Docker access';
 
   @override
   String get allowLanSubtitle =>
-      'Прокси будет слушать 0.0.0.0 и станет доступен из локальной сети и контейнеров';
+      'The proxy will listen on 0.0.0.0 and be accessible from the local network and containers';
 
   @override
-  String get androidBackgroundRuntimeTitle => 'Работа в фоне на Android';
+  String get androidBackgroundRuntimeTitle => 'Background operation on Android';
 
   @override
   String get androidBackgroundRuntimeSubtitle =>
-      'Нужно, чтобы прокси не останавливался при сворачивании приложения';
+      'Required so the proxy does not stop when the app is minimized';
 
   @override
-  String get requestRetriesLabel => 'Количество повторов запросов к Google';
+  String get requestRetriesLabel => 'Number of request retries to Google';
 
   @override
-  String get requestRetriesHelperText => 'Сколько раз KiCk повторит запрос после временной ошибки';
+  String get requestRetriesHelperText =>
+      'How many times KiCk will retry a request after a temporary error';
 
   @override
-  String get requestRetriesInvalidError => 'Укажите число от 0 до 20';
+  String get requestRetriesInvalidError => 'Enter a number from 0 to 20';
 
   @override
-  String get retry429DelayLabel => 'Интервал повтора для 429';
+  String get retry429DelayLabel => 'Retry interval for 429';
 
   @override
   String get retry429DelayHelperText =>
-      'Интервал, с которым прокси повторяет запрос при ошибке 429';
+      'The interval at which the proxy retries a request after a 429 error';
 
   @override
-  String get retry429DelayInvalidError => 'Укажите число от 1 до 3600';
+  String get retry429DelayInvalidError => 'Enter a number from 1 to 3600';
 
   @override
-  String get mark429AsUnhealthyTitle => 'Временно выводить аккаунт из ротации при ошибке 429';
+  String get mark429AsUnhealthyTitle =>
+      'Temporarily remove the account from rotation on a 429 error';
 
   @override
   String get mark429AsUnhealthySubtitle =>
-      'После ошибки 429 KiCk пометит аккаунт как временно недоступный и переключится на другой';
+      'After a 429 error, KiCk will mark the account as temporarily unavailable and switch to another one';
 
   @override
-  String get loggingLabel => 'Логирование';
+  String get loggingLabel => 'Logging';
 
   @override
-  String get loggingQuiet => 'Минимальное';
+  String get loggingQuiet => 'Minimal';
 
   @override
-  String get loggingNormal => 'Стандартное';
+  String get loggingNormal => 'Standard';
 
   @override
-  String get loggingVerbose => 'Подробное';
+  String get loggingVerbose => 'Verbose';
 
   @override
-  String get logRetentionLabel => 'Лимит записей лога';
+  String get logRetentionLabel => 'Log entry limit';
 
   @override
   String get logRetentionHelperText =>
-      'Когда лимит достигнут, самые старые записи будут автоматически удаляться';
+      'When the limit is reached, the oldest entries will be removed automatically';
 
   @override
   String logRetentionInvalidError(int min, int max) {
-    return 'Укажите число от $min до $max';
+    return 'Enter a number from $min to $max';
   }
 
   @override
-  String get unsafeRawLoggingTitle => 'Сырые логи отладки';
+  String get unsafeRawLoggingTitle => 'Raw debug logs';
 
   @override
   String get unsafeRawLoggingSubtitle =>
-      'Сохраняет содержимое запросов и ответов. Включайте только для отладки!';
+      'Stores the contents of requests and responses. Enable only for debugging!';
 
   @override
-  String get defaultGoogleWebSearchTitle => 'Включать веб-поиск по умолчанию';
+  String get defaultGoogleWebSearchTitle => 'Enable web search by default';
 
   @override
   String get defaultGoogleWebSearchSubtitle =>
-      'KiCk будет автоматически использовать Google Поиск, если клиент не передал явное переопределение параметров, а в запросе нет вызовов функций';
+      'KiCk will automatically use Google Search if the client did not explicitly override parameters and the request contains no function calls';
 
   @override
-  String get renderGoogleGroundingInMessageTitle => 'Показывать цитаты и источники в ответе';
+  String get renderGoogleGroundingInMessageTitle => 'Show citations and sources in the response';
 
   @override
   String get renderGoogleGroundingInMessageSubtitle =>
-      'Если отключить, ссылки на источники останутся в метаданных и не будут добавляться в сам текст ответа';
+      'If disabled, source links will remain in metadata and will not be added to the response text itself';
 
   @override
-  String get customModelsLabel => 'Пользовательские ID моделей';
+  String get customModelsLabel => 'Custom model IDs';
 
   @override
-  String get customModelsHelperText => 'По одному ID на строку, например google/... или kiro/...';
+  String get customModelsHelperText => 'One ID per line, for example google/... or kiro/...';
 
   @override
-  String get settingsSavingStatus => 'Сохраняем изменения...';
+  String get settingsSavingStatus => 'Saving changes...';
 
   @override
-  String get settingsSavedStatus => 'Изменения сохранены';
+  String get settingsSavedStatus => 'Changes saved';
 
   @override
-  String get settingsValidationStatus => 'Проверьте поля с ошибками';
+  String get settingsValidationStatus => 'Check the fields with errors';
 
   @override
-  String get settingsSaveFailedStatus => 'Не удалось сохранить изменения';
+  String get settingsSaveFailedStatus => 'Failed to save changes';
 
   @override
-  String get settingsBackupExportButton => 'Сохранить резервную копию';
+  String get settingsBackupExportButton => 'Save backup';
 
   @override
-  String get settingsBackupImportButton => 'Восстановить резервную копию';
+  String get settingsBackupImportButton => 'Restore backup';
 
   @override
-  String get settingsBackupExportOptionsDialogTitle => 'Экспорт резервной копии';
+  String get settingsBackupExportOptionsDialogTitle => 'Export backup';
 
   @override
-  String get settingsBackupExportDialogTitle => 'Куда сохранить резервную копию?';
+  String get settingsBackupExportDialogTitle => 'Where should the backup be saved?';
 
   @override
-  String get settingsBackupImportDialogTitle => 'Выберите файл резервной копии';
+  String get settingsBackupImportDialogTitle => 'Select a backup file';
 
   @override
-  String get settingsBackupExportConfirmButton => 'Продолжить';
+  String get settingsBackupExportConfirmButton => 'Continue';
 
   @override
-  String get settingsBackupProtectWithPasswordLabel => 'Защитить файл паролем (рекомендуется)';
+  String get settingsBackupProtectWithPasswordLabel =>
+      'Protect the file with a password (recommended)';
 
   @override
   String get settingsBackupProtectWithPasswordSubtitle =>
-      'Шифрует резервную копию, чтобы токены и ключи нельзя было прочитать без пароля';
+      'Encrypts the backup so tokens and keys cannot be read without the password';
 
   @override
-  String get settingsBackupPasswordLabel => 'Пароль';
+  String get settingsBackupPasswordLabel => 'Password';
 
   @override
-  String get settingsBackupPasswordConfirmLabel => 'Подтвердите пароль';
+  String get settingsBackupPasswordConfirmLabel => 'Confirm password';
 
   @override
   String get settingsBackupPasswordHelperText =>
-      'Запомните этот пароль: без него зашифрованную резервную копию восстановить нельзя!';
+      'Remember this password: without it, the encrypted backup cannot be restored!';
 
   @override
-  String get settingsBackupPasswordsDoNotMatch => 'Пароли не совпадают';
+  String get settingsBackupPasswordsDoNotMatch => 'Passwords do not match';
 
   @override
   String get settingsBackupUnprotectedWarning =>
-      'Внимание! Ваши токены и ключи будут сохранены в открытом виде. Любой, кто получит этот файл, получит доступ к вашим данным.';
+      'Warning! Your tokens and keys will be saved in plain text. Anyone who gets this file will gain access to your data.';
 
   @override
-  String get settingsBackupRestoreDialogTitle => 'Восстановить конфигурацию?';
+  String get settingsBackupRestoreDialogTitle => 'Restore configuration?';
 
   @override
   String get settingsBackupRestoreDialogMessage =>
-      'Текущие настройки, API-ключ и список аккаунтов будут заменены данными из этой резервной копии. Это действие нельзя отменить.';
+      'Current settings, the API key, and the account list will be replaced with data from this backup. This action cannot be undone.';
 
   @override
-  String get settingsBackupRestoreConfirmButton => 'Восстановить';
+  String get settingsBackupRestoreConfirmButton => 'Restore';
 
   @override
-  String get settingsBackupPasswordDialogTitle => 'Введите пароль резервной копии';
+  String get settingsBackupPasswordDialogTitle => 'Enter the backup password';
 
   @override
   String settingsBackupPasswordDialogMessage(String fileName) {
-    return 'Файл $fileName защищен паролем. Введите пароль, чтобы продолжить восстановление.';
+    return 'The file $fileName is password-protected. Enter the password to continue restoring.';
   }
 
   @override
   String settingsBackupPasswordDialogInvalidMessage(String fileName) {
-    return 'Не удалось расшифровать файл $fileName. Проверьте пароль и попробуйте снова.';
+    return 'Failed to decrypt the file $fileName. Check the password and try again.';
   }
 
   @override
-  String get settingsBackupPasswordConfirmButton => 'Расшифровать';
+  String get settingsBackupPasswordConfirmButton => 'Decrypt';
 
   @override
   String settingsBackupExportedMessage(String fileName) {
-    return 'Резервная копия сохранена в файл $fileName';
+    return 'Backup saved to file $fileName';
   }
 
   @override
   String settingsBackupRestoredMessage(int accountCount) {
-    return 'Конфигурация восстановлена. Аккаунтов: $accountCount';
+    return 'Configuration restored. Accounts: $accountCount';
   }
 
   @override
   String settingsBackupRestoredMissingTokensMessage(int accountCount, int missingCount) {
-    return 'Конфигурация восстановлена. Аккаунтов: $accountCount, без токенов: $missingCount';
+    return 'Configuration restored. Accounts: $accountCount, without tokens: $missingCount';
   }
 
   @override
   String settingsBackupExportFailedMessage(String error) {
-    return 'Не удалось сохранить резервную копию: $error';
+    return 'Failed to save backup: $error';
   }
 
   @override
   String settingsBackupRestoreFailedMessage(String error) {
-    return 'Не удалось восстановить резервную копию: $error';
+    return 'Failed to restore backup: $error';
   }
 
   @override
   String get settingsBackupInvalidMessage =>
-      'Файл резервной копии поврежден или имеет неподдерживаемый формат';
+      'The backup file is corrupted or has an unsupported format';
 
   @override
   String get settingsBackupUnsupportedVersionMessage =>
-      'Эта резервная копия создана в более новой версии KiCk и пока не поддерживается';
+      'This backup was created in a newer version of KiCk and is not supported yet';
 
   @override
-  String get settingsBackupReadFailedMessage => 'Не удалось прочитать выбранную резервную копию';
+  String get settingsBackupReadFailedMessage => 'Failed to read the selected backup';
 
   @override
-  String get settingsBackupPasswordRequiredMessage => 'Для этой резервной копии нужен пароль';
+  String get settingsBackupPasswordRequiredMessage => 'A password is required for this backup';
 
   @override
-  String get settingsLoadErrorTitle => 'Не удалось загрузить настройки';
+  String get settingsLoadErrorTitle => 'Failed to load settings';
 
   @override
-  String get aboutTitle => 'О программе';
+  String get aboutTitle => 'About';
 
   @override
-  String get aboutMenuSubtitle => 'Версия, обновления и аналитика';
+  String get aboutMenuSubtitle => 'Version, updates, and analytics';
 
   @override
   String get aboutDescription =>
-      'Локальный OpenAI-совместимый прокси для Gemini CLI и Kiro в нативном Flutter-приложении';
+      'A local OpenAI-compatible proxy for Gemini CLI and Kiro in a native Flutter app';
 
   @override
-  String get aboutUpdatesTitle => 'Обновления';
+  String get aboutUpdatesTitle => 'Updates';
 
   @override
-  String get aboutUpdatesChecking => 'Проверяем обновления на GitHub...';
+  String get aboutUpdatesChecking => 'Checking for updates on GitHub...';
 
   @override
-  String get aboutUpdateAvailableTitle => 'Доступно обновление';
+  String get aboutUpdateAvailableTitle => 'Update available';
 
   @override
   String aboutUpdateAvailableMessage(String latestVersion, String currentVersion) {
-    return 'Доступна версия $latestVersion. Сейчас у вас установлена $currentVersion.';
+    return 'Version $latestVersion is available. You currently have $currentVersion installed.';
   }
 
   @override
-  String get aboutUpToDateTitle => 'Обновлений нет';
+  String get aboutUpToDateTitle => 'Up to date';
 
   @override
   String aboutUpToDateMessage(String currentVersion) {
-    return 'У вас установлена актуальная версия: $currentVersion.';
+    return 'You have the latest version installed: $currentVersion.';
   }
 
   @override
-  String get aboutUpdateCheckFailedTitle => 'Не удалось проверить обновления';
+  String get aboutUpdateCheckFailedTitle => 'Failed to check for updates';
 
   @override
-  String get aboutUpdateCheckFailedMessage => 'Не удалось получить информацию о релизах с GitHub.';
+  String get aboutUpdateCheckFailedMessage => 'Failed to get release information from GitHub.';
 
   @override
-  String get aboutOpenReleaseButton => 'Открыть релиз';
+  String get aboutOpenReleaseButton => 'Open release';
 
   @override
-  String get aboutRetryUpdateCheckButton => 'Проверить еще раз';
+  String get aboutRetryUpdateCheckButton => 'Check again';
 
   @override
-  String get aboutAnalyticsTitle => 'Аналитика';
+  String get aboutAnalyticsTitle => 'Analytics';
 
   @override
-  String get aboutAnalyticsSubtitle => 'Анонимная статистика использования помогает улучшать KiCk.';
+  String get aboutAnalyticsSubtitle => 'Anonymous usage statistics help improve KiCk.';
 
   @override
-  String get copyProxyEndpointTooltip => 'Скопировать адрес прокси';
+  String get copyProxyEndpointTooltip => 'Copy proxy address';
 
   @override
-  String get proxyEndpointCopiedMessage => 'Адрес прокси скопирован';
+  String get proxyEndpointCopiedMessage => 'Proxy address copied';
 
   @override
-  String get copyApiKeyTooltip => 'Скопировать API-ключ';
+  String get copyApiKeyTooltip => 'Copy API key';
 
   @override
-  String get apiKeyCopiedMessage => 'API-ключ скопирован';
+  String get apiKeyCopiedMessage => 'API key copied';
 
   @override
-  String get homeOnboardingTitle => 'С чего начать';
+  String get homeOnboardingTitle => 'Getting started';
 
   @override
-  String get homeOnboardingSubtitle => 'Небольшая подсказка для первого запуска';
+  String get homeOnboardingSubtitle => 'A quick guide for the first launch';
 
   @override
-  String get homeOnboardingAccountsTitle => 'Подключите аккаунт';
+  String get homeOnboardingAccountsTitle => 'Connect an account';
 
   @override
   String get homeOnboardingAccountsMessage =>
-      'Без активного аккаунта Gemini CLI или Kiro KiCk не сможет обрабатывать запросы.';
+      'Without an active Gemini CLI or Kiro account, KiCk will not be able to process requests.';
 
   @override
-  String get homeOnboardingEndpointTitle => 'Проверьте адрес прокси';
+  String get homeOnboardingEndpointTitle => 'Check the proxy address';
 
   @override
   String homeOnboardingEndpointMessage(String endpoint) {
-    return 'Когда все будет готово, используйте адрес $endpoint в своем клиенте.';
+    return 'When everything is ready, use the address $endpoint in your client.';
   }
 
   @override
-  String get homeOnboardingStartTitle => 'Запустите прокси';
+  String get homeOnboardingStartTitle => 'Start the proxy';
 
   @override
   String get homeOnboardingStartMessage =>
-      'После запуска KiCk начнет принимать запросы на этом устройстве.';
+      'After startup, KiCk will begin accepting requests on this device.';
 
   @override
   String get homeOnboardingFooter =>
-      'Если аккаунт уже подключен, просто включите его на экране аккаунтов и вернитесь сюда.';
+      'If an account is already connected, just enable it on the accounts screen and come back here.';
 
   @override
-  String get apiKeyRegeneratedMessage => 'Новый API-ключ сохранен';
+  String get apiKeyRegeneratedMessage => 'New API key saved';
 
   @override
-  String get regenerateApiKeyAction => 'Создать новый API-ключ';
+  String get regenerateApiKeyAction => 'Create new API key';
 
   @override
-  String get regenerateApiKeyDialogTitle => 'Создать новый API-ключ?';
+  String get regenerateApiKeyDialogTitle => 'Create a new API key?';
 
   @override
   String get regenerateApiKeyDialogMessage =>
-      'Старый ключ будет сразу отозван. Всем подключенным клиентам понадобится новый ключ для работы.';
+      'The old key will be revoked immediately. All connected clients will need the new key to keep working.';
 
   @override
-  String get regenerateApiKeyConfirmButton => 'Сгенерировать';
+  String get regenerateApiKeyConfirmButton => 'Generate';
 
   @override
-  String get trayOpenWindowAction => 'Открыть окно';
+  String get trayOpenWindowAction => 'Open window';
 
   @override
-  String get trayHideToTrayAction => 'Свернуть в трей';
+  String get trayHideToTrayAction => 'Minimize to tray';
 
   @override
-  String get trayExitAction => 'Выйти';
+  String get trayExitAction => 'Exit';
 
   @override
   String get noActiveAccountsWarning =>
-      'Нет активных аккаунтов. Прокси запустится, но не сможет обрабатывать запросы, пока вы не добавите или не включите хотя бы один аккаунт.';
+      'No active accounts. The proxy will start, but it will not be able to process requests until you add or enable at least one account.';
 
   @override
-  String get pinWindowTooltip => 'Закрепить окно поверх остальных';
+  String get pinWindowTooltip => 'Pin window on top';
 
   @override
-  String get unpinWindowTooltip => 'Убрать закрепление окна';
+  String get unpinWindowTooltip => 'Unpin window';
 
   @override
-  String get welcomeTitle => 'Добро пожаловать в KiCk';
+  String get welcomeTitle => 'Welcome to KiCk';
 
   @override
   String get welcomeSubtitle =>
-      'KiCk помогает запустить локальный прокси для Gemini CLI и Kiro без терминала и лишних настроек.';
+      'KiCk helps you run a local proxy for Gemini CLI and Kiro without terminal commands or extra setup.';
 
   @override
-  String get welcomeStepAccountsTitle => 'Подключите аккаунт';
+  String get welcomeStepAccountsTitle => 'Connect an account';
 
   @override
   String get welcomeStepAccountsMessage =>
-      'Это можно сделать на экране аккаунтов. Можно подключить Gemini CLI или Kiro.';
+      'You can do this on the accounts screen. You can connect Gemini CLI or Kiro.';
 
   @override
-  String get welcomeStepHomeTitle => 'Откройте главную';
+  String get welcomeStepHomeTitle => 'Open Home';
 
   @override
   String get welcomeStepHomeMessage =>
-      'На главной всегда видны адрес прокси, API-ключ и кнопка запуска.';
+      'Home always shows the proxy address, API key, and the start button.';
 
   @override
-  String get welcomeUsageTitle => 'Важно знать';
+  String get welcomeUsageTitle => 'Important to know';
 
   @override
-  String get welcomeUsageMessage =>
-      'KiCk предназначен для личного, учебного и исследовательского использования.';
+  String get welcomeUsageMessage => 'KiCk is intended for personal, educational, and research use.';
 
   @override
-  String get welcomeAnalyticsTitle => 'Анонимная аналитика';
+  String get welcomeAnalyticsTitle => 'Anonymous analytics';
 
   @override
   String get welcomeAnalyticsSubtitle =>
-      'Помогает понять, где KiCk работает хорошо, а где его стоит улучшить.';
+      'Helps understand where KiCk works well and where it should be improved.';
 
   @override
-  String get welcomeRepositoryLinkLabel => 'Подробнее о проекте';
+  String get welcomeRepositoryLinkLabel => 'Learn more about the project';
 
   @override
-  String get logsTitle => 'Логи';
+  String get logsTitle => 'Logs';
 
   @override
-  String get logsSubtitle => 'История запросов и ошибок';
+  String get logsSubtitle => 'Request and error history';
 
   @override
-  String get logsSearchHint => 'Поиск по маршруту или сообщению';
+  String get logsSearchHint => 'Search by route or message';
 
   @override
-  String get logsRefreshButton => 'Обновить';
+  String get logsRefreshButton => 'Refresh';
 
   @override
-  String get logsClearButton => 'Очистить';
+  String get logsClearButton => 'Clear';
 
   @override
-  String get logsClearDialogTitle => 'Очистить логи?';
+  String get logsClearDialogTitle => 'Clear logs?';
 
   @override
   String get logsClearDialogMessage =>
-      'Все записи будут удалены из KiCk. Это действие нельзя отменить.';
+      'All entries will be removed from KiCk. This action cannot be undone.';
 
   @override
-  String get logsClearConfirmButton => 'Очистить';
+  String get logsClearConfirmButton => 'Clear';
 
   @override
-  String get logsLevelAll => 'Все уровни';
+  String get logsLevelAll => 'All levels';
 
   @override
-  String get logsLevelInfo => 'Инфо';
+  String get logsLevelInfo => 'Info';
 
   @override
-  String get logsLevelWarning => 'Предупреждения';
+  String get logsLevelWarning => 'Warnings';
 
   @override
-  String get logsLevelError => 'Ошибки';
+  String get logsLevelError => 'Errors';
 
   @override
-  String get logsCategoryAll => 'Все категории';
+  String get logsCategoryAll => 'All categories';
 
   @override
-  String get logsCategoryFilterTitle => 'Категории';
+  String get logsCategoryFilterTitle => 'Categories';
 
   @override
-  String get logsPayloadShowButton => 'Показать payload';
+  String get logsPayloadShowButton => 'Show payload';
 
   @override
-  String get logsPayloadHideButton => 'Скрыть payload';
+  String get logsPayloadHideButton => 'Hide payload';
 
   @override
-  String get logsCopyEntryButton => 'Копировать';
+  String get logsCopyEntryButton => 'Copy';
 
   @override
-  String get logsCopiedMessage => 'Запись лога скопирована';
+  String get logsCopiedMessage => 'Log entry copied';
 
   @override
-  String get logsFilteredEmptyTitle => 'По текущим фильтрам ничего не найдено';
+  String get logsFilteredEmptyTitle => 'Nothing found for the current filters';
 
   @override
-  String get logsFilteredEmptyMessage => 'Попробуйте убрать часть фильтров или изменить поиск.';
+  String get logsFilteredEmptyMessage => 'Try removing some filters or changing the search.';
 
   @override
-  String get logsEntryLevelInfo => 'Инфо';
+  String get logsEntryLevelInfo => 'Info';
 
   @override
-  String get logsEntryLevelWarning => 'Предупреждение';
+  String get logsEntryLevelWarning => 'Warning';
 
   @override
-  String get logsEntryLevelError => 'Ошибка';
+  String get logsEntryLevelError => 'Error';
 
   @override
   String logsTotalCount(int count) {
-    return 'Всего: $count';
+    return 'Total: $count';
   }
 
   @override
   String logsFilteredCount(int count) {
-    return 'После фильтра: $count';
+    return 'After filtering: $count';
   }
 
   @override
   String logsLoadedCount(int count) {
-    return 'Загружено: $count';
+    return 'Loaded: $count';
   }
 
   @override
-  String get logsEmptyTitle => 'Логи пусты';
+  String get logsEmptyTitle => 'Logs are empty';
 
   @override
-  String get logsLoadErrorTitle => 'Не удалось загрузить логи';
+  String get logsLoadErrorTitle => 'Failed to load logs';
 
   @override
-  String get logsExportTooltip => 'Сохранить все логи по текущим фильтрам';
+  String get logsExportTooltip => 'Save all logs for the current filters';
 
   @override
-  String get logsExportDialogTitle => 'Куда сохранить логи?';
+  String get logsExportDialogTitle => 'Where should the logs be saved?';
 
   @override
-  String get logsShareTooltip => 'Поделиться всеми логами по текущим фильтрам';
+  String get logsShareTooltip => 'Share all logs for the current filters';
 
   @override
-  String get logsLoadMoreButton => 'Загрузить еще';
+  String get logsLoadMoreButton => 'Load more';
 
   @override
-  String get logsNothingToExportMessage => 'Нет логов для сохранения';
+  String get logsNothingToExportMessage => 'No logs to save';
 
   @override
   String logsExportedMessage(String fileName) {
-    return 'Логи сохранены в файл $fileName';
+    return 'Logs saved to file $fileName';
   }
 
   @override
   String logsExportFailedMessage(String error) {
-    return 'Не удалось сохранить логи: $error';
+    return 'Failed to save logs: $error';
   }
 
   @override
   String logsShareFailedMessage(String error) {
-    return 'Не удалось поделиться логами: $error';
+    return 'Failed to share logs: $error';
   }
 
   @override
-  String get accountDialogTitle => 'Аккаунт';
+  String get accountDialogTitle => 'Account';
 
   @override
-  String get accountDialogBasicsTitle => 'Основное';
+  String get accountDialogBasicsTitle => 'Basics';
 
   @override
-  String get accountDialogBasicsSubtitle => 'Поля для подключения выбранного типа аккаунта';
+  String get accountDialogBasicsSubtitle => 'Fields for connecting the selected account type';
 
   @override
-  String get accountDialogAdvancedTitle => 'Расширенные настройки';
+  String get accountDialogAdvancedTitle => 'Advanced settings';
 
   @override
-  String get accountDialogAdvancedSubtitle => 'Приоритет и ограничения по моделям';
+  String get accountDialogAdvancedSubtitle => 'Priority and model restrictions';
 
   @override
   String get accountDialogAdvancedHint =>
-      'Если не хочется настраивать вручную, этот блок можно оставить как есть.';
+      'If you don\'t want to configure it manually, you can leave this section as is.';
 
   @override
   String get projectIdLabel => 'PROJECT_ID';
@@ -1020,292 +1021,296 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectIdHint => 'my-google-cloud-project';
 
   @override
-  String get projectIdConsoleLinkLabel => 'Где посмотреть ID проекта';
+  String get projectIdConsoleLinkLabel => 'Where to find the project ID';
 
   @override
-  String get projectIdRequiredError => 'Укажите ID проекта';
+  String get projectIdRequiredError => 'Enter a project ID';
 
   @override
-  String get projectIdLookupFailedMessage => 'Не удалось открыть Google Cloud Console.';
+  String get projectIdLookupFailedMessage => 'Failed to open Google Cloud Console.';
 
   @override
-  String get accountNameLabel => 'Название аккаунта';
+  String get accountNameLabel => 'Account name';
 
   @override
-  String get accountNameHint => 'Например, основной аккаунт';
+  String get accountNameHint => 'For example, main account';
 
   @override
-  String get accountNameHelperText => 'Если оставить поле пустым, KiCk подставит имя аккаунта.';
+  String get accountNameHelperText =>
+      'If you leave this field empty, KiCk will use the account name.';
 
   @override
-  String get priorityLabel => 'Приоритет';
+  String get priorityLabel => 'Priority';
 
   @override
   String get priorityHelperText =>
-      'Сначала используются основные аккаунты. Аккаунты с одинаковым приоритетом чередуются.';
+      'Primary accounts are used first. Accounts with the same priority alternate.';
 
   @override
-  String get priorityLevelPrimary => 'Основной';
+  String get priorityLevelPrimary => 'Primary';
 
   @override
-  String get priorityLevelNormal => 'Обычный';
+  String get priorityLevelNormal => 'Normal';
 
   @override
-  String get priorityLevelReserve => 'Резервный';
+  String get priorityLevelReserve => 'Reserve';
 
   @override
-  String get blockedModelsLabel => 'Недоступные модели';
+  String get blockedModelsLabel => 'Unavailable models';
 
   @override
-  String get blockedModelsHelperText => 'По одному ID на строку, например google/... или kiro/...';
+  String get blockedModelsHelperText => 'One ID per line, for example google/... or kiro/...';
 
   @override
-  String get kiroLinkAuthDialogTitle => 'Авторизация Kiro';
+  String get kiroLinkAuthDialogTitle => 'Kiro authorization';
 
   @override
   String get kiroLinkAuthDialogMessage =>
-      'Откройте ссылку, войдите через AWS Builder ID и подтвердите вход для Kiro. Код нужен только для сверки, вводить его не нужно. KiCk сам дождётся завершения.';
+      'Open the link, sign in with AWS Builder ID, and confirm access for Kiro. The code is only for verification; you do not need to enter it. KiCk will wait for completion automatically.';
 
   @override
-  String get kiroLinkAuthUserCodeLabel => 'Код для сверки';
+  String get kiroLinkAuthUserCodeLabel => 'Verification code';
 
   @override
-  String get kiroLinkAuthVerificationUrlLabel => 'Ссылка для входа';
+  String get kiroLinkAuthVerificationUrlLabel => 'Sign-in link';
 
   @override
-  String get kiroLinkAuthWaitingMessage => 'Ждём, пока вы подтвердите вход в браузере...';
+  String get kiroLinkAuthWaitingMessage => 'Waiting for you to confirm sign-in in the browser...';
 
   @override
-  String get kiroLinkAuthOpenLinkButton => 'Открыть ссылку';
+  String get kiroLinkAuthOpenLinkButton => 'Open link';
 
   @override
-  String get kiroLinkAuthOpenLinkAgainButton => 'Открыть ещё раз';
+  String get kiroLinkAuthOpenLinkAgainButton => 'Open again';
 
   @override
-  String get kiroLinkAuthOpenLinkFailedMessage => 'Не удалось открыть ссылку для входа в Kiro.';
+  String get kiroLinkAuthOpenLinkFailedMessage => 'Failed to open the sign-in link for Kiro.';
 
   @override
-  String get cancelButton => 'Отмена';
+  String get cancelButton => 'Cancel';
 
   @override
-  String get continueButton => 'Продолжить';
+  String get continueButton => 'Continue';
 
   @override
-  String get navHome => 'Главная';
+  String get navHome => 'Home';
 
   @override
-  String get navAccounts => 'Аккаунты';
+  String get navAccounts => 'Accounts';
 
   @override
-  String get navSettings => 'Настройки';
+  String get navSettings => 'Settings';
 
   @override
-  String get navLogs => 'Логи';
+  String get navLogs => 'Logs';
 
   @override
-  String get runtimeChannelName => 'Прокси KiCk в фоне';
+  String get runtimeChannelName => 'KiCk proxy in background';
 
   @override
-  String get runtimeChannelDescription => 'Поддерживает работу прокси в фоновом режиме';
+  String get runtimeChannelDescription => 'Keeps the proxy running in the background';
 
   @override
-  String get runtimeNotificationTitle => 'Прокси KiCk запущен';
+  String get runtimeNotificationTitle => 'KiCk proxy is running';
 
   @override
-  String get runtimeNotificationReturn => 'Нажмите, чтобы вернуться в приложение';
+  String get runtimeNotificationReturn => 'Tap to return to the app';
 
   @override
-  String get runtimeNotificationManage => 'Нажмите, чтобы открыть аккаунты и настройки';
+  String get runtimeNotificationManage => 'Tap to open accounts and settings';
 
   @override
-  String get runtimeNotificationActive => 'Прокси активен';
+  String get runtimeNotificationActive => 'Proxy is active';
 
   @override
-  String get oauthPageTitleError => 'Ошибка авторизации';
+  String get oauthPageTitleError => 'Authorization error';
 
   @override
-  String get oauthPageTitleSuccess => 'Успешная авторизация';
+  String get oauthPageTitleSuccess => 'Authorization successful';
 
   @override
-  String get oauthPageStateMismatchMessage =>
-      'Несоответствие состояний. Вы можете закрыть эту вкладку.';
+  String get oauthPageStateMismatchMessage => 'State mismatch. You can close this tab.';
 
   @override
-  String get oauthPageGoogleErrorMessage => 'Google вернул ошибку. Вы можете закрыть эту вкладку.';
+  String get oauthPageGoogleErrorMessage => 'Google returned an error. You can close this tab.';
 
   @override
-  String get oauthPageCodeMissingMessage => 'Код не получен. Вы можете закрыть эту вкладку.';
+  String get oauthPageCodeMissingMessage => 'No code received. You can close this tab.';
 
   @override
-  String get oauthPageCloseTabMessage => 'Вы можете закрыть вкладку.';
+  String get oauthPageCloseTabMessage => 'You can close this tab.';
 
   @override
-  String get accountDisplayNameFallbackGoogle => 'Google-аккаунт';
+  String get accountDisplayNameFallbackGoogle => 'Google account';
 
   @override
   String get errorNetworkUnavailable =>
-      'Не удалось связаться с серверами Google. Проверьте интернет и попробуйте снова.';
+      'Could not reach Google\'s servers. Check your internet connection and try again.';
 
   @override
   String get errorGoogleServiceUnavailable =>
-      'Сервис Google временно недоступен. Повторите попытку позже.';
+      'Google service is temporarily unavailable. Please try again later.';
 
   @override
-  String get errorInvalidServiceResponse => 'Сервер вернул непонятный ответ. Попробуйте еще раз.';
+  String get errorInvalidServiceResponse =>
+      'The server returned an invalid response. Please try again.';
 
   @override
-  String get errorGoogleAuthFailed => 'Авторизация Google завершилась с ошибкой. Попробуйте снова.';
+  String get errorGoogleAuthFailed => 'Google authorization failed. Please try again.';
 
   @override
   String get errorGoogleAuthTimedOut =>
-      'Авторизация Google не завершилась вовремя. Вернитесь в приложение и попробуйте снова. Если это повторяется на Android, отключите для KiCk ограничения батареи.';
+      'Google authorization did not finish in time. Return to the app and try again. If this keeps happening on Android, disable battery restrictions for KiCk.';
 
   @override
   String get errorGoogleAuthBrowserOpenFailed =>
-      'Не удалось открыть браузер для авторизации Google. Попробуйте снова.';
+      'Failed to open the browser for Google authorization. Please try again.';
 
   @override
-  String get errorUnknown => 'Произошла неизвестная ошибка. Попробуйте снова.';
+  String get errorUnknown => 'An unknown error occurred. Please try again.';
 
   @override
   String get errorOauthTokensMissing =>
-      'Для этого аккаунта не найдены токены авторизации. Переподключите аккаунт.';
+      'Authorization tokens for this account were not found. Reconnect the account.';
 
   @override
-  String get errorAccountNotFound => 'Аккаунт не найден. Возможно, он уже был удалён.';
+  String get errorAccountNotFound => 'Account not found. It may already have been deleted.';
 
   @override
   String get errorPortAlreadyInUse =>
-      'Этот порт уже занят другим приложением. Выберите другой порт в настройках.';
+      'This port is already in use by another app. Choose a different port in settings.';
 
   @override
   String get errorPermissionDenied =>
-      'Не хватило системных разрешений для запуска. Проверьте настройки приложения и повторите попытку.';
+      'The app does not have the required system permissions to start. Check app settings and try again.';
 
   @override
   String errorGoogleRateLimitedRetry(String retryHint) {
-    return 'Google временно ограничил запросы для этого аккаунта. Попробуйте снова через $retryHint.';
+    return 'Google has temporarily rate-limited requests for this account. Try again in $retryHint.';
   }
 
   @override
   String get errorGoogleRateLimitedLater =>
-      'Google временно ограничил запросы для этого аккаунта. Попробуйте снова позже.';
+      'Google has temporarily rate-limited requests for this account. Try again later.';
 
   @override
-  String get errorKiroAuthExpired => 'Сессия Kiro истекла. Войдите заново и попробуйте снова.';
+  String get errorKiroAuthExpired => 'Kiro session expired. Sign in again and try again.';
 
   @override
   String get errorKiroAuthStartFailed =>
-      'Не удалось запустить авторизацию Kiro. Попробуйте снова позже.';
+      'Failed to start Kiro authorization. Please try again later.';
 
   @override
-  String get errorKiroAuthCancelled => 'Авторизация Kiro была отменена.';
+  String get errorKiroAuthCancelled => 'Kiro authorization was canceled.';
 
   @override
-  String get errorKiroAuthTimedOut => 'Время ожидания авторизации Kiro истекло. Попробуйте снова.';
+  String get errorKiroAuthTimedOut => 'Kiro authorization timed out. Please try again.';
 
   @override
-  String get errorKiroAuthRejected => 'Kiro отклонил авторизацию. Попробуйте начать вход заново.';
+  String get errorKiroAuthRejected =>
+      'Kiro rejected the authorization. Try starting sign-in again.';
 
   @override
   String errorKiroRateLimitedRetry(String retryHint) {
-    return 'Kiro временно ограничил запросы. Попробуйте снова через $retryHint.';
+    return 'Kiro has temporarily rate-limited requests. Try again in $retryHint.';
   }
 
   @override
   String get errorKiroRateLimitedLater =>
-      'Kiro временно ограничил запросы. Попробуйте снова позже.';
+      'Kiro has temporarily rate-limited requests. Try again later.';
 
   @override
   String get errorKiroServiceUnavailable =>
-      'Сервис Kiro временно недоступен. Повторите попытку позже.';
+      'Kiro service is temporarily unavailable. Please try again later.';
 
   @override
   String get errorGoogleAccountVerificationRequired =>
-      'Google просит подтвердить этот аккаунт. Откройте страницу подтверждения и войдите под тем же Google-аккаунтом.';
+      'Google asks you to verify this account. Open the verification page and sign in with the same Google account.';
 
   @override
   String get errorGoogleProjectIdMissing =>
-      'Google не смог определить корректный ID проекта для этого аккаунта или запроса. Проверьте ID проекта в настройках аккаунта и при необходимости переподключите его.';
+      'Google could not determine a valid project ID for this account or request. Check the project ID in the account settings and reconnect the account if necessary.';
 
   @override
   String get errorGoogleProjectApiDisabled =>
-      'Gemini for Google Cloud API отключен для этого проекта. Откройте Google Cloud, включите API для нужного ID проекта и повторите проверку.';
+      'Gemini for Google Cloud API is disabled for this project. Open Google Cloud, enable the API for the correct project ID, and run the check again.';
 
   @override
   String get errorGoogleProjectInvalid =>
-      'Google отклонил этот ID проекта. Проверьте, что указали существующий проект и что у аккаунта есть доступ именно к нему.';
+      'Google rejected this project ID. Make sure you entered an existing project and that the account has access to it.';
 
   @override
   String get errorGoogleProjectAccessDenied =>
-      'Google отклонил запрос для этого проекта или аккаунта. Проверьте ID проекта, выбранный аккаунт и убедитесь, что Gemini Code Assist включен именно для этого проекта.';
+      'Google rejected the request for this project or account. Check the project ID and selected account, and make sure Gemini Code Assist is enabled for this project.';
 
   @override
   String get errorAuthExpired =>
-      'Срок действия авторизации истек или она стала недействительной. Переподключите аккаунт и попробуйте снова.';
+      'Authorization has expired or is no longer valid. Reconnect the account and try again.';
 
   @override
   String get errorGoogleCapacity =>
-      'Сервера Google временно перегружены. Повторите попытку чуть позже.';
+      'Google servers are temporarily overloaded. Please try again a little later.';
 
   @override
-  String get errorUnsupportedModel => 'Выбранная модель сейчас недоступна для этого аккаунта.';
+  String get errorUnsupportedModel =>
+      'The selected model is currently unavailable for this account.';
 
   @override
-  String get errorInvalidJson => 'Запрос имеет неверный формат JSON.';
+  String get errorInvalidJson => 'The request has an invalid JSON format.';
 
   @override
-  String get errorUnexpectedResponse => 'Сервис вернул неожиданный ответ. Повторите попытку.';
+  String get errorUnexpectedResponse =>
+      'The service returned an unexpected response. Please try again.';
 
   @override
   String get errorQuotaExhausted =>
-      'Лимит этого аккаунта исчерпан. Дождитесь сброса или используйте другой аккаунт.';
+      'This account\'s quota has been exhausted. Wait for a reset or use another account.';
 
   @override
   String errorQuotaExhaustedRetry(String retryHint) {
-    return 'Лимит этого аккаунта исчерпан. Попробуйте снова через $retryHint или используйте другой аккаунт.';
+    return 'This account\'s quota has been exhausted. Try again in $retryHint or use another account.';
   }
 
   @override
   String get errorQuotaExhaustedNoResetHint =>
-      'Google вернул RESOURCE_EXHAUSTED без времени сброса. KiCk отдельно проверит этот аккаунт; если ошибка повторяется, используйте другой аккаунт';
+      'Google returned RESOURCE_EXHAUSTED without a reset time. KiCk will check this account separately; if the error repeats, use another account';
 
   @override
   String get errorGoogleTermsOfServiceViolation =>
-      'Google отключил этот аккаунт за нарушение ToS. Подайте апелляцию или используйте другой аккаунт.';
+      'Google disabled this account for violating the ToS. Submit an appeal or use another account.';
 
   @override
-  String get errorInvalidRequestRejected => 'Запрос имеет неверный формат и был отклонён.';
+  String get errorInvalidRequestRejected => 'The request has an invalid format and was rejected.';
 
   @override
   String get errorReasoningConfigRejected =>
-      'Google отклонил параметры reasoning/thinking для этой модели. Включите автоматический режим размышлений (reasoning).';
+      'Google rejected the reasoning/thinking parameters for this model. Enable automatic reasoning mode.';
 
   @override
-  String get durationFewSeconds => 'несколько секунд';
+  String get durationFewSeconds => 'a few seconds';
 
   @override
   String durationSeconds(int seconds) {
-    return '$seconds сек';
+    return '$seconds sec';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes мин';
+    return '$minutes min';
   }
 
   @override
   String durationMinutesSeconds(int minutes, int seconds) {
-    return '$minutes мин $seconds сек';
+    return '$minutes min $seconds sec';
   }
 
   @override
   String durationHours(int hours) {
-    return '$hours ч';
+    return '$hours h';
   }
 
   @override
   String durationHoursMinutes(int hours, int minutes) {
-    return '$hours ч $minutes мин';
+    return '$hours h $minutes min';
   }
 }

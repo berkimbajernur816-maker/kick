@@ -21,13 +21,13 @@ flutter gen-l10n
 
 4. Commit the updated ARB files together with `lib/l10n/generated/`.
 
-## Hosted Weblate setup
+## Self-hosted Weblate setup
 
-These settings match this repository structure and are ready to use with Hosted Weblate (`hosted.weblate.org`).
+These settings match this repository structure and are used by the self-hosted Weblate instance at `https://weblate.nikz.lol`.
 
 ### Repository access
 
-Hosted Weblate uses a dedicated GitHub account named `weblate` for pushes. Add that user as a collaborator with write access if you want Weblate to open pull requests from an upstream branch.
+Self-hosted Weblate can use a dedicated GitHub bot account or a repository deploy key with write access. Configure the Weblate SSH public key in GitHub and add the `github.com` host key in the Weblate admin UI.
 
 Recommended repository settings:
 

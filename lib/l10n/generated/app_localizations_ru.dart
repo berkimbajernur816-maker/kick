@@ -90,7 +90,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get accountsTitle => 'Аккаунты';
 
   @override
-  String get accountsSubtitle => 'Подключайте аккаунты Gemini и Kiro и управляйте ими';
+  String get accountsSubtitle => 'Подключайте аккаунты Gemini CLI и Kiro и управляйте ими';
 
   @override
   String get addButton => 'Добавить';
@@ -99,7 +99,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get accountsEmptyTitle => 'Аккаунтов пока нет';
 
   @override
-  String get accountsEmptyMessage => 'Подключите хотя бы один аккаунт Gemini или Kiro';
+  String get accountsEmptyMessage => 'Подключите хотя бы один аккаунт Gemini CLI или Kiro';
 
   @override
   String get connectAccountButton => 'Подключить аккаунт';
@@ -117,7 +117,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get accountProviderLabel => 'Тип аккаунта';
 
   @override
-  String get accountProviderGemini => 'Gemini';
+  String get accountProviderGemini => 'Gemini CLI';
 
   @override
   String get accountProviderGeminiCli => 'Gemini CLI';
@@ -290,7 +290,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get accountUsageUnavailableMessage =>
-      'Страница лимитов пока работает только для аккаунтов Gemini.';
+      'Страница лимитов пока работает только для аккаунтов Gemini CLI.';
 
   @override
   String get accountUsageMissingTitle => 'Аккаунт не найден';
@@ -436,10 +436,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsModelsSectionSummary => 'Пользовательские ID моделей';
 
   @override
-  String get settingsGoogleSectionTitle => 'Поиск Google (только Gemini)';
+  String get settingsGoogleSectionTitle => 'Поиск Google (только Gemini CLI)';
 
   @override
-  String get settingsGoogleSectionSummary => 'Веб-поиск Google и параметры Gemini';
+  String get settingsGoogleSectionSummary => 'Веб-поиск Google и параметры Gemini CLI';
 
   @override
   String get settingsBackupSectionTitle => 'Резервная копия и восстановление';
@@ -766,7 +766,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeOnboardingAccountsMessage =>
-      'Без активного аккаунта Gemini или Kiro KiCk не сможет обрабатывать запросы.';
+      'Без активного аккаунта Gemini CLI или Kiro KiCk не сможет обрабатывать запросы.';
 
   @override
   String get homeOnboardingEndpointTitle => 'Проверьте адрес прокси';
@@ -834,7 +834,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get welcomeStepAccountsMessage =>
-      'Это можно сделать на экране аккаунтов. Можно подключить Gemini или Kiro.';
+      'Это можно сделать на экране аккаунтов. Можно подключить Gemini CLI или Kiro.';
 
   @override
   String get welcomeStepHomeTitle => 'Откройте главную';

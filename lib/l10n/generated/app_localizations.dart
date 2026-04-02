@@ -245,7 +245,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountsSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **'Подключайте аккаунты Gemini и Kiro и управляйте ими'**
+  /// **'Подключайте аккаунты Gemini CLI и Kiro и управляйте ими'**
   String get accountsSubtitle;
 
   /// No description provided for @addButton.
@@ -263,7 +263,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountsEmptyMessage.
   ///
   /// In ru, this message translates to:
-  /// **'Подключите хотя бы один аккаунт Gemini или Kiro'**
+  /// **'Подключите хотя бы один аккаунт Gemini CLI или Kiro'**
   String get accountsEmptyMessage;
 
   /// No description provided for @connectAccountButton.
@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountProviderGemini.
   ///
   /// In ru, this message translates to:
-  /// **'Gemini'**
+  /// **'Gemini CLI'**
   String get accountProviderGemini;
 
   /// No description provided for @accountProviderGeminiCli.
@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountUsageUnavailableMessage.
   ///
   /// In ru, this message translates to:
-  /// **'Страница лимитов пока работает только для аккаунтов Gemini.'**
+  /// **'Страница лимитов пока работает только для аккаунтов Gemini CLI.'**
   String get accountUsageUnavailableMessage;
 
   /// No description provided for @accountUsageMissingTitle.
@@ -869,13 +869,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsGoogleSectionTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Поиск Google (только Gemini)'**
+  /// **'Поиск Google (только Gemini CLI)'**
   String get settingsGoogleSectionTitle;
 
   /// No description provided for @settingsGoogleSectionSummary.
   ///
   /// In ru, this message translates to:
-  /// **'Веб-поиск Google и параметры Gemini'**
+  /// **'Веб-поиск Google и параметры Gemini CLI'**
   String get settingsGoogleSectionSummary;
 
   /// No description provided for @settingsBackupSectionTitle.
@@ -1451,7 +1451,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeOnboardingAccountsMessage.
   ///
   /// In ru, this message translates to:
-  /// **'Без активного аккаунта Gemini или Kiro KiCk не сможет обрабатывать запросы.'**
+  /// **'Без активного аккаунта Gemini CLI или Kiro KiCk не сможет обрабатывать запросы.'**
   String get homeOnboardingAccountsMessage;
 
   /// No description provided for @homeOnboardingEndpointTitle.
@@ -1571,7 +1571,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeStepAccountsMessage.
   ///
   /// In ru, this message translates to:
-  /// **'Это можно сделать на экране аккаунтов. Можно подключить Gemini или Kiro.'**
+  /// **'Это можно сделать на экране аккаунтов. Можно подключить Gemini CLI или Kiro.'**
   String get welcomeStepAccountsMessage;
 
   /// No description provided for @welcomeStepHomeTitle.

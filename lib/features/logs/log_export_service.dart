@@ -544,10 +544,11 @@ class LogExportService {
   }
 
   Locale? _parseLocale(String? value) {
-    if (value == null || value.trim().isEmpty) {
+    final localeTag = value?.trim();
+    if (localeTag == null || localeTag.isEmpty || localeTag.toLowerCase() == 'system') {
       return null;
     }
-    final subtags = value.replaceAll('_', '-').split('-');
+    final subtags = localeTag.replaceAll('_', '-').split('-');
     if (subtags.isEmpty || subtags.first.trim().isEmpty) {
       return null;
     }

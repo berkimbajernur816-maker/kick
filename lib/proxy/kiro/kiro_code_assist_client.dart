@@ -1041,9 +1041,10 @@ class _KiroResponseAccumulator {
 
   Map<String, Object?> _buildUsageMetadata() {
     final completionTokenCount = _estimateKiroTokenCount(_completionTokenSource());
-    final totalTokenCount = _contextUsagePercentage != null && _contextUsagePercentage! > 0
+    final estimatedTotalTokenCount = _contextUsagePercentage != null && _contextUsagePercentage! > 0
         ? ((_contextUsagePercentage! / 100) * _maxInputTokensForModel(model)).floor()
         : completionTokenCount;
+    final totalTokenCount = max(completionTokenCount, estimatedTotalTokenCount);
     final promptTokenCount = max(0, totalTokenCount - completionTokenCount);
 
     return {

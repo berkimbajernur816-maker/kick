@@ -308,6 +308,32 @@ void main() {
     expect(OpenAiResponseMapper.currentCachedTokenCount(response), 0);
     expect(OpenAiResponseMapper.currentReasoningTokenCount(response), 0);
   });
+
+  test('keeps Kiro total token usage at least as large as completion usage', () async {
+    final client = KiroCodeAssistClient(
+      httpClient: QueueHttpClient([
+        (request) async {
+          expect(request.url.path, '/generateAssistantResponse');
+          return http.StreamedResponse(
+            Stream<List<int>>.fromIterable([
+              utf8.encode('\u0000\u0000{"content":"Hello from Kiro"}'),
+              utf8.encode('\u0000\u0000{"contextUsagePercentage":0.001}'),
+            ]),
+            200,
+          );
+        },
+      ]),
+    );
+
+    final response = await client.generateContent(
+      account: sampleAccount(),
+      request: sampleRequest(),
+    );
+    final completionTokens = OpenAiResponseMapper.currentCompletionTokenCount(response)!;
+
+    expect(OpenAiResponseMapper.currentPromptTokenCount(response), 0);
+    expect(OpenAiResponseMapper.currentTotalTokenCount(response), completionTokens);
+  });
 }
 
 class QueueHttpClient extends http.BaseClient {

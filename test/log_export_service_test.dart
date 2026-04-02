@@ -237,4 +237,30 @@ void main() {
     expect(contents, contains('Retried requests: total=1, succeeded=0, failed=1'));
     expect(contents, contains('Tokens: prompt=120, completion=80, total=200'));
   });
+
+  test('treats the system locale marker as the default export language', () {
+    final service = LogExportService(
+      exportDirectoryResolver: () async => Directory.systemTemp,
+      shareCallback: (_) async => ShareResult.unavailable,
+      useNativeSaveDialog: false,
+    );
+
+    final contents = service.format(
+      [
+        AppLogEntry(
+          id: '1',
+          timestamp: DateTime.utc(2026, 3, 15, 17),
+          level: AppLogLevel.info,
+          category: 'proxy',
+          route: null,
+          message: 'Proxy started',
+          maskedPayload: null,
+        ),
+      ],
+      metadata: const LogExportMetadata(locale: 'system'),
+    );
+
+    expect(contents, contains('KiCk log export'));
+    expect(contents, contains('Environment'));
+  });
 }

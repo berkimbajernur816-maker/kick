@@ -45,12 +45,21 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create or update version tag
+      - name: Create version tag
         if: steps.version.outputs.changed == 'true'
         shell: bash
         run: |
           tag_name="v${{ steps.version.outputs.current }}"
+          current_sha=$(git rev-parse HEAD)
+          existing_tag_sha=$(git rev-list -n 1 "$tag_name" 2>/dev/null || true)
+
+          if [ -n "$existing_tag_sha" ]; then
+            echo "Tag '$tag_name' already exists at commit '$existing_tag_sha'." >&2
+            echo "Release tags are immutable. Bump pubspec.yaml to a new version before creating another release." >&2
+            exit 1
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -fa "$tag_name" -m "Release $tag_name"
-          git push origin "refs/tags/$tag_name" --force
+          git tag -a "$tag_name" -m "Release $tag_name" "$current_sha"
+          git push origin "refs/tags/$tag_name"

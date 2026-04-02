@@ -222,11 +222,7 @@ class _AboutHeroCard extends StatelessWidget {
                   children: [
                     Text(appTitle, style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 8),
-                    KickBadge(
-                      label: versionLabel,
-                      leading: const Icon(Icons.label_rounded),
-                      emphasis: true,
-                    ),
+                    KickBadge(label: versionLabel, emphasis: true),
                   ],
                 ),
               ),

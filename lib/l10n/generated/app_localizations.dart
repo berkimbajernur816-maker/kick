@@ -278,6 +278,12 @@ abstract class AppLocalizations {
   /// **'Подключить аккаунт'**
   String get connectAccountDialogTitle;
 
+  /// No description provided for @connectAccountProviderPickerTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите провайдера'**
+  String get connectAccountProviderPickerTitle;
+
   /// No description provided for @accountsLoadErrorTitle.
   ///
   /// In ru, this message translates to:
@@ -295,6 +301,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Gemini'**
   String get accountProviderGemini;
+
+  /// No description provided for @accountProviderGeminiCli.
+  ///
+  /// In ru, this message translates to:
+  /// **'Gemini CLI'**
+  String get accountProviderGeminiCli;
 
   /// No description provided for @accountProviderKiro.
   ///

@@ -5,6 +5,7 @@ import '../../core/accounts/account_priority.dart';
 import '../../data/models/account_profile.dart';
 import '../../l10n/kick_localizations.dart';
 import '../../proxy/kiro/kiro_auth_source.dart';
+import '../shared/provider_icon.dart';
 
 class AccountEditorResult {
   const AccountEditorResult({
@@ -29,18 +30,20 @@ class AccountEditorResult {
 Future<AccountEditorResult?> showAccountEditorDialog(
   BuildContext context, {
   AccountProfile? initial,
+  AccountProvider? provider,
   String? title,
 }) {
   return showDialog<AccountEditorResult>(
     context: context,
-    builder: (context) => _AccountEditorDialog(initial: initial, title: title),
+    builder: (context) => _AccountEditorDialog(initial: initial, provider: provider, title: title),
   );
 }
 
 class _AccountEditorDialog extends StatefulWidget {
-  const _AccountEditorDialog({this.initial, this.title});
+  const _AccountEditorDialog({this.initial, this.provider, this.title});
 
   final AccountProfile? initial;
+  final AccountProvider? provider;
   final String? title;
 
   @override
@@ -58,6 +61,8 @@ class _AccountEditorDialogState extends State<_AccountEditorDialog> {
   late AccountPriorityLevel _selectedPriority;
   late bool _advancedExpanded;
 
+  bool get _providerLocked => widget.initial != null || widget.provider != null;
+
   @override
   void initState() {
     super.initState();
@@ -70,7 +75,7 @@ class _AccountEditorDialogState extends State<_AccountEditorDialog> {
     _modelsController = TextEditingController(
       text: widget.initial?.notSupportedModels.join('\n') ?? '',
     );
-    _selectedProvider = widget.initial?.provider ?? AccountProvider.gemini;
+    _selectedProvider = widget.initial?.provider ?? widget.provider ?? AccountProvider.gemini;
     _selectedPriority = AccountPriorityLevel.fromStoredValue(
       widget.initial?.priority ?? AccountPriorityLevel.normal.storedValue,
     );
@@ -94,6 +99,10 @@ class _AccountEditorDialogState extends State<_AccountEditorDialog> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
+    final providerLabel = switch (_selectedProvider) {
+      AccountProvider.gemini => l10n.accountProviderGemini,
+      AccountProvider.kiro => l10n.accountProviderKiro,
+    };
 
     return AlertDialog(
       icon: const Icon(Icons.account_circle_rounded),
@@ -116,36 +125,85 @@ class _AccountEditorDialogState extends State<_AccountEditorDialog> {
                   ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 14),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    l10n.accountProviderLabel,
-                    style: Theme.of(context).textTheme.titleSmall,
+                if (_providerLocked) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: scheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.42)),
+                    ),
+                    child: Row(
+                      children: [
+                        ProviderIcon(
+                          provider: _selectedProvider,
+                          size: 24,
+                          variant: ProviderIconVariant.brand,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.accountProviderLabel,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(providerLabel, style: Theme.of(context).textTheme.titleMedium),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: SegmentedButton<AccountProvider>(
-                    showSelectedIcon: false,
-                    segments: [
-                      ButtonSegment(
-                        value: AccountProvider.gemini,
-                        label: Text(l10n.accountProviderGemini),
-                      ),
-                      ButtonSegment(
-                        value: AccountProvider.kiro,
-                        label: Text(l10n.accountProviderKiro),
-                      ),
-                    ],
-                    selected: {_selectedProvider},
-                    onSelectionChanged: widget.initial != null
-                        ? null
-                        : (value) {
-                            setState(() => _selectedProvider = value.first);
-                          },
+                ] else ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      l10n.accountProviderLabel,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<AccountProvider>(
+                      showSelectedIcon: false,
+                      segments: [
+                        ButtonSegment(
+                          value: AccountProvider.gemini,
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const ProviderIcon(provider: AccountProvider.gemini, size: 16),
+                              const SizedBox(width: 8),
+                              Text(l10n.accountProviderGemini),
+                            ],
+                          ),
+                        ),
+                        ButtonSegment(
+                          value: AccountProvider.kiro,
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const ProviderIcon(provider: AccountProvider.kiro, size: 16),
+                              const SizedBox(width: 8),
+                              Text(l10n.accountProviderKiro),
+                            ],
+                          ),
+                        ),
+                      ],
+                      selected: {_selectedProvider},
+                      onSelectionChanged: (value) {
+                        setState(() => _selectedProvider = value.first);
+                      },
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 14),
                 if (_selectedProvider == AccountProvider.gemini) ...[
                   TextFormField(

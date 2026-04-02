@@ -14,8 +14,10 @@ import '../../proxy/kiro/kiro_auth_source.dart';
 import '../../proxy/kiro/kiro_link_auth_service.dart';
 import '../app_state/providers.dart';
 import '../shared/kick_surfaces.dart';
+import '../shared/provider_icon.dart';
 import 'account_editor_dialog.dart';
 import 'account_priority_presentation.dart';
+import 'account_provider_picker_dialog.dart';
 
 class AccountsPage extends ConsumerWidget {
   const AccountsPage({super.key});
@@ -109,8 +111,14 @@ class AccountsPage extends ConsumerWidget {
   }
 
   Future<void> _authenticateNewAccount(BuildContext context, WidgetRef ref) async {
+    final provider = await showAccountProviderPickerDialog(context);
+    if (!context.mounted || provider == null) {
+      return;
+    }
+
     final draft = await showAccountEditorDialog(
       context,
+      provider: provider,
       title: context.l10n.connectAccountDialogTitle,
     );
     if (!context.mounted || draft == null) {
@@ -235,11 +243,7 @@ class _AccountCard extends ConsumerWidget {
                 label: account.provider == AccountProvider.kiro
                     ? l10n.accountProviderKiro
                     : l10n.accountProviderGemini,
-                leading: Icon(
-                  account.provider == AccountProvider.kiro
-                      ? Icons.devices_rounded
-                      : Icons.auto_awesome_rounded,
-                ),
+                leading: ProviderIcon(provider: account.provider),
               ),
               if (account.provider != AccountProvider.kiro)
                 KickBadge(
@@ -505,6 +509,10 @@ Future<void> _connectKiroAccount(
   final keepAliveStarted = await keepAlive.begin(
     notificationTitle: context.l10n.kiroLinkAuthDialogTitle,
   );
+  if (!context.mounted) {
+    await keepAlive.end(keepAliveStarted);
+    return;
+  }
   try {
     final resolvedCredentialSourcePath = await _authorizeKiroByLink(
       context,

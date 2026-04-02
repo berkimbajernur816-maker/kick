@@ -108,6 +108,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get connectAccountDialogTitle => 'Подключить аккаунт';
 
   @override
+  String get connectAccountProviderPickerTitle => 'Выберите провайдера';
+
+  @override
   String get accountsLoadErrorTitle => 'Не удалось загрузить аккаунты';
 
   @override
@@ -115,6 +118,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get accountProviderGemini => 'Gemini';
+
+  @override
+  String get accountProviderGeminiCli => 'Gemini CLI';
 
   @override
   String get accountProviderKiro => 'Kiro';

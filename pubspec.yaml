@@ -39,6 +39,7 @@ dependencies:
   local_notifier: ^0.1.6
   sentry_flutter: ^9.16.0
   cryptography: ^2.9.0
+  flutter_svg: ^2.2.4
 
 dev_dependencies:
   flutter_test:
@@ -73,5 +74,9 @@ flutter:
           weight: 700
           style: italic
   assets:
+    - assets/icons/providers/gemini.svg
+    - assets/icons/providers/gemini_brand.png
+    - assets/icons/providers/kiro.svg
+    - assets/icons/providers/kiro_brand.png
     - android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
     - windows/runner/resources/app_icon.ico

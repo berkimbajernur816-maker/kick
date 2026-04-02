@@ -1,5 +1,5 @@
 name: Feature request
-description: Предложить улучшение или новую функцию для KiCk
+description: Suggest an improvement or a new feature for KiCk
 title: "[Feature]: "
 labels:
   - enhancement
@@ -7,40 +7,40 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Какую проблему решает запрос?
-      description: Опиши текущую боль или ограничение.
+      label: What problem does this request solve?
+      description: Describe the current pain point or limitation.
     validations:
       required: true
 
   - type: textarea
     id: proposal
     attributes:
-      label: Какое решение ты предлагаешь?
-      description: Кратко и конкретно опиши желаемое поведение.
+      label: What solution do you propose?
+      description: Describe the desired behavior briefly and concretely.
     validations:
       required: true
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Какие альтернативы ты уже рассмотрел?
-      description: Если есть обходные пути или компромиссы, укажи их.
+      label: What alternatives have you already considered?
+      description: If there are workarounds or tradeoffs, describe them here.
 
   - type: dropdown
     id: platform
     attributes:
-      label: К каким платформам относится запрос?
+      label: Which platforms does this request affect?
       multiple: true
       options:
         - Windows
         - Android
-        - Обе
-        - Не зависит от платформы
+        - Both
+        - Platform-independent
     validations:
       required: true
 
   - type: textarea
     id: extra
     attributes:
-      label: Дополнительный контекст
-      description: Макеты, ссылки, примеры API или другие детали.
+      label: Additional context
+      description: Mockups, links, API examples, or any other useful detail.

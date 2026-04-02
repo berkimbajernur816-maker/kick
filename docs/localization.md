@@ -1,35 +1,35 @@
-# Локализация
+# Localization
 
-## Обзор
+## Overview
 
-- Исходная локаль: `en`
-- Исходный ARB-файл: `lib/l10n/app_en.arb`
-- Файлы перевода: `lib/l10n/app_<locale>.arb`
-- Сгенерированные локализации Flutter: `lib/l10n/generated/`
+- Source locale: `en`
+- Source ARB file: `lib/l10n/app_en.arb`
+- Translation files: `lib/l10n/app_<locale>.arb`
+- Generated Flutter localizations: `lib/l10n/generated/`
 
-Английский является каноничной исходной локалью для Flutter `gen_l10n` и для внешних платформ перевода.
+English is the canonical source locale for Flutter `gen_l10n` and for external translation platforms.
 
-## Локальный воркфлоу
+## Local workflow
 
-1. Добавьте или обновите строки в `lib/l10n/app_en.arb`.
-2. Обновите существующие переводы, например `lib/l10n/app_ru.arb`.
-3. Выполните:
+1. Add or update strings in `lib/l10n/app_en.arb`.
+2. Update existing translations, for example `lib/l10n/app_ru.arb`.
+3. Run:
 
 ```powershell
 flutter gen-l10n
 ```
 
-4. Закоммите обновленные ARB-файлы вместе с `lib/l10n/generated/`.
+4. Commit the updated ARB files together with `lib/l10n/generated/`.
 
-## Настройка Hosted Weblate
+## Hosted Weblate setup
 
-Эти настройки соответствуют структуре данного репозитория и готовы для использования в Hosted Weblate (`hosted.weblate.org`).
+These settings match this repository structure and are ready to use with Hosted Weblate (`hosted.weblate.org`).
 
-### Доступ к репозитоию
+### Repository access
 
-Hosted Weblate использует специального GitHub-аккаунта для пушей с именем `weblate`. Добавьте этого пользователя в качестве коллаборатора с правом записи в репозиторий, если хотите, чтобы Weblate открывал пулл-реквесты из upstream-ветки.
+Hosted Weblate uses a dedicated GitHub account named `weblate` for pushes. Add that user as a collaborator with write access if you want Weblate to open pull requests from an upstream branch.
 
-Рекомендуемые настройки репозитория:
+Recommended repository settings:
 
 - Source code repository: `git@github.com:mxnix/kick.git`
 - Repository push URL: `git@github.com:mxnix/kick.git`
@@ -37,26 +37,26 @@ Hosted Weblate использует специального GitHub-аккаун
 - Push branch: `l10n/weblate-translations`
 - Repository branch: `main`
 
-Если оставить поле `Push branch` пустым, Weblate будет пушить из форка, а не из upstream-ветки.
+If you leave `Push branch` empty, Weblate will push from a fork instead of the upstream branch.
 
-### Настройки компонента
+### Component settings
 
-Создайте один компонент для строк Flutter-приложения со следующими значениями:
+Create a single component for the Flutter app strings with the following values:
 
 - File mask: `lib/l10n/app_*.arb`
 - Monolingual base language file: `lib/l10n/app_en.arb`
-- Template for new translations: *оставь пустым*
+- Template for new translations: *leave empty*
 - File format: `ARB file`
 
-Предлагаемая настройка языков:
+Suggested language setup:
 
 - Source language: English
 - Initial target language: Russian, ...
 
-### Автоматизация GitHub в этом репозитории
+### GitHub automation in this repository
 
-В этом репозитории находится файл `.github/workflows/sync-generated-localizations.yml`.
+This repository includes `.github/workflows/sync-generated-localizations.yml`.
 
-Когда Weblate обновляет любой файл `lib/l10n/*.arb` в ветке, этот воркфлоу запускает `flutter gen-l10n` и коммитит обновленные сгенерированные файлы обратно в ту же ветку. Это позволяет мержить пулл-реквесты от Weblate без конфликтов, даже несмотря на то, что исходники локализации Flutter закоммичены в репозиторий.
+When Weblate updates any `lib/l10n/*.arb` file in a branch, this workflow runs `flutter gen-l10n` and commits the refreshed generated files back to the same branch. That allows Weblate pull requests to merge cleanly even though Flutter localization outputs are committed to the repository.
 
-`CI` также проверяет, что сгенерированные файлы локализации находятся в актуальном состоянии.
+`CI` also checks that generated localization files are up to date.

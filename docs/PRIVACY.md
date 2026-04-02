@@ -1,30 +1,30 @@
-# Политика конфиденциальности
+# Privacy Policy
 
-*Обновлено: 2 апреля 2026*
+*Updated: April 2, 2026*
 
-KiCk по умолчанию работает локально на вашем устройстве. У приложения нет собственных серверов для обработки ваших запросов или ответов.
+KiCk runs locally on your device by default. The app does not operate its own servers to process your prompts or responses.
 
-## Что хранится локально
-Все данные остаются на вашем устройстве:
-* **Настройки:** тема, порты, лимиты, кастомные ID моделей и согласие на аналитику.
-* **Данные аккаунтов:** email, `PROJECT_ID`, параметры Kiro-сессии и статусы лимитов.
-* **Авторизация:** токены Google OAuth, локально сохраненные данные Kiro Builder ID и ваш локальный API-ключ KiCk.
-* **Логи:** хранятся локально для дебага. Запись полных текстов запросов (сырые логи) по умолчанию **отключена**. При экспорте логов чувствительные данные маскируются.
+## What Is Stored Locally
+All data stays on your device:
+* **Settings:** theme, ports, limits, custom model IDs, and analytics consent.
+* **Account data:** email, `PROJECT_ID`, Kiro session parameters, and limit statuses.
+* **Authentication:** Google OAuth tokens, locally stored Kiro Builder ID data, and your local KiCk API key.
+* **Logs:** stored locally for debugging. Full raw prompt logging is **disabled** by default. Sensitive data is masked when logs are exported.
 
-## Сетевые подключения
-Приложение связывается только с:
-* Серверами Google (для OAuth авторизации и запросов Gemini CLI).
-* Сервисами AWS и Kiro (для авторизации AWS Builder ID, обновления Kiro-сессии и запросов Kiro).
-* Локальным хостом `127.0.0.1`
-* Серверами Aptabase (**только** если вы сами включили анонимную аналитику).
-* Сервером GlitchTip или другим Sentry-совместимым endpoint'ом, если такая диагностика включена в конкретной сборке приложения.
+## Network Connections
+The app connects only to:
+* Google servers, for OAuth sign-in and Gemini CLI requests.
+* AWS and Kiro services, for AWS Builder ID sign-in, Kiro session refresh, and Kiro requests.
+* The local host at `127.0.0.1`.
+* Aptabase servers, **only** if you explicitly enable anonymous analytics.
+* GlitchTip or another Sentry-compatible endpoint, if that diagnostics option is enabled in a specific build.
 
-## Аналитика (строго по желанию)
-По умолчанию сбор данных **отключен**. Если вы его включите, KiCk будет отправлять только базовую статистику (запуск приложения, ошибки прокси, успешность подключения аккаунта). 
+## Analytics (Strictly Optional)
+Data collection is **disabled** by default. If you enable it, KiCk sends only basic metrics such as app launches, proxy errors, and account connection success.
 
-**Никогда не собирается:** тексты промптов или ответов, API-ключи, токены, email-адреса, `PROJECT_ID` или сырые логи.
+**Never collected:** prompt or response text, API keys, tokens, email addresses, `PROJECT_ID`, or raw logs.
 
-## Варианты доступа
-По умолчанию прокси слушает только `127.0.0.1`. Если вы включаете `Allow LAN` (доступ по сети 0.0.0.0) или отключаете `Require API key` (требование ключа), вы берете ответственность за безопасность своей локальной сети на себя.
+## Access Modes
+By default, the proxy listens only on `127.0.0.1`. If you enable `Allow LAN` (binding to `0.0.0.0`) or disable `Require API key`, you take responsibility for the security of your local network.
 
-**Связь:** По вопросам конфиденциальности открывайте обычный Issue в репозитории.
+**Contact:** For privacy questions, open a regular issue in the repository.

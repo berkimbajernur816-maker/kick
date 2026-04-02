@@ -1,5 +1,5 @@
 name: Bug report
-description: Сообщить о баге или регрессии в KiCk
+description: Report a bug or regression in KiCk
 title: "[Bug]: "
 labels:
   - bug
@@ -7,20 +7,20 @@ body:
   - type: dropdown
     id: platform
     attributes:
-      label: Платформа
-      description: Где воспроизводится проблема?
+      label: Platform
+      description: Where does the issue reproduce?
       options:
         - Windows
         - Android
-        - Другое
+        - Other
     validations:
       required: true
 
   - type: input
     id: version
     attributes:
-      label: Версия KiCk
-      description: Укажи версию из экрана "О программе" или из релиза GitHub.
+      label: KiCk version
+      description: Enter the version from the About screen or the GitHub release.
       placeholder: 1.0.0
     validations:
       required: true
@@ -28,38 +28,38 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: Шаги воспроизведения
-      description: Опиши минимальную последовательность действий.
+      label: Steps to reproduce
+      description: Describe the shortest sequence that reproduces the issue.
       placeholder: |
-        1. Открыть ...
-        2. Нажать ...
-        3. Отправить запрос ...
+        1. Open ...
+        2. Click ...
+        3. Send a request ...
     validations:
       required: true
 
   - type: textarea
     id: expected
     attributes:
-      label: Ожидаемое поведение
+      label: Expected behavior
     validations:
       required: true
 
   - type: textarea
     id: actual
     attributes:
-      label: Фактическое поведение
+      label: Actual behavior
     validations:
       required: true
 
   - type: textarea
     id: logs
     attributes:
-      label: Логи или скриншоты
-      description: Если прикладываешь экспорт логов, проверь, что это безопасно для публикации.
+      label: Logs or screenshots
+      description: If you attach exported logs, make sure they are safe to publish.
       render: shell
 
   - type: textarea
     id: extra
     attributes:
-      label: Дополнительный контекст
-      description: Любая информация, которая может ускорить разбор.
+      label: Additional context
+      description: Any extra detail that could speed up investigation.

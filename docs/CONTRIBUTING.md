@@ -1,29 +1,29 @@
 # Contributing
 
-## Локальная установка
+## Local setup
 
-1. Установите Flutter и нужные Android инструменты.
-2. Выполните `flutter pub get`.
+1. Install Flutter and the required Android tooling.
+2. Run `flutter pub get`.
 
-## Релиз
+## Release
 
-- Версия берется из `pubspec.yaml`.
-- При изменении `version:` в `main` workflow `Sync Version Tag` создает или обновляет tag формата `vX.Y.Z`.
-- Пуш такого тега запускает release workflow, который собирает:
-  - Windows-переносной zip
-  - Windows-установщик
+- The version is taken from `pubspec.yaml`.
+- When `version:` changes on `main`, the `Sync Version Tag` workflow creates or updates a tag in the `vX.Y.Z` format.
+- Pushing that tag triggers the release workflow, which builds:
+  - Windows portable zip
+  - Windows installer
   - APK/AAB
 
-## Подпись
+## Signing
 
-Должны быть настроены секреты:
+The following secrets must be configured:
 
 - `KICK_ANDROID_KEYSTORE_BASE64`
 - `KICK_ANDROID_KEYSTORE_PASSWORD`
 - `KICK_ANDROID_KEY_ALIAS`
 - `KICK_ANDROID_KEY_PASSWORD`
 
-Опционально для аналитики:
+Optional analytics and diagnostics secrets:
 
 - `KICK_APTABASE_APP_KEY_RELEASE`
 - `KICK_APTABASE_HOST_RELEASE`
@@ -31,11 +31,11 @@
 - `SENTRY_AUTH_TOKEN`
 - `KICK_GLITCHTIP_TRACES_SAMPLE_RATE`
 
-## Windows установщик
+## Windows installer
 
-Для локальной сборки installer нужен Inno Setup 6.
+Inno Setup 6 is required to build the installer locally.
 
-Команда:
+Command:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1
@@ -43,6 +43,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-windows-inst
 
 ## Generated files
 
-- После изменений в любом `lib/l10n/app_*.arb` обновляйте локализации через `flutter gen-l10n`
-- Канонический исходник локализации находится в `lib/l10n/app_en.arb`
-- Настройка Weblate и правила для переводов описаны в `docs/localization.md`
+- After changing any `lib/l10n/app_*.arb` file, regenerate localizations with `flutter gen-l10n`.
+- The canonical source locale is `lib/l10n/app_en.arb`.
+- Weblate setup and translation rules are documented in `docs/localization.md`.

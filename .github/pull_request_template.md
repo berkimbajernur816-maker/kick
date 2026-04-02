@@ -1,14 +1,14 @@
 ## Summary
 
-- Что меняется в этом PR?
+- What changes in this PR?
 
 ## Testing
 
 - [ ] `flutter analyze`
 - [ ] `flutter test`
-- [ ] Ручная проверка на Windows
-- [ ] Ручная проверка на Android
+- [ ] Manual verification on Windows
+- [ ] Manual verification on Android
 
 ## Notes
 
-- Что особенно важно посмотреть ревьюеру?
+- What should the reviewer pay extra attention to?

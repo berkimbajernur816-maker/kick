@@ -183,4 +183,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-windows-inst
 
 </details>
 
-[Лицензия](LICENSE.md) | [Политика конфиденциальности](PRIVACY.md) | [Локализация](docs/localization.md) | [Как вносить изменения](CONTRIBUTING.md)
+[Лицензия](LICENSE.md) | [Политика конфиденциальности](docs/PRIVACY.md) | [Локализация](docs/localization.md) | [Как вносить изменения](docs/CONTRIBUTING.md)

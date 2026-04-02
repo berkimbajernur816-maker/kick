@@ -72,8 +72,10 @@ class _AccountProviderPickerDialog extends StatelessWidget {
                         aspectRatio: cardAspectRatio,
                         labelStyle: _ProviderChoiceLabelStyle(
                           fontSize: compact ? 22 : 39,
-                          iconSize: compact ? 74 : 96,
+                          iconSize: compact ? 62 : 82,
+                          iconSlotHeight: compact ? 74 : 96,
                           labelGap: compact ? 18 : 34,
+                          labelSlotHeight: compact ? 22 : 39,
                         ),
                       ),
                       _ProviderChoiceCard(
@@ -83,7 +85,9 @@ class _AccountProviderPickerDialog extends StatelessWidget {
                         labelStyle: _ProviderChoiceLabelStyle(
                           fontSize: compact ? 18 : 32,
                           iconSize: compact ? 62 : 82,
+                          iconSlotHeight: compact ? 74 : 96,
                           labelGap: compact ? 18 : 34,
+                          labelSlotHeight: compact ? 22 : 39,
                         ),
                       ),
                     ],
@@ -176,24 +180,37 @@ class _ProviderChoiceCardState extends State<_ProviderChoiceCard> {
                   child: AspectRatio(
                     aspectRatio: widget.aspectRatio,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ProviderIcon(
-                          provider: widget.provider,
-                          size: widget.labelStyle.iconSize,
-                          variant: ProviderIconVariant.brand,
+                        SizedBox(
+                          height: widget.labelStyle.iconSlotHeight,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ProviderIcon(
+                              provider: widget.provider,
+                              size: widget.labelStyle.iconSize,
+                              variant: ProviderIconVariant.brand,
+                            ),
+                          ),
                         ),
                         SizedBox(height: widget.labelStyle.labelGap),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            label,
-                            maxLines: 1,
-                            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                              fontSize: widget.labelStyle.fontSize,
-                              fontWeight: FontWeight.w400,
-                              height: 1,
-                              color: scheme.onSurface,
+                        SizedBox(
+                          height: widget.labelStyle.labelSlotHeight,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                label,
+                                maxLines: 1,
+                                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                  fontSize: widget.labelStyle.fontSize,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1,
+                                  color: scheme.onSurface,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -214,10 +231,14 @@ class _ProviderChoiceLabelStyle {
   const _ProviderChoiceLabelStyle({
     required this.fontSize,
     required this.iconSize,
+    required this.iconSlotHeight,
     required this.labelGap,
+    required this.labelSlotHeight,
   });
 
   final double fontSize;
   final double iconSize;
+  final double iconSlotHeight;
   final double labelGap;
+  final double labelSlotHeight;
 }

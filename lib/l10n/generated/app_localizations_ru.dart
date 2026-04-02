@@ -268,7 +268,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get accountTermsOfServiceMessage =>
-      'Google подтвердил блокировку этого аккаунта за нарушение ToS. Аккаунт выведен из ротации.';
+      'Google подтвердил блокировку этого аккаунта за нарушение условий обслуживания. Аккаунт выведен из ротации.';
 
   @override
   String get accountUsageLoadErrorTitle => 'Не удалось загрузить данные по лимитам';
@@ -1064,7 +1064,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get kiroLinkAuthDialogMessage =>
-      'Откройте ссылку, войдите через AWS Builder ID и подтвердите вход для Kiro. Код нужен только для сверки, вводить его не нужно. KiCk сам дождётся завершения.';
+      'Откройте ссылку, войдите через AWS Builder ID и подтвердите вход для Kiro. Код нужен только для сверки. KiCk сам дождётся завершения.';
 
   @override
   String get kiroLinkAuthUserCodeLabel => 'Код для сверки';

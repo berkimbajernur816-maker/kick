@@ -161,11 +161,7 @@ class OpenAiRequestParser {
         if (text.isEmpty) {
           continue;
         }
-        if (turns.isEmpty) {
-          systemParts.add(text);
-        } else {
-          turns.add(UnifiedTurn(role: 'user', parts: [UnifiedPart.text(text)]));
-        }
+        systemParts.add(text);
         continue;
       }
 

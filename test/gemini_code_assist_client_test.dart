@@ -1248,6 +1248,7 @@ void main() {
     expect(generationConfig['stopSequences'], ['END']);
     expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
       'thinkingLevel': 'HIGH',
+      'includeThoughts': true,
     });
     expect(requestMap.containsKey('safetySettings'), isFalse);
   });
@@ -1291,10 +1292,11 @@ void main() {
 
     expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
       'thinkingLevel': 'MINIMAL',
+      'includeThoughts': false,
     });
   });
 
-  test('maps Gemini 3 pro reasoning effort medium to low thinking', () async {
+  test('maps Gemini 3 pro reasoning effort medium to high thinking', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -1332,7 +1334,8 @@ void main() {
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
     expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
-      'thinkingLevel': 'LOW',
+      'thinkingLevel': 'HIGH',
+      'includeThoughts': true,
     });
   });
 
@@ -1430,7 +1433,7 @@ void main() {
     });
   });
 
-  test('defaults Gemini 2.5 text-only requests to thinkingBudget 0', () async {
+  test('defaults Gemini 2.5 text-only requests to thinkingBudget 8192', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -1469,12 +1472,12 @@ void main() {
 
     expect(generationConfig['responseModalities'], ['TEXT']);
     expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
-      'thinkingBudget': 0,
-      'includeThoughts': false,
+      'thinkingBudget': 8192,
+      'includeThoughts': true,
     });
   });
 
-  test('does not disable thinking by default for Gemini 2.5 Pro text-only requests', () async {
+  test('uses Gemini 2.5 Pro default thinking budget for text-only requests', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -1512,7 +1515,10 @@ void main() {
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
     expect(generationConfig['responseModalities'], ['TEXT']);
-    expect(generationConfig.containsKey('thinkingConfig'), isFalse);
+    expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
+      'thinkingBudget': 8192,
+      'includeThoughts': true,
+    });
   });
 
   test('respects explicit reasoning effort on Gemini 2.5', () async {
@@ -1605,7 +1611,10 @@ void main() {
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
     expect(generationConfig.containsKey('responseModalities'), isFalse);
-    expect(generationConfig.containsKey('thinkingConfig'), isFalse);
+    expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
+      'thinkingBudget': 8192,
+      'includeThoughts': true,
+    });
   });
 
   test('uses Gemini CLI wire-format for tools and structured JSON output', () async {
@@ -1767,7 +1776,7 @@ void main() {
     expect(requestMap.containsKey('toolConfig'), isFalse);
   });
 
-  test('does not disable thinking by default for multimodal Gemini 2.5 requests', () async {
+  test('uses Gemini 2.5 default thinking budget for multimodal requests', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -1819,7 +1828,10 @@ void main() {
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
     expect(generationConfig['responseModalities'], ['TEXT']);
-    expect(generationConfig.containsKey('thinkingConfig'), isFalse);
+    expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
+      'thinkingBudget': 8192,
+      'includeThoughts': true,
+    });
   });
 
   test('passes assistant thought signatures through to Gemini request parts', () async {
@@ -1886,7 +1898,7 @@ void main() {
     expect((assistantParts[1]['functionCall'] as Map)['name'], 'lookupWeather');
   });
 
-  test('defaults short Gemini 3 flash text-only requests to minimal thinking', () async {
+  test('defaults short Gemini 3 flash text-only requests to high thinking', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -1924,11 +1936,12 @@ void main() {
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
     expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
-      'thinkingLevel': 'MINIMAL',
+      'thinkingLevel': 'HIGH',
+      'includeThoughts': true,
     });
   });
 
-  test('defaults short Gemini 3 pro text-only requests to low thinking', () async {
+  test('defaults short Gemini 3 pro text-only requests to high thinking', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -1966,11 +1979,12 @@ void main() {
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
     expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
-      'thinkingLevel': 'LOW',
+      'thinkingLevel': 'HIGH',
+      'includeThoughts': true,
     });
   });
 
-  test('does not constrain Gemini 3 defaults when max output tokens is large', () async {
+  test('defaults large Gemini 3 text-only requests to high thinking', () async {
     Map<String, Object?>? capturedBody;
 
     final client = GeminiCodeAssistClient(
@@ -2007,7 +2021,10 @@ void main() {
     final requestMap = (capturedBody?['request'] as Map).cast<String, Object?>();
     final generationConfig = (requestMap['generationConfig'] as Map).cast<String, Object?>();
 
-    expect(generationConfig.containsKey('thinkingConfig'), isFalse);
+    expect((generationConfig['thinkingConfig'] as Map).cast<String, Object?>(), {
+      'thinkingLevel': 'HIGH',
+      'includeThoughts': true,
+    });
   });
 
   test('omits max output token budget when the client omits it', () async {

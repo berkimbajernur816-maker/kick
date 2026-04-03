@@ -166,7 +166,7 @@ const _maxTransientRequestRetries = 3;
 const _maxRetryable429Delay = Duration(minutes: 1);
 const _maxRetryableTransientDelay = Duration(minutes: 5);
 const _gemini3DefaultTopK = 64;
-const _gemini3ShortTextMaxOutputTokens = 256;
+const _defaultGemini25ThinkingBudget = 8192;
 const defaultGeminiMaxOutputTokens = 8192;
 const _continuationPrompt = 'Please continue from where you left off.';
 const _continuationTailLength = 180;
@@ -1796,12 +1796,12 @@ class GeminiCodeAssistClient {
       return thinkingConfig.isEmpty ? null : thinkingConfig;
     }
 
-    if (_shouldDisableThinkingByDefault(request, model)) {
-      return const {'thinkingBudget': 0, 'includeThoughts': false};
+    if (_isGemini3Model(model)) {
+      return {'includeThoughts': true, 'thinkingLevel': _defaultGemini3ThinkingLevel()};
     }
 
-    if (_shouldConstrainGemini3ThinkingByDefault(request, model)) {
-      return {'thinkingLevel': _defaultGemini3ThinkingLevel(model)};
+    if (_shouldUseDefaultGemini25ThinkingConfig(model)) {
+      return const {'thinkingBudget': _defaultGemini25ThinkingBudget, 'includeThoughts': true};
     }
 
     return null;
@@ -1832,32 +1832,8 @@ class GeminiCodeAssistClient {
         normalized.contains('2.0-flash-thinking');
   }
 
-  bool _shouldDisableThinkingByDefault(UnifiedPromptRequest request, String model) {
-    return _isGemini25FlashModel(model) &&
-        request.tools.isEmpty &&
-        request.responseModalities == null &&
-        _isTextOnlyRequest(request);
-  }
-
-  bool _shouldConstrainGemini3ThinkingByDefault(UnifiedPromptRequest request, String model) {
-    final maxOutputTokens = request.maxOutputTokens;
-    return _isGemini3Model(model) &&
-        request.tools.isEmpty &&
-        request.responseModalities == null &&
-        maxOutputTokens != null &&
-        maxOutputTokens <= _gemini3ShortTextMaxOutputTokens &&
-        _isTextOnlyRequest(request);
-  }
-
-  bool _isTextOnlyRequest(UnifiedPromptRequest request) {
-    for (final turn in request.turns) {
-      for (final part in turn.parts) {
-        if (part.type != UnifiedPartType.text) {
-          return false;
-        }
-      }
-    }
-    return true;
+  bool _shouldUseDefaultGemini25ThinkingConfig(String model) {
+    return _isGemini25Model(model);
   }
 
   bool _isGemini3Model(String model) {
@@ -1870,8 +1846,8 @@ class GeminiCodeAssistClient {
     return _isGemini3Model(normalized) && normalized.contains('flash');
   }
 
-  String _defaultGemini3ThinkingLevel(String model) {
-    return _isGemini3FlashModel(model) ? 'MINIMAL' : 'LOW';
+  String _defaultGemini3ThinkingLevel() {
+    return 'HIGH';
   }
 
   Map<String, Object?>? _buildGemini3ThinkingConfigFromReasoningEffort(
@@ -1879,14 +1855,19 @@ class GeminiCodeAssistClient {
     String reasoningEffort,
   ) {
     final thinkingLevel = switch (reasoningEffort) {
-      'auto' => null,
+      'auto' => 'HIGH',
       'none' || 'minimal' => _isGemini3FlashModel(model) ? 'MINIMAL' : 'LOW',
       'low' => 'LOW',
-      'medium' => _isGemini3FlashModel(model) ? 'MEDIUM' : 'LOW',
+      'medium' => 'HIGH',
       'high' => 'HIGH',
       _ => null,
     };
-    return thinkingLevel == null ? null : {'thinkingLevel': thinkingLevel};
+    return thinkingLevel == null
+        ? null
+        : {
+            'thinkingLevel': thinkingLevel,
+            'includeThoughts': thinkingLevel != 'LOW' && thinkingLevel != 'MINIMAL',
+          };
   }
 
   Map<String, Object?>? _normalizeGemini3ThinkingConfig(Map<String, Object?> googleThinkingConfig) {
@@ -1917,11 +1898,6 @@ class GeminiCodeAssistClient {
   bool _isGemini25Model(String model) {
     final normalized = model.toLowerCase();
     return normalized.contains('2.5');
-  }
-
-  bool _isGemini25FlashModel(String model) {
-    final normalized = model.toLowerCase();
-    return _isGemini25Model(normalized) && normalized.contains('flash');
   }
 
   bool _shouldForceTextResponseModality(String model) {

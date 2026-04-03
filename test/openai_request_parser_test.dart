@@ -161,7 +161,7 @@ void main() {
     expect(request.turns.last.parts.single.arguments?['result'], 'Bananas are berries.');
   });
 
-  test('keeps non-leading developer notes in chat history order', () {
+  test('keeps non-leading developer notes in system instruction', () {
     final request = OpenAiRequestParser.parseChatRequest({
       'model': 'gemini-2.5-pro',
       'messages': [
@@ -172,10 +172,12 @@ void main() {
       ],
     }, requestId: 'req_late_system');
 
-    expect(request.systemInstruction, 'Lead instruction.');
-    expect(request.turns, hasLength(3));
-    expect(request.turns[1].role, 'user');
-    expect(request.turns[1].parts.single.text, 'Late policy update.');
+    expect(request.systemInstruction, 'Lead instruction.\n\nLate policy update.');
+    expect(request.turns, hasLength(2));
+    expect(request.turns.first.role, 'user');
+    expect(request.turns.first.parts.single.text, 'Hello');
+    expect(request.turns.last.role, 'assistant');
+    expect(request.turns.last.parts.single.text, 'Hi there');
   });
 
   test('falls back to a user turn when chat contains only system messages', () {

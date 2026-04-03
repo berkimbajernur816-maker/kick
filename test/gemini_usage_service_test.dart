@@ -44,7 +44,7 @@ void main() {
     scope: null,
   );
 
-  test('parses buckets in bundled model order without remapping ids and computes total usage', () {
+  test('sorts buckets by model id without remapping ids and computes total usage', () {
     final snapshot = GeminiUsageSnapshot.fromApi({
       'buckets': [
         {

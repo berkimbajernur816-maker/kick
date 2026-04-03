@@ -3,18 +3,16 @@ import 'package:kick/data/models/account_profile.dart';
 import 'package:kick/proxy/model_catalog.dart';
 
 void main() {
-  test('preserves exact model ids when merging bundled and custom models', () {
+  test('preserves exact Gemini model ids when merging discovered and custom models', () {
     final catalog = ModelCatalog(
-      customModels: const [
-        'models/gemini-2.5-flash',
-        'google/gemini-3-flash',
-        'google/gemini-4-experimental-preview',
-      ],
+      geminiModels: const ['gemini-2.5-flash', 'gemini-2.5-pro'],
+      customModels: const ['google/gemini-3-flash', 'google/gemini-4-experimental-preview'],
     );
 
     final models = catalog.all();
 
     expect(models, contains('google/gemini-2.5-flash'));
+    expect(models, contains('google/gemini-2.5-pro'));
     expect(models, contains('google/gemini-3-flash'));
     expect(models, contains('google/gemini-4-experimental-preview'));
     expect(models.where((item) => item == 'google/gemini-2.5-flash').length, 1);
@@ -50,6 +48,13 @@ void main() {
 
     expect(catalog.all(), isEmpty);
     expect(catalog.contains('kiro/deepseek-3.2'), isTrue);
+  });
+
+  test('does not advertise hardcoded Gemini models when discovery is empty', () {
+    final catalog = ModelCatalog(customModels: const [], enableGemini: true, enableKiro: false);
+
+    expect(catalog.all(), isEmpty);
+    expect(catalog.contains('google/gemini-3.1-pro-preview'), isTrue);
   });
 
   test('builds canonical provider/model ids for user-facing storage', () {

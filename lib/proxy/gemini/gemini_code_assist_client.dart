@@ -430,6 +430,25 @@ class GeminiCodeAssistClient {
     _retryPolicy = retryPolicy.normalized();
   }
 
+  Future<List<String>> listModels({required ProxyRuntimeAccount account}) async {
+    await _ensureFreshTokens(account);
+    final projectId = await _ensureResolvedProjectId(
+      account,
+      headerModel: geminiCodeAssistAuxiliaryHeaderModel,
+    );
+    final response = await _executeWithRetry(
+      () => _callJsonMethod(
+        method: 'retrieveUserQuota',
+        accessToken: account.tokens.accessToken,
+        headerModel: geminiCodeAssistAuxiliaryHeaderModel,
+        body: {'project': projectId},
+        timeoutLabel: 'Gemini model discovery',
+      ),
+    );
+    final models = _extractQuotaModelIds(response).toList()..sort();
+    return models;
+  }
+
   Future<Map<String, Object?>> generateContent({
     required ProxyRuntimeAccount account,
     required UnifiedPromptRequest request,
@@ -1170,8 +1189,8 @@ class GeminiCodeAssistClient {
     if (response.statusCode >= 400) {
       throw decodeGeminiGatewayError(response.statusCode, rawBody);
     }
-    final decoded = _tryDecodeJsonMap(rawBody);
-    if (decoded.isNotEmpty || rawBody.trim().isEmpty) {
+    final decoded = _decodeJsonObjectResponse(rawBody);
+    if (decoded != null) {
       return decoded;
     }
     throw GeminiGatewayException(
@@ -1219,8 +1238,8 @@ class GeminiCodeAssistClient {
     if (response.statusCode >= 400) {
       throw decodeGeminiGatewayError(response.statusCode, rawBody);
     }
-    final decoded = _tryDecodeJsonMap(rawBody);
-    if (decoded.isNotEmpty || rawBody.trim().isEmpty) {
+    final decoded = _decodeJsonObjectResponse(rawBody);
+    if (decoded != null) {
       return decoded;
     }
     throw GeminiGatewayException(
@@ -2017,6 +2036,25 @@ Map<String, Object?> _tryDecodeJsonMap(String body) {
   return const <String, Object?>{};
 }
 
+Map<String, Object?>? _decodeJsonObjectResponse(String body) {
+  final trimmed = body.trim();
+  if (trimmed.isEmpty) {
+    return const <String, Object?>{};
+  }
+
+  try {
+    final decoded = jsonDecode(trimmed);
+    if (decoded is Map<String, dynamic>) {
+      return decoded.cast<String, Object?>();
+    }
+    if (decoded is Map) {
+      return decoded.cast<String, Object?>();
+    }
+  } catch (_) {}
+
+  return null;
+}
+
 String _extractProjectId(Object? value) {
   if (value is String) {
     return value.trim();
@@ -2056,6 +2094,21 @@ String _extractDefaultTierId(Object? value) {
   }
 
   return _fallbackOnboardTierId;
+}
+
+Set<String> _extractQuotaModelIds(Map<String, Object?> response) {
+  final models = <String>{};
+  for (final rawBucket in (response['buckets'] as List?) ?? const []) {
+    if (rawBucket is! Map) {
+      continue;
+    }
+    final modelId = (rawBucket.cast<String, Object?>()['modelId'] as String? ?? '').trim();
+    if (modelId.isEmpty) {
+      continue;
+    }
+    models.add(ModelCatalog.normalizeModel(modelId));
+  }
+  return models;
 }
 
 Map<String, Object?>? _typedDetail(List<Map<String, Object?>> details, String type) {

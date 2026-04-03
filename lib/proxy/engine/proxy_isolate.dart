@@ -27,6 +27,7 @@ const _proxyBindRetryDelays = <Duration>[
   Duration(milliseconds: 200),
   Duration(milliseconds: 400),
 ];
+const _modelCatalogRefreshInterval = Duration(minutes: 30);
 
 bool looksLikeProxyPortInUseError(String value) {
   final normalized = value.toLowerCase();
@@ -239,6 +240,10 @@ class _ProxyIsolateHost {
   Map<String, Object?>? _settings;
   String? _geminiInstallationIdPath;
   ModelCatalog _catalog = ModelCatalog(customModels: const []);
+  List<String> _geminiModels = const <String>[];
+  List<String> _kiroModels = const <String>[];
+  DateTime? _modelCatalogRefreshAttemptedAt;
+  Future<void>? _modelCatalogRefreshTask;
   ProxyAccountPool _pool = ProxyAccountPool(<ProxyRuntimeAccount>[]);
   final Set<String> _pendingTermsOfServiceChecks = <String>{};
   HttpServer? _server;
@@ -278,18 +283,7 @@ class _ProxyIsolateHost {
             default429Delay: Duration(seconds: _settings?['retry_429_delay_seconds'] as int? ?? 30),
           ),
         );
-        final hasGeminiAccounts = _pool.accounts.any(
-          (account) => account.provider == AccountProvider.gemini && account.enabled,
-        );
-        final hasKiroAccounts = _pool.accounts.any(
-          (account) => account.provider == AccountProvider.kiro && account.enabled,
-        );
-        _catalog = ModelCatalog(
-          customModels: ((_settings?['custom_models'] as List?) ?? const []).cast<String>(),
-          kiroModels: hasKiroAccounts ? await _discoverKiroModels() : const <String>[],
-          enableGemini: hasGeminiAccounts,
-          enableKiro: hasKiroAccounts,
-        );
+        await _refreshModelCatalog(force: true);
         await _publishAccounts();
         if (_server != null &&
             _shouldRestartServerForConfigurationChange(previousSettings, _settings)) {
@@ -379,6 +373,7 @@ class _ProxyIsolateHost {
       if (authResult != null) {
         return authResult;
       }
+      _refreshModelCatalogInBackgroundIfStale();
       return _jsonResponse(_catalog.toOpenAiModelList());
     });
     router.post('/v1/chat/completions', _handleChatCompletions);
@@ -1101,18 +1096,120 @@ class _ProxyIsolateHost {
     };
   }
 
-  Future<List<String>> _discoverKiroModels() async {
+  void _refreshModelCatalogInBackgroundIfStale() {
+    if (_modelCatalogRefreshTask != null) {
+      return;
+    }
+    if (!_shouldRefreshModelCatalog()) {
+      return;
+    }
+
+    unawaited(_refreshModelCatalog());
+  }
+
+  Future<void> _refreshModelCatalog({bool force = false}) async {
+    if (!force && !_shouldRefreshModelCatalog()) {
+      return;
+    }
+
+    final currentTask = _modelCatalogRefreshTask;
+    if (currentTask != null) {
+      if (!force) {
+        return;
+      }
+      await currentTask;
+    }
+
+    final refreshTask = _refreshModelCatalogNow();
+    _modelCatalogRefreshTask = refreshTask;
+    try {
+      await refreshTask;
+    } finally {
+      if (identical(_modelCatalogRefreshTask, refreshTask)) {
+        _modelCatalogRefreshTask = null;
+      }
+    }
+  }
+
+  bool _shouldRefreshModelCatalog() {
+    final lastRefreshAttempt = _modelCatalogRefreshAttemptedAt;
+    return lastRefreshAttempt == null ||
+        DateTime.now().difference(lastRefreshAttempt) >= _modelCatalogRefreshInterval;
+  }
+
+  Future<void> _refreshModelCatalogNow() async {
+    final settings = _settings;
+    if (settings == null) {
+      return;
+    }
+
+    final hasGeminiAccounts = _pool.accounts.any(
+      (account) => account.provider == AccountProvider.gemini && account.enabled,
+    );
+    final hasKiroAccounts = _pool.accounts.any(
+      (account) => account.provider == AccountProvider.kiro && account.enabled,
+    );
+
+    if (hasGeminiAccounts) {
+      _geminiModels = await _discoverGeminiModels() ?? _geminiModels;
+    } else {
+      _geminiModels = const <String>[];
+    }
+    if (hasKiroAccounts) {
+      _kiroModels = await _discoverKiroModels() ?? _kiroModels;
+    } else {
+      _kiroModels = const <String>[];
+    }
+
+    _catalog = ModelCatalog(
+      customModels: ((settings['custom_models'] as List?) ?? const []).cast<String>(),
+      geminiModels: _geminiModels,
+      kiroModels: _kiroModels,
+      enableGemini: hasGeminiAccounts,
+      enableKiro: hasKiroAccounts,
+    );
+    _modelCatalogRefreshAttemptedAt = DateTime.now();
+  }
+
+  Future<List<String>?> _discoverKiroModels() async {
     final discoveredModels = <String>{};
+    var hasSuccessfulDiscovery = false;
     for (final account in _pool.accounts) {
       if (account.provider != AccountProvider.kiro || !account.enabled) {
         continue;
       }
       try {
         final models = await _kiroClient.listModels(account: account);
+        hasSuccessfulDiscovery = true;
         discoveredModels.addAll(models.where((item) => item.trim().isNotEmpty));
       } catch (_) {
         continue;
       }
+    }
+    if (!hasSuccessfulDiscovery) {
+      return null;
+    }
+    final sorted = discoveredModels.toList()..sort();
+    return sorted;
+  }
+
+  Future<List<String>?> _discoverGeminiModels() async {
+    final discoveredModels = <String>{};
+    var hasSuccessfulDiscovery = false;
+    for (final account in _pool.accounts) {
+      if (account.provider != AccountProvider.gemini || !account.enabled) {
+        continue;
+      }
+      try {
+        final models = await _geminiClient.listModels(account: account);
+        hasSuccessfulDiscovery = true;
+        discoveredModels.addAll(models.where((item) => item.trim().isNotEmpty));
+      } catch (_) {
+        continue;
+      }
+    }
+    if (!hasSuccessfulDiscovery) {
+      return null;
     }
     final sorted = discoveredModels.toList()..sort();
     return sorted;

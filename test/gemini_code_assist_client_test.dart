@@ -111,6 +111,59 @@ void main() {
     );
   }
 
+  test('discovers Gemini models from retrieveUserQuota buckets', () async {
+    Map<String, Object?>? requestBody;
+    Map<String, String>? requestHeaders;
+
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      httpClient: QueueHttpClient([
+        (request) async {
+          expect(request.url.path, '/v1internal:retrieveUserQuota');
+          requestHeaders = request.headers;
+          requestBody =
+              jsonDecode(await request.finalize().bytesToString()) as Map<String, Object?>;
+          return http.Response(
+            jsonEncode({
+              'buckets': [
+                {'modelId': 'models/gemini-3.1-pro-preview'},
+                {'modelId': 'gemini-2.5-flash'},
+                {'modelId': 'gemini-2.5-flash'},
+                {'modelId': ''},
+              ],
+            }),
+            200,
+          );
+        },
+      ]),
+    );
+
+    final models = await client.listModels(account: sampleAccount());
+
+    expect(models, ['gemini-2.5-flash', 'gemini-3.1-pro-preview']);
+    expect(requestBody, {'project': 'project-1'});
+    expect(
+      requestHeaders?[HttpHeaders.userAgentHeader],
+      contains('/$geminiCodeAssistAuxiliaryHeaderModel '),
+    );
+  });
+
+  test('returns an empty Gemini discovery list when retrieveUserQuota omits buckets', () async {
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      httpClient: QueueHttpClient([
+        (request) async {
+          expect(request.url.path, '/v1internal:retrieveUserQuota');
+          return http.Response('{}', 200);
+        },
+      ]),
+    );
+
+    final models = await client.listModels(account: sampleAccount());
+
+    expect(models, isEmpty);
+  });
+
   test('builds Code Assist session and prompt identifiers', () async {
     Map<String, Object?>? capturedBody;
     Map<String, String>? capturedHeaders;

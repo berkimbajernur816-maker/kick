@@ -29,10 +29,12 @@ class _ParsedModelReference {
 class ModelCatalog {
   ModelCatalog({
     required List<String> customModels,
+    List<String> geminiModels = const [],
     List<String> kiroModels = const [],
     bool enableGemini = true,
     bool? enableKiro,
   }) : _customModels = customModels,
+       _geminiModels = geminiModels,
        _kiroModels = kiroModels,
        _enableGemini = enableGemini,
        _enableKiro = enableKiro ?? kiroModels.isNotEmpty;
@@ -40,18 +42,8 @@ class ModelCatalog {
   static const String googleProviderId = 'google';
   static const String kiroProviderId = 'kiro';
 
-  static const List<String> bundledGeminiModels = [
-    'gemini-2.5-flash',
-    'gemini-2.5-pro',
-    'gemini-3-pro-preview',
-    'gemini-3-flash-preview',
-    'gemini-3.1-pro-preview',
-    'gemini-3.1-flash-lite-preview',
-  ];
-
-  static const List<String> bundledModels = bundledGeminiModels;
-
   final List<String> _customModels;
+  final List<String> _geminiModels;
   final List<String> _kiroModels;
   final bool _enableGemini;
   final bool _enableKiro;
@@ -199,7 +191,7 @@ class ModelCatalog {
   }
 
   Set<String> get _geminiPublicModels => {
-    for (final model in bundledGeminiModels) _normalizeForProvider(model, AccountProvider.gemini),
+    for (final model in _geminiModels) _normalizeForProvider(model, AccountProvider.gemini),
     for (final model in _customModels)
       if (!_parseModelReference(model).explicitProvider ||
           _parseModelReference(model).provider == AccountProvider.gemini)

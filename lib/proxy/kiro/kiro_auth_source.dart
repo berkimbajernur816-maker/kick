@@ -8,6 +8,10 @@ import '../../data/models/oauth_tokens.dart';
 
 const defaultKiroRegion = 'us-east-1';
 const defaultKiroBuilderIdStartUrl = 'https://view.awsapps.com/start';
+const defaultKiroBuilderIdProfileArn =
+    'arn:aws:codewhisperer:us-east-1:638616132270:profile/AAAACCCCXXXX';
+const defaultKiroSocialProfileArn =
+    'arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK';
 const defaultKiroCredentialSourceType = 'local_json';
 const manualKiroCredentialSourceType = 'manual_json';
 const builderIdKiroCredentialSourceType = 'builder_id_link';
@@ -59,6 +63,9 @@ class KiroAuthSourceSnapshot {
       _ when sourceName == 'kiro-auth-token.json' => 'Kiro local session',
       _ => sourceName,
     };
+    if (authMethod?.trim().toLowerCase() == builderIdKiroAuthMethod) {
+      return _firstNonEmpty(normalizedSource, profileArn, 'Kiro local session');
+    }
     return _firstNonEmpty(profileArn, normalizedSource, 'Kiro local session');
   }
 
@@ -144,6 +151,10 @@ Future<KiroAuthSourceSnapshot?> loadKiroAuthSource({String? sourcePath}) async {
       _readDateTime(json, const ['expiresAt', 'expires_at', 'expiry', 'expires']) ??
       DateTime.now().subtract(const Duration(minutes: 5));
   final authMethod = _readString(json, const ['authMethod', 'auth_method']);
+  final provider = _readString(json, const ['provider']);
+  final profileArn =
+      _readString(json, const ['profileArn', 'profile_arn']) ??
+      _fallbackKiroProfileArn(authMethod: authMethod, provider: provider);
 
   return KiroAuthSourceSnapshot(
     sourcePath: file.path,
@@ -154,9 +165,9 @@ Future<KiroAuthSourceSnapshot?> loadKiroAuthSource({String? sourcePath}) async {
     refreshToken: refreshToken ?? '',
     expiry: expiry,
     region: _readString(json, const ['idcRegion', 'region']),
-    profileArn: _readString(json, const ['profileArn', 'profile_arn']),
+    profileArn: profileArn,
     authMethod: authMethod,
-    provider: _readString(json, const ['provider']),
+    provider: provider,
     clientId: _readString(json, const ['clientId', 'client_id']),
     clientSecret: _readString(json, const ['clientSecret', 'client_secret']),
     startUrl: _readString(json, const ['startUrl', 'start_url']),
@@ -328,4 +339,15 @@ String _firstNonEmpty(String? first, [String? second, String? fallback]) {
     }
   }
   return '';
+}
+
+String? _fallbackKiroProfileArn({required String? authMethod, required String? provider}) {
+  if (authMethod?.trim().toLowerCase() == builderIdKiroAuthMethod) {
+    return defaultKiroBuilderIdProfileArn;
+  }
+
+  return switch (provider?.trim().toLowerCase()) {
+    'github' || 'google' => defaultKiroSocialProfileArn,
+    _ => null,
+  };
 }

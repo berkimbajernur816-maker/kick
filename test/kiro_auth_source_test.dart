@@ -29,6 +29,7 @@ void main() {
     expect(snapshot.authMethod, builderIdKiroAuthMethod);
     expect(snapshot.clientId, 'client-id');
     expect(snapshot.clientSecret, 'client-secret');
+    expect(snapshot.profileArn, defaultKiroBuilderIdProfileArn);
     expect(snapshot.startUrl, 'https://view.awsapps.com/start');
     expect(snapshot.effectiveRegion, 'us-east-1');
     expect(snapshot.displayIdentity, 'AWS Builder ID');
@@ -63,6 +64,7 @@ void main() {
     expect(reloaded!.sourceType, builderIdKiroCredentialSourceType);
     expect(reloaded.accessToken, 'access-token');
     expect(reloaded.refreshToken, 'refresh-token');
+    expect(reloaded.profileArn, defaultKiroBuilderIdProfileArn);
     expect(reloaded.clientId, 'client-id');
     expect(reloaded.clientSecret, 'client-secret');
     expect(reloaded.startUrl, defaultKiroBuilderIdStartUrl);

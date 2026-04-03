@@ -439,6 +439,7 @@
   },
   "aboutUpdateCheckFailedTitle": "Failed to check for updates",
   "aboutUpdateCheckFailedMessage": "Failed to get release information from GitHub.",
+  "aboutDownloadAndInstallButton": "Download and install",
   "aboutOpenReleaseButton": "Open release",
   "aboutRetryUpdateCheckButton": "Check again",
   "aboutAnalyticsTitle": "Analytics",

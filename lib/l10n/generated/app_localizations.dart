@@ -1431,6 +1431,12 @@ abstract class AppLocalizations {
   /// **'Failed to get release information from GitHub.'**
   String get aboutUpdateCheckFailedMessage;
 
+  /// No description provided for @aboutDownloadAndInstallButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and install'**
+  String get aboutDownloadAndInstallButton;
+
   /// No description provided for @aboutOpenReleaseButton.
   ///
   /// In en, this message translates to:

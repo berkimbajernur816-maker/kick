@@ -38,6 +38,7 @@ void main() {
           latestVersion: '1.1.0',
           releaseUrl: 'https://example.com/releases/tag/v1.1.0',
           hasUpdate: true,
+          installerUrl: 'https://example.com/releases/download/v1.1.0/kick-windows-1.1.0-setup.exe',
         ),
       ),
     );
@@ -46,6 +47,7 @@ void main() {
 
     expect(find.byType(AppUpdateBanner), findsOneWidget);
     expect(find.text(enL10n.aboutUpdateAvailableTitle), findsOneWidget);
+    expect(find.text(enL10n.aboutDownloadAndInstallButton), findsOneWidget);
     expect(find.text(enL10n.aboutOpenReleaseButton), findsOneWidget);
   });
 

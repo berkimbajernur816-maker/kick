@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:kick/features/settings/app_update_checker.dart';
@@ -20,6 +21,7 @@ void main() {
   test('detects available update from GitHub release payload', () async {
     final checker = AppUpdateChecker(
       apiUrl: 'https://example.com/releases/latest',
+      targetPlatform: TargetPlatform.windows,
       httpClient: QueueHttpClient([
         (request) async {
           expect(request.url.toString(), 'https://example.com/releases/latest');
@@ -27,6 +29,18 @@ void main() {
             jsonEncode({
               'tag_name': 'v0.2.0',
               'html_url': 'https://github.com/mxnix/kick/releases/tag/v0.2.0',
+              'assets': [
+                {
+                  'name': 'kick-windows-0.2.0-setup.exe',
+                  'browser_download_url':
+                      'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-windows-0.2.0-setup.exe',
+                },
+                {
+                  'name': 'kick-windows-0.2.0-portable.zip',
+                  'browser_download_url':
+                      'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-windows-0.2.0-portable.zip',
+                },
+              ],
             }),
             200,
           );
@@ -40,6 +54,10 @@ void main() {
     expect(result.latestVersion, '0.2.0');
     expect(result.hasUpdate, isTrue);
     expect(result.releaseUrl, 'https://github.com/mxnix/kick/releases/tag/v0.2.0');
+    expect(
+      result.installerUrl,
+      'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-windows-0.2.0-setup.exe',
+    );
   });
 
   test('reports no update when installed version is current', () async {

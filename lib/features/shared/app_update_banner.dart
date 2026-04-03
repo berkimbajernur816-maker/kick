@@ -14,6 +14,8 @@ class AppUpdateBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
+    final installerUrl = updateInfo.installerUrl?.trim();
+    final hasInstallerUrl = installerUrl?.isNotEmpty == true;
 
     return KickPanel(
       tone: KickPanelTone.accent,
@@ -39,14 +41,33 @@ class AppUpdateBanner extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () => _openExternalUrl(updateInfo.releaseUrl),
-              icon: const Icon(Icons.open_in_new_rounded),
-              label: Text(l10n.aboutOpenReleaseButton),
+          if (hasInstallerUrl) ...[
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => _openExternalUrl(installerUrl!),
+                icon: const Icon(Icons.download_rounded),
+                label: Text(l10n.aboutDownloadAndInstallButton),
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.center,
+              child: TextButton.icon(
+                onPressed: () => _openExternalUrl(updateInfo.releaseUrl),
+                icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                label: Text(l10n.aboutOpenReleaseButton),
+              ),
+            ),
+          ] else
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _openExternalUrl(updateInfo.releaseUrl),
+                icon: const Icon(Icons.open_in_new_rounded),
+                label: Text(l10n.aboutOpenReleaseButton),
+              ),
+            ),
         ],
       ),
     );

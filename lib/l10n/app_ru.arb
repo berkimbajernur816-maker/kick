@@ -434,6 +434,7 @@
     },
     "aboutUpdateCheckFailedTitle": "Не удалось проверить обновления",
     "aboutUpdateCheckFailedMessage": "Не удалось получить информацию о релизах с GitHub.",
+    "aboutDownloadAndInstallButton": "Скачать и установить",
     "aboutOpenReleaseButton": "Открыть релиз",
     "aboutRetryUpdateCheckButton": "Проверить еще раз",
     "aboutAnalyticsTitle": "Аналитика",

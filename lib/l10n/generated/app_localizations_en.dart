@@ -762,6 +762,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutUpdateCheckFailedMessage => 'Failed to get release information from GitHub.';
 
   @override
+  String get aboutDownloadAndInstallButton => 'Download and install';
+
+  @override
   String get aboutOpenReleaseButton => 'Open release';
 
   @override

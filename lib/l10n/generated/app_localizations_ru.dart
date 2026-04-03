@@ -760,6 +760,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutUpdateCheckFailedMessage => 'Не удалось получить информацию о релизах с GitHub.';
 
   @override
+  String get aboutDownloadAndInstallButton => 'Скачать и установить';
+
+  @override
   String get aboutOpenReleaseButton => 'Открыть релиз';
 
   @override

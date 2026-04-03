@@ -12,12 +12,14 @@ class AppUpdateInfo {
     required this.latestVersion,
     required this.releaseUrl,
     required this.hasUpdate,
+    this.installerUrl,
   });
 
   final String currentVersion;
   final String latestVersion;
   final String releaseUrl;
   final bool hasUpdate;
+  final String? installerUrl;
 }
 
 class AppUpdateChecker {
@@ -25,15 +27,18 @@ class AppUpdateChecker {
     http.Client? httpClient,
     String apiUrl = kickLatestReleaseApiUrl,
     Duration requestTimeout = const Duration(seconds: 8),
+    TargetPlatform? targetPlatform,
   }) : _http = httpClient ?? http.Client(),
        _apiUrl = apiUrl,
        _requestTimeout = requestTimeout > Duration.zero
            ? requestTimeout
-           : const Duration(seconds: 8);
+           : const Duration(seconds: 8),
+       _targetPlatform = targetPlatform ?? defaultTargetPlatform;
 
   final http.Client _http;
   final String _apiUrl;
   final Duration _requestTimeout;
+  final TargetPlatform _targetPlatform;
 
   Future<AppUpdateInfo> checkForUpdates({required String currentVersion}) async {
     final normalizedCurrentVersion = normalizeVersion(currentVersion);
@@ -66,12 +71,18 @@ class AppUpdateChecker {
     final releaseUrl = (map['html_url']?.toString().trim().isNotEmpty == true)
         ? map['html_url']!.toString().trim()
         : kickLatestReleaseUrl;
+    final installerUrl = _resolveInstallerUrl(
+      releasePayload: map,
+      latestVersion: latestVersion,
+      targetPlatform: _targetPlatform,
+    );
 
     return AppUpdateInfo(
       currentVersion: normalizedCurrentVersion,
       latestVersion: latestVersion,
       releaseUrl: releaseUrl,
       hasUpdate: compareVersions(latestVersion, normalizedCurrentVersion) > 0,
+      installerUrl: installerUrl,
     );
   }
 
@@ -123,6 +134,44 @@ class AppUpdateChecker {
       return -1;
     }
     return leftParts.preRelease!.compareTo(rightParts.preRelease!);
+  }
+
+  static String? _resolveInstallerUrl({
+    required Map<String, Object?> releasePayload,
+    required String latestVersion,
+    required TargetPlatform targetPlatform,
+  }) {
+    final assets = releasePayload['assets'];
+    if (assets is! List) {
+      return null;
+    }
+
+    final expectedAssetName = switch (targetPlatform) {
+      TargetPlatform.android => 'kick-android-$latestVersion.apk',
+      TargetPlatform.windows => 'kick-windows-$latestVersion-setup.exe',
+      TargetPlatform.fuchsia ||
+      TargetPlatform.iOS ||
+      TargetPlatform.linux ||
+      TargetPlatform.macOS => null,
+    };
+    if (expectedAssetName == null) {
+      return null;
+    }
+
+    for (final asset in assets) {
+      if (asset is! Map) {
+        continue;
+      }
+
+      final assetMap = asset.cast<Object?, Object?>();
+      final name = assetMap['name']?.toString().trim();
+      final downloadUrl = assetMap['browser_download_url']?.toString().trim();
+      if (name == expectedAssetName && downloadUrl?.isNotEmpty == true) {
+        return downloadUrl;
+      }
+    }
+
+    return null;
   }
 }
 

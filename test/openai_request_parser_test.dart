@@ -243,27 +243,47 @@ void main() {
     expect(request.googleWebSearchEnabled, isTrue);
   });
 
-  test('rejects mixing google web search with function tools', () {
-    expect(
-      () => OpenAiRequestParser.parseChatRequest({
-        'model': 'gemini-3-flash-preview',
-        'messages': [
-          {'role': 'user', 'content': 'Find fresh Flutter news'},
-        ],
-        'tools': [
-          {
-            'type': 'function',
-            'function': {
-              'name': 'lookupWeather',
-              'parameters': {'type': 'object'},
-            },
+  test('allows mixing google web search with function tools in chat requests', () {
+    final request = OpenAiRequestParser.parseChatRequest({
+      'model': 'gemini-3-flash-preview',
+      'messages': [
+        {'role': 'user', 'content': 'Find fresh Flutter news and summarize it'},
+      ],
+      'tools': [
+        {
+          'type': 'function',
+          'function': {
+            'name': 'lookupWeather',
+            'parameters': {'type': 'object'},
           },
-        ],
-        'extra_body': {
-          'google': {'web_search': true},
         },
-      }, requestId: 'req_search_tools'),
-      throwsFormatException,
-    );
+      ],
+      'extra_body': {
+        'google': {'web_search': true},
+      },
+    }, requestId: 'req_search_tools');
+
+    expect(request.googleWebSearchEnabled, isTrue);
+    expect(request.tools.single.name, 'lookupWeather');
+  });
+
+  test('allows mixing google web search with function tools in responses requests', () {
+    final request = OpenAiRequestParser.parseResponsesRequest({
+      'model': 'gemini-3-flash-preview',
+      'input': 'Find fresh Flutter news and summarize it',
+      'tools': [
+        {
+          'type': 'function',
+          'function': {
+            'name': 'lookupWeather',
+            'parameters': {'type': 'object'},
+          },
+        },
+      ],
+      'google': {'web_search': true},
+    }, requestId: 'req_search_tools_responses');
+
+    expect(request.googleWebSearchEnabled, isTrue);
+    expect(request.tools.single.name, 'lookupWeather');
   });
 }

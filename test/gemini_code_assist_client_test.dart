@@ -1776,6 +1776,95 @@ void main() {
     expect(requestMap.containsKey('toolConfig'), isFalse);
   });
 
+  test('sends function tools together with googleSearch built-in tool', () async {
+    Map<String, Object?>? capturedBody;
+
+    final client = GeminiCodeAssistClient(
+      onTokensUpdated: (account, tokens) async {},
+      httpClient: QueueHttpClient([
+        (request) async {
+          capturedBody =
+              jsonDecode(await request.finalize().bytesToString()) as Map<String, Object?>;
+          return http.Response(
+            jsonEncode({
+              'response': {
+                'candidates': [
+                  {
+                    'content': {
+                      'parts': [
+                        {'text': 'ok'},
+                      ],
+                    },
+                  },
+                ],
+              },
+            }),
+            200,
+          );
+        },
+      ]),
+    );
+
+    await client.generateContent(
+      account: sampleAccount(),
+      request: UnifiedPromptRequest(
+        requestId: 'req_search_tools',
+        model: 'gemini-3-flash',
+        stream: false,
+        source: 'chat.completions',
+        turns: const [
+          UnifiedTurn(
+            role: 'user',
+            parts: [UnifiedPart.text('Find fresh Flutter news and call a tool if needed')],
+          ),
+        ],
+        tools: const [
+          UnifiedToolDeclaration(
+            name: 'lookupWeather',
+            description: 'Weather lookup',
+            parameters: {
+              'type': 'object',
+              'properties': {
+                'city': {'type': 'string'},
+              },
+            },
+          ),
+        ],
+        systemInstruction: null,
+        toolChoice: 'required',
+        temperature: null,
+        topP: null,
+        maxOutputTokens: 256,
+        stopSequences: null,
+        reasoningEffort: null,
+        googleThinkingConfig: null,
+        googleWebSearchEnabled: true,
+        responseModalities: null,
+        jsonMode: false,
+        responseSchema: null,
+      ),
+    );
+
+    final requestMap = (capturedBody?['request'] as Map).cast<String, Object?>();
+    final tools = (requestMap['tools'] as List).cast<Map<String, Object?>>();
+
+    expect(tools, hasLength(2));
+    expect((tools.first['functionDeclarations'] as List).single, {
+      'name': 'lookupWeather',
+      'description': 'Weather lookup',
+      'parametersJsonSchema': {
+        'type': 'object',
+        'properties': {
+          'city': {'type': 'string'},
+        },
+      },
+    });
+    expect(tools.last, {'googleSearch': <String, Object?>{}});
+    expect(requestMap['toolConfig'], {
+      'functionCallingConfig': {'mode': 'ANY'},
+    });
+  });
+
   test('uses Gemini 2.5 default thinking budget for multimodal requests', () async {
     Map<String, Object?>? capturedBody;
 

@@ -230,9 +230,6 @@ class OpenAiRequestParser {
 
     final responseFormat = (json['response_format'] as Map?)?.cast<String, Object?>();
     final googleWebSearchEnabled = _parseGoogleWebSearchEnabled(json);
-    if (toolDeclarations.isNotEmpty && googleWebSearchEnabled) {
-      throw const FormatException('`google web search` cannot be used together with `tools` yet.');
-    }
     final mergedSystemInstruction = leadingSystemParts.join('\n\n').trim();
     var systemInstruction = mergedSystemInstruction.isEmpty ? null : mergedSystemInstruction;
     if (turns.isEmpty && systemInstruction != null) {
@@ -333,9 +330,6 @@ class OpenAiRequestParser {
 
     final tools = _parseTools(json['tools']);
     final googleWebSearchEnabled = _parseGoogleWebSearchEnabled(json);
-    if (tools.isNotEmpty && googleWebSearchEnabled) {
-      throw const FormatException('`google web search` cannot be used together with `tools` yet.');
-    }
     final textConfig = (json['text'] as Map?)?.cast<String, Object?>();
     final responseFormat = (textConfig?['format'] as Map?)?.cast<String, Object?>();
 

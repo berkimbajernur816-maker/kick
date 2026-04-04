@@ -1491,11 +1491,83 @@ abstract class AppLocalizations {
   /// **'Failed to get release information from GitHub.'**
   String get aboutUpdateCheckFailedMessage;
 
+  /// No description provided for @aboutDownloadUpdateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Download update'**
+  String get aboutDownloadUpdateButton;
+
   /// No description provided for @aboutDownloadAndInstallButton.
   ///
   /// In en, this message translates to:
   /// **'Download and install'**
   String get aboutDownloadAndInstallButton;
+
+  /// No description provided for @aboutInstallOnRestartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Install on restart'**
+  String get aboutInstallOnRestartButton;
+
+  /// No description provided for @aboutInstallUpdateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Install update'**
+  String get aboutInstallUpdateButton;
+
+  /// No description provided for @aboutAllowUnknownSourcesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow install source'**
+  String get aboutAllowUnknownSourcesButton;
+
+  /// No description provided for @aboutPreparingUpdateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing update...'**
+  String get aboutPreparingUpdateButton;
+
+  /// No description provided for @aboutUpdateDownloadingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update in background: {progress}'**
+  String aboutUpdateDownloadingProgress(String progress);
+
+  /// No description provided for @aboutUpdateDownloadingIndeterminate.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update in background...'**
+  String get aboutUpdateDownloadingIndeterminate;
+
+  /// No description provided for @aboutUpdateVerifyingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying the downloaded package with SHA-256...'**
+  String get aboutUpdateVerifyingMessage;
+
+  /// No description provided for @aboutUpdateReadyVerifiedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The update package is downloaded, verified, and ready to install.'**
+  String get aboutUpdateReadyVerifiedMessage;
+
+  /// No description provided for @aboutUpdateReadyUnverifiedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The update package is downloaded and ready to install. This release did not provide a checksum file.'**
+  String get aboutUpdateReadyUnverifiedMessage;
+
+  /// No description provided for @aboutUpdateUnknownSourcesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow installs from this source in Android settings, then return and tap Install update again.'**
+  String get aboutUpdateUnknownSourcesMessage;
+
+  /// No description provided for @aboutUpdateOperationFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to prepare the update: {error}'**
+  String aboutUpdateOperationFailedMessage(String error);
 
   /// No description provided for @aboutOpenReleaseButton.
   ///

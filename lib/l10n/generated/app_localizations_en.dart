@@ -796,7 +796,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutUpdateCheckFailedMessage => 'Failed to get release information from GitHub.';
 
   @override
+  String get aboutDownloadUpdateButton => 'Download update';
+
+  @override
   String get aboutDownloadAndInstallButton => 'Download and install';
+
+  @override
+  String get aboutInstallOnRestartButton => 'Install on restart';
+
+  @override
+  String get aboutInstallUpdateButton => 'Install update';
+
+  @override
+  String get aboutAllowUnknownSourcesButton => 'Allow install source';
+
+  @override
+  String get aboutPreparingUpdateButton => 'Preparing update...';
+
+  @override
+  String aboutUpdateDownloadingProgress(String progress) {
+    return 'Downloading update in background: $progress';
+  }
+
+  @override
+  String get aboutUpdateDownloadingIndeterminate => 'Downloading update in background...';
+
+  @override
+  String get aboutUpdateVerifyingMessage => 'Verifying the downloaded package with SHA-256...';
+
+  @override
+  String get aboutUpdateReadyVerifiedMessage =>
+      'The update package is downloaded, verified, and ready to install.';
+
+  @override
+  String get aboutUpdateReadyUnverifiedMessage =>
+      'The update package is downloaded and ready to install. This release did not provide a checksum file.';
+
+  @override
+  String get aboutUpdateUnknownSourcesMessage =>
+      'Allow installs from this source in Android settings, then return and tap Install update again.';
+
+  @override
+  String aboutUpdateOperationFailedMessage(String error) {
+    return 'Failed to prepare the update: $error';
+  }
 
   @override
   String get aboutOpenReleaseButton => 'Open release';

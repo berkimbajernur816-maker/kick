@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include <flutter_windows.h>
+#include <cstring>
 #include <io.h>
 #include <stdio.h>
 #include <windows.h>
@@ -98,6 +99,31 @@ std::string Utf8FromUtf16(const wchar_t* utf16_string) {
     return std::string();
   }
   return utf8_string;
+}
+
+std::wstring Utf16FromUtf8(const char* utf8_string) {
+  if (utf8_string == nullptr) {
+    return std::wstring();
+  }
+
+  const int input_length = static_cast<int>(strlen(utf8_string));
+  const int target_length = ::MultiByteToWideChar(
+      CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string, input_length, nullptr, 0);
+  std::wstring utf16_string;
+  if (target_length <= 0 ||
+      static_cast<size_t>(target_length) > utf16_string.max_size()) {
+    return utf16_string;
+  }
+
+  utf16_string.resize(target_length);
+  const int converted_length = ::MultiByteToWideChar(
+      CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string, input_length,
+      utf16_string.data(), target_length);
+  if (converted_length == 0) {
+    return std::wstring();
+  }
+
+  return utf16_string;
 }
 
 UINT GetKickActivateWindowMessage() {

@@ -36,6 +36,11 @@ void main() {
                       'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-windows-0.2.0-setup.exe',
                 },
                 {
+                  'name': 'kick-0.2.0-checksums.txt',
+                  'browser_download_url':
+                      'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-0.2.0-checksums.txt',
+                },
+                {
                   'name': 'kick-windows-0.2.0-portable.zip',
                   'browser_download_url':
                       'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-windows-0.2.0-portable.zip',
@@ -57,6 +62,11 @@ void main() {
     expect(
       result.installerUrl,
       'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-windows-0.2.0-setup.exe',
+    );
+    expect(result.installerFileName, 'kick-windows-0.2.0-setup.exe');
+    expect(
+      result.checksumUrl,
+      'https://github.com/mxnix/kick/releases/download/v0.2.0/kick-0.2.0-checksums.txt',
     );
   });
 

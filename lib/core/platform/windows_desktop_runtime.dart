@@ -69,6 +69,14 @@ class WindowsDesktopRuntime with TrayListener, WindowListener {
     await _instance._dispose();
   }
 
+  static Future<void> exitApplication() async {
+    if (!Platform.isWindows) {
+      return;
+    }
+
+    await _instance._exitApplication();
+  }
+
   bool _configured = false;
   bool _listenersAttached = false;
   bool _exitRequested = false;

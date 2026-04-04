@@ -463,7 +463,33 @@
   },
   "aboutUpdateCheckFailedTitle": "Failed to check for updates",
   "aboutUpdateCheckFailedMessage": "Failed to get release information from GitHub.",
+  "aboutDownloadUpdateButton": "Download update",
   "aboutDownloadAndInstallButton": "Download and install",
+  "aboutInstallOnRestartButton": "Install on restart",
+  "aboutInstallUpdateButton": "Install update",
+  "aboutAllowUnknownSourcesButton": "Allow install source",
+  "aboutPreparingUpdateButton": "Preparing update...",
+  "aboutUpdateDownloadingProgress": "Downloading update in background: {progress}",
+  "@aboutUpdateDownloadingProgress": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutUpdateDownloadingIndeterminate": "Downloading update in background...",
+  "aboutUpdateVerifyingMessage": "Verifying the downloaded package with SHA-256...",
+  "aboutUpdateReadyVerifiedMessage": "The update package is downloaded, verified, and ready to install.",
+  "aboutUpdateReadyUnverifiedMessage": "The update package is downloaded and ready to install. This release did not provide a checksum file.",
+  "aboutUpdateUnknownSourcesMessage": "Allow installs from this source in Android settings, then return and tap Install update again.",
+  "aboutUpdateOperationFailedMessage": "Failed to prepare the update: {error}",
+  "@aboutUpdateOperationFailedMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "aboutOpenReleaseButton": "Open release",
   "aboutRetryUpdateCheckButton": "Check again",
   "aboutAnalyticsTitle": "Analytics",

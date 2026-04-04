@@ -1,0 +1,389 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
+import '../../core/platform/windows_desktop_runtime.dart';
+import 'app_update_checker.dart';
+
+const _appUpdateChannelName = 'kick/app_update';
+
+enum AppUpdatePhase { idle, downloading, verifying, readyToInstall, awaitingPermission, error }
+
+class AppUpdateFlowState {
+  const AppUpdateFlowState({
+    this.version,
+    this.phase = AppUpdatePhase.idle,
+    this.progress,
+    this.downloadedUpdate,
+    this.errorMessage,
+  });
+
+  final String? version;
+  final AppUpdatePhase phase;
+  final double? progress;
+  final DownloadedAppUpdate? downloadedUpdate;
+  final String? errorMessage;
+
+  bool matches(AppUpdateInfo updateInfo) => version == updateInfo.latestVersion;
+
+  AppUpdateFlowState copyWith({
+    String? version,
+    AppUpdatePhase? phase,
+    Object? progress = _flowFieldUnset,
+    Object? downloadedUpdate = _flowFieldUnset,
+    Object? errorMessage = _flowFieldUnset,
+  }) {
+    return AppUpdateFlowState(
+      version: version ?? this.version,
+      phase: phase ?? this.phase,
+      progress: identical(progress, _flowFieldUnset) ? this.progress : progress as double?,
+      downloadedUpdate: identical(downloadedUpdate, _flowFieldUnset)
+          ? this.downloadedUpdate
+          : downloadedUpdate as DownloadedAppUpdate?,
+      errorMessage: identical(errorMessage, _flowFieldUnset)
+          ? this.errorMessage
+          : errorMessage as String?,
+    );
+  }
+
+  static const idle = AppUpdateFlowState();
+}
+
+const _flowFieldUnset = Object();
+
+class DownloadedAppUpdate {
+  const DownloadedAppUpdate({
+    required this.version,
+    required this.filePath,
+    required this.fileName,
+    required this.sha256,
+    required this.isChecksumVerified,
+  });
+
+  final String version;
+  final String filePath;
+  final String fileName;
+  final String sha256;
+  final bool isChecksumVerified;
+}
+
+enum AppUpdateInstallLaunchResult { launched, permissionRequired }
+
+typedef AppUpdateDirectoryProvider = Future<Directory> Function();
+typedef AppUpdateWindowsInstallerLauncher = Future<void> Function();
+
+final appUpdateInstallerProvider = Provider<AppUpdateInstaller>((ref) {
+  final installer = AppUpdateInstaller();
+  ref.onDispose(installer.dispose);
+  return installer;
+});
+
+final appUpdateControllerProvider = NotifierProvider<AppUpdateController, AppUpdateFlowState>(
+  AppUpdateController.new,
+);
+
+class AppUpdateInstaller {
+  AppUpdateInstaller({
+    http.Client? httpClient,
+    MethodChannel? platformChannel,
+    AppUpdateDirectoryProvider? directoryProvider,
+    AppUpdateWindowsInstallerLauncher? windowsInstallerLauncher,
+  }) : _http = httpClient ?? http.Client(),
+       _platformChannel = platformChannel ?? const MethodChannel(_appUpdateChannelName),
+       _directoryProvider = directoryProvider ?? getApplicationSupportDirectory,
+       _windowsInstallerLauncher =
+           windowsInstallerLauncher ?? WindowsDesktopRuntime.exitApplication;
+
+  final http.Client _http;
+  final MethodChannel _platformChannel;
+  final AppUpdateDirectoryProvider _directoryProvider;
+  final AppUpdateWindowsInstallerLauncher _windowsInstallerLauncher;
+
+  Future<DownloadedAppUpdate> downloadUpdate({
+    required AppUpdateInfo updateInfo,
+    required void Function(int receivedBytes, int? totalBytes) onProgress,
+    VoidCallback? onVerifying,
+  }) async {
+    final installerUrl = updateInfo.installerUrl?.trim();
+    final installerFileName = updateInfo.installerFileName?.trim();
+    if (installerUrl == null ||
+        installerUrl.isEmpty ||
+        installerFileName == null ||
+        installerFileName.isEmpty) {
+      throw StateError('This release does not provide a native installer package.');
+    }
+
+    final updatesDirectory = await _resolveUpdatesDirectory(updateInfo.latestVersion);
+    final targetFile = File(p.join(updatesDirectory.path, installerFileName));
+    final tempFile = File('${targetFile.path}.part');
+    final expectedSha256 = await _loadExpectedSha256(updateInfo);
+
+    if (await tempFile.exists()) {
+      await tempFile.delete();
+    }
+
+    if (await targetFile.exists()) {
+      final existingSha256 = await _digestFile(targetFile);
+      if (expectedSha256 == null || _hashesEqual(existingSha256, expectedSha256)) {
+        return DownloadedAppUpdate(
+          version: updateInfo.latestVersion,
+          filePath: targetFile.path,
+          fileName: installerFileName,
+          sha256: existingSha256,
+          isChecksumVerified: expectedSha256 != null,
+        );
+      }
+      await targetFile.delete();
+    }
+
+    final request = http.Request('GET', Uri.parse(installerUrl));
+    final response = await _http.send(request);
+    if (response.statusCode >= 400) {
+      throw StateError('Failed to download the update package: ${response.statusCode}.');
+    }
+
+    final sink = tempFile.openWrite();
+    var receivedBytes = 0;
+    try {
+      await for (final chunk in response.stream) {
+        sink.add(chunk);
+        receivedBytes += chunk.length;
+        onProgress(receivedBytes, response.contentLength);
+      }
+      await sink.flush();
+    } catch (_) {
+      await sink.close();
+      rethrow;
+    }
+    await sink.close();
+
+    onVerifying?.call();
+    final sha256Hash = await _digestFile(tempFile);
+    if (expectedSha256 != null && !_hashesEqual(sha256Hash, expectedSha256)) {
+      await tempFile.delete();
+      throw StateError('SHA-256 mismatch for $installerFileName.');
+    }
+
+    await tempFile.rename(targetFile.path);
+    return DownloadedAppUpdate(
+      version: updateInfo.latestVersion,
+      filePath: targetFile.path,
+      fileName: installerFileName,
+      sha256: sha256Hash,
+      isChecksumVerified: expectedSha256 != null,
+    );
+  }
+
+  Future<AppUpdateInstallLaunchResult> launchInstall(DownloadedAppUpdate downloadedUpdate) async {
+    if (Platform.isWindows) {
+      final scheduled =
+          await _platformChannel.invokeMethod<bool>('scheduleInstallerOnExit', {
+            'filePath': downloadedUpdate.filePath,
+          }) ??
+          false;
+      if (!scheduled) {
+        throw StateError('Failed to stage the Windows installer.');
+      }
+      await _windowsInstallerLauncher();
+      return AppUpdateInstallLaunchResult.launched;
+    }
+
+    if (Platform.isAndroid) {
+      final canInstall =
+          await _platformChannel.invokeMethod<bool>('canRequestPackageInstalls') ?? true;
+      if (!canInstall) {
+        await _platformChannel.invokeMethod<void>('openUnknownSourcesSettings');
+        return AppUpdateInstallLaunchResult.permissionRequired;
+      }
+
+      final installerOpened =
+          await _platformChannel.invokeMethod<bool>('installApk', {
+            'filePath': downloadedUpdate.filePath,
+          }) ??
+          false;
+      if (!installerOpened) {
+        throw StateError('Android installer could not be opened.');
+      }
+      return AppUpdateInstallLaunchResult.launched;
+    }
+
+    throw UnsupportedError('Native update install is not supported on this platform.');
+  }
+
+  Future<void> dispose() async {
+    _http.close();
+  }
+
+  Future<String?> _loadExpectedSha256(AppUpdateInfo updateInfo) async {
+    final checksumUrl = updateInfo.checksumUrl?.trim();
+    final installerFileName = updateInfo.installerFileName?.trim();
+    if (checksumUrl == null ||
+        checksumUrl.isEmpty ||
+        installerFileName == null ||
+        installerFileName.isEmpty) {
+      return null;
+    }
+
+    final response = await _http.get(Uri.parse(checksumUrl));
+    if (response.statusCode >= 400) {
+      return null;
+    }
+
+    final normalizedFileName = installerFileName.toLowerCase();
+    for (final rawLine in response.body.split(RegExp(r'\r?\n'))) {
+      final line = rawLine.trim();
+      if (line.isEmpty) {
+        continue;
+      }
+
+      final match = RegExp(r'^([A-Fa-f0-9]{64})\s+\*?(.+)$').firstMatch(line);
+      if (match == null) {
+        continue;
+      }
+
+      final assetName = match.group(2)?.trim().toLowerCase();
+      if (assetName == normalizedFileName) {
+        return match.group(1)!.toLowerCase();
+      }
+    }
+
+    return null;
+  }
+
+  Future<Directory> _resolveUpdatesDirectory(String version) async {
+    final rootDirectory = await _directoryProvider();
+    final updatesDirectory = Directory(p.join(rootDirectory.path, 'updates', version));
+    await updatesDirectory.create(recursive: true);
+    return updatesDirectory;
+  }
+
+  Future<String> _digestFile(File file) async {
+    final digest = await sha256.bind(file.openRead()).first;
+    return digest.toString().toLowerCase();
+  }
+
+  bool _hashesEqual(String left, String right) =>
+      left.trim().toLowerCase() == right.trim().toLowerCase();
+}
+
+class AppUpdateController extends Notifier<AppUpdateFlowState> {
+  @override
+  AppUpdateFlowState build() => AppUpdateFlowState.idle;
+
+  Future<void> download(AppUpdateInfo updateInfo) async {
+    if (state.matches(updateInfo) && state.phase == AppUpdatePhase.downloading) {
+      return;
+    }
+
+    state = AppUpdateFlowState(
+      version: updateInfo.latestVersion,
+      phase: AppUpdatePhase.downloading,
+      progress: 0,
+    );
+
+    try {
+      final downloadedUpdate = await ref
+          .read(appUpdateInstallerProvider)
+          .downloadUpdate(
+            updateInfo: updateInfo,
+            onProgress: (receivedBytes, totalBytes) {
+              final nextProgress = totalBytes == null || totalBytes <= 0
+                  ? null
+                  : receivedBytes / totalBytes;
+              state = state.copyWith(
+                version: updateInfo.latestVersion,
+                phase: AppUpdatePhase.downloading,
+                progress: nextProgress,
+                downloadedUpdate: null,
+                errorMessage: null,
+              );
+            },
+            onVerifying: () {
+              state = state.copyWith(
+                version: updateInfo.latestVersion,
+                phase: AppUpdatePhase.verifying,
+                progress: null,
+                errorMessage: null,
+              );
+            },
+          );
+
+      state = AppUpdateFlowState(
+        version: updateInfo.latestVersion,
+        phase: AppUpdatePhase.readyToInstall,
+        progress: 1,
+        downloadedUpdate: downloadedUpdate,
+      );
+    } catch (error) {
+      state = AppUpdateFlowState(
+        version: updateInfo.latestVersion,
+        phase: AppUpdatePhase.error,
+        errorMessage: _normalizeInstallerError(error),
+      );
+    }
+  }
+
+  Future<void> install(AppUpdateInfo updateInfo) async {
+    final currentState = state.matches(updateInfo) ? state : AppUpdateFlowState.idle;
+    final currentDownload = currentState.downloadedUpdate;
+    if (currentDownload == null) {
+      await download(updateInfo);
+      if (!state.matches(updateInfo) || state.phase != AppUpdatePhase.readyToInstall) {
+        return;
+      }
+    }
+
+    final downloadedUpdate = state.downloadedUpdate;
+    if (downloadedUpdate == null) {
+      return;
+    }
+
+    try {
+      final result = await ref.read(appUpdateInstallerProvider).launchInstall(downloadedUpdate);
+      if (result == AppUpdateInstallLaunchResult.permissionRequired) {
+        state = state.copyWith(
+          version: updateInfo.latestVersion,
+          phase: AppUpdatePhase.awaitingPermission,
+          errorMessage: null,
+        );
+        return;
+      }
+
+      state = state.copyWith(
+        version: updateInfo.latestVersion,
+        phase: AppUpdatePhase.readyToInstall,
+        errorMessage: null,
+      );
+    } catch (error) {
+      state = state.copyWith(
+        version: updateInfo.latestVersion,
+        phase: AppUpdatePhase.error,
+        errorMessage: _normalizeInstallerError(error),
+      );
+    }
+  }
+
+  void resetFor(AppUpdateInfo updateInfo) {
+    if (!state.matches(updateInfo) && state.phase != AppUpdatePhase.downloading) {
+      state = AppUpdateFlowState.idle;
+    }
+  }
+}
+
+String _normalizeInstallerError(Object error) {
+  if (error is PlatformException) {
+    final message = error.message?.trim();
+    if (message != null && message.isNotEmpty) {
+      return message;
+    }
+  }
+
+  final message = error.toString().replaceFirst(RegExp(r'^[A-Za-z]+Exception:\s*'), '').trim();
+  return message.isEmpty ? 'The update operation failed.' : message;
+}

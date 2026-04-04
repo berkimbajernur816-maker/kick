@@ -378,6 +378,16 @@ jobs:
             --template ".github/release_template.md" \
             --output "release-notes.md"
 
+      - name: Generate release checksums
+        shell: bash
+        run: |
+          checksum_file="release-artifacts/kick-${{ needs.metadata.outputs.version }}-checksums.txt"
+          : > "$checksum_file"
+          while IFS= read -r -d '' file; do
+            hash=$(sha256sum "$file" | cut -d' ' -f1)
+            printf '%s *%s\n' "$hash" "$(basename "$file")" >> "$checksum_file"
+          done < <(find release-artifacts -type f \( -name '*.zip' -o -name '*.exe' -o -name '*.apk' -o -name '*.aab' \) -print0 | sort -z)
+
       - name: Create or update GitHub release
         uses: softprops/action-gh-release@v2
         with:
@@ -389,3 +399,4 @@ jobs:
             release-artifacts/**/*.exe
             release-artifacts/**/*.apk
             release-artifacts/**/*.aab
+            release-artifacts/**/*checksums.txt

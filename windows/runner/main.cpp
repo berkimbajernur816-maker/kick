@@ -1,11 +1,31 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include <shellapi.h>
 #include <windows.h>
 
 #include <algorithm>
+#include <optional>
 
 #include "flutter_window.h"
 #include "utils.h"
+
+namespace {
+
+void LaunchScheduledInstaller(const std::optional<std::wstring>& installer_path) {
+  if (!installer_path.has_value() || installer_path->empty()) {
+    return;
+  }
+
+  const auto result = reinterpret_cast<INT_PTR>(::ShellExecuteW(
+      nullptr, L"open", installer_path->c_str(), nullptr, nullptr,
+      SW_SHOWNORMAL));
+  if (result <= 32) {
+    ::OutputDebugStringW(
+        L"KiCk failed to launch the scheduled Windows installer.\n");
+  }
+}
+
+}  // namespace
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
@@ -59,6 +79,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
     ::TranslateMessage(&msg);
     ::DispatchMessage(&msg);
   }
+  LaunchScheduledInstaller(window.TakeScheduledInstallerPath());
 
   if (single_instance_mutex != nullptr) {
     ::CloseHandle(single_instance_mutex);

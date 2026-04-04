@@ -83,7 +83,7 @@ void main() {
         final request = await client.getUrl(Uri.http('127.0.0.1:${state.port}', '/v1/models'));
         request.headers.set(HttpHeaders.authorizationHeader, 'Bearer wrong-key');
         final response = await request.close();
-        await response.drain();
+        await response.drain<void>();
 
         expect(response.statusCode, HttpStatus.unauthorized);
       } finally {
@@ -115,7 +115,7 @@ void main() {
           final request = await client.getUrl(Uri.http('127.0.0.1:${state.port}', '/v1/models'));
           request.headers.set(HttpHeaders.authorizationHeader, headerValue);
           final response = await request.close();
-          await response.drain();
+          await response.drain<void>();
 
           expect(response.statusCode, HttpStatus.ok);
         }

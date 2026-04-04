@@ -6,10 +6,15 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/*.g.dart"
     - "**/*.mocks.dart"
+  language:
+    strict-casts: true
+    strict-inference: true
 
 formatter:
   page_width: 100
 
 linter:
   rules:
+    avoid_void_async: true
+    discarded_futures: true
     directives_ordering: true

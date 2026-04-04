@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -146,7 +148,13 @@ class _AnimatedShellContentState extends State<_AnimatedShellContent>
   void didUpdateWidget(covariant _AnimatedShellContent oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.location != widget.location) {
-      _controller.forward(from: 0);
+      unawaited(() async {
+        try {
+          await _controller.forward(from: 0).orCancel;
+        } on TickerCanceled {
+          // The animation can be canceled during widget disposal.
+        }
+      }());
     }
   }
 

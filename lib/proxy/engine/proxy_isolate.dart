@@ -1308,7 +1308,7 @@ class _ProxyIsolateHost {
         error.detail == GeminiGatewayFailureDetail.indefiniteQuotaExhausted) {
       _scheduleTermsOfServiceCheck(account, error);
     }
-    _publishAccounts();
+    unawaited(_publishAccounts());
     _publishStatus();
   }
 
@@ -1719,7 +1719,8 @@ class _ProxyIsolateHost {
     }
 
     try {
-      return jsonDecode(trimmed);
+      final decoded = jsonDecode(trimmed);
+      return decoded is Object ? decoded : payload;
     } catch (_) {
       return payload;
     }

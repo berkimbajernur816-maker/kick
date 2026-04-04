@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,7 +60,7 @@ class _WindowsWindowFrameState extends ConsumerState<_WindowsWindowFrame> with W
   void initState() {
     super.initState();
     windowManager.addListener(this);
-    _syncWindowState();
+    unawaited(_syncWindowState());
   }
 
   @override
@@ -117,7 +119,7 @@ class _WindowsWindowFrameState extends ConsumerState<_WindowsWindowFrame> with W
 
   @override
   void onWindowRestore() {
-    _syncWindowState();
+    unawaited(_syncWindowState());
   }
 
   @override
@@ -232,26 +234,26 @@ class _WindowsTitleBar extends StatelessWidget {
           WindowCaptionButton.minimize(
             brightness: Theme.of(context).brightness,
             onPressed: () {
-              windowManager.minimize();
+              unawaited(windowManager.minimize());
             },
           ),
           isMaximized
               ? WindowCaptionButton.unmaximize(
                   brightness: Theme.of(context).brightness,
                   onPressed: () {
-                    windowManager.unmaximize();
+                    unawaited(windowManager.unmaximize());
                   },
                 )
               : WindowCaptionButton.maximize(
                   brightness: Theme.of(context).brightness,
                   onPressed: () {
-                    windowManager.maximize();
+                    unawaited(windowManager.maximize());
                   },
                 ),
           WindowCaptionButton.close(
             brightness: Theme.of(context).brightness,
             onPressed: () {
-              windowManager.close();
+              unawaited(windowManager.close());
             },
           ),
         ],

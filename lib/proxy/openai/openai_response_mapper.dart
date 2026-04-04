@@ -247,8 +247,8 @@ class OpenAiResponseMapper {
         {
           'type': 'output_text',
           'text': extracted.text,
-          'annotations': const [],
-          'logprobs': const [],
+          'annotations': const <Object?>[],
+          'logprobs': const <Object?>[],
         },
       ],
     });
@@ -338,7 +338,7 @@ class OpenAiResponseMapper {
           'type': 'message',
           'role': 'assistant',
           'status': 'in_progress',
-          'content': const [],
+          'content': const <Object?>[],
         },
       });
       events.add({
@@ -346,7 +346,12 @@ class OpenAiResponseMapper {
         'item_id': messageId,
         'output_index': messageOutputIndex,
         'content_index': 0,
-        'part': {'type': 'output_text', 'text': '', 'annotations': const [], 'logprobs': const []},
+        'part': {
+          'type': 'output_text',
+          'text': '',
+          'annotations': const <Object?>[],
+          'logprobs': const <Object?>[],
+        },
       });
     }
 
@@ -458,8 +463,8 @@ class OpenAiResponseMapper {
           'part': {
             'type': 'output_text',
             'text': extracted.text,
-            'annotations': const [],
-            'logprobs': const [],
+            'annotations': const <Object?>[],
+            'logprobs': const <Object?>[],
           },
         });
         events.add({
@@ -475,8 +480,8 @@ class OpenAiResponseMapper {
               {
                 'type': 'output_text',
                 'text': extracted.text,
-                'annotations': const [],
-                'logprobs': const [],
+                'annotations': const <Object?>[],
+                'logprobs': const <Object?>[],
               },
             ],
           },

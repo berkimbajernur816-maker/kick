@@ -236,7 +236,7 @@ class KickForegroundTaskHandler extends TaskHandler {
       _notificationModeOAuth => (authNotificationTitle, l10n.runtimeNotificationReturn),
       _ => (l10n.runtimeNotificationTitle, l10n.runtimeNotificationActive),
     };
-    FlutterForegroundTask.updateService(notificationTitle: title, notificationText: text);
+    unawaited(FlutterForegroundTask.updateService(notificationTitle: title, notificationText: text));
   }
 
   @override

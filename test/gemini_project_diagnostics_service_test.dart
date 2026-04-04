@@ -370,7 +370,8 @@ void main() {
           }),
           200,
         ),
-        (request) async => http.Response(jsonEncode({'done': true, 'response': {}}), 200),
+        (request) async =>
+            http.Response(jsonEncode({'done': true, 'response': <String, Object?>{}}), 200),
       ]),
     );
 

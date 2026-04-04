@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kick/data/models/account_profile.dart';
@@ -90,7 +92,7 @@ class _TestApp extends StatelessWidget {
           builder: (context) => Center(
             child: FilledButton(
               onPressed: () {
-                showAccountEditorDialog(context);
+                unawaited(showAccountEditorDialog(context));
               },
               child: const Text('Open dialog'),
             ),

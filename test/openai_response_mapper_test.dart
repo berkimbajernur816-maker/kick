@@ -466,7 +466,7 @@ void main() {
       'response': {
         'candidates': [
           {
-            'content': {'parts': const []},
+            'content': {'parts': const <Object?>[]},
             'finishReason': 'BLOCKLIST',
           },
         ],
@@ -491,7 +491,7 @@ void main() {
       'response': {
         'candidates': [
           {
-            'content': {'parts': const []},
+            'content': {'parts': const <Object?>[]},
             'finishReason': 'SAFETY',
             'finishMessage': 'Blocked due to policy.',
           },

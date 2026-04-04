@@ -524,7 +524,7 @@ void main() {
                 'schema': 'kick.configuration_backup',
                 'version': 99,
                 'settings': AppSettings.defaults(apiKey: 'restored-api-key').toBackupJson(),
-                'accounts': const [],
+                'accounts': const <Object?>[],
               }),
             ),
           ),

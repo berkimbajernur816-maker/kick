@@ -355,9 +355,11 @@ class _AccountCard extends ConsumerWidget {
               Switch(
                 value: account.enabled,
                 onChanged: (value) {
-                  ref
-                      .read(accountsControllerProvider.notifier)
-                      .saveAccount(account.copyWith(enabled: value));
+                  unawaited(
+                    ref.read(accountsControllerProvider.notifier).saveAccount(
+                      account.copyWith(enabled: value),
+                    ),
+                  );
                 },
               ),
             ],

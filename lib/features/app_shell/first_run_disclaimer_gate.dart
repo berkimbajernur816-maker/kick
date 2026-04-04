@@ -31,7 +31,7 @@ class _FirstRunDisclaimerGateState extends ConsumerState<FirstRunDisclaimerGate>
       _dialogQueued = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _dialogQueued = false;
-        _showDisclaimerIfNeeded();
+        unawaited(_showDisclaimerIfNeeded());
       });
     }
 

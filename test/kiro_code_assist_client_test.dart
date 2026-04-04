@@ -128,7 +128,7 @@ void main() {
         httpClient: QueueHttpClient([
           (request) async {
             expect(request.url.path, '/ListAvailableModels');
-            return http.Response(jsonEncode({'models': []}), 200);
+            return http.Response(jsonEncode({'models': <Object?>[]}), 200);
           },
         ]),
       );

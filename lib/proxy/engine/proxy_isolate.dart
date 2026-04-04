@@ -459,7 +459,7 @@ class _ProxyIsolateHost {
           },
           doneEvent: () => encodeSseEvent('[DONE]'),
         );
-        return Response.ok(stream, headers: _sseHeaders());
+        return _sseResponse(stream);
       }
 
       await _logTrace(
@@ -660,7 +660,7 @@ class _ProxyIsolateHost {
           },
           doneEvent: () => '',
         );
-        return Response.ok(stream, headers: _sseHeaders());
+        return _sseResponse(stream);
       }
 
       final payload = await _executeNonStreamRequest(resolvedPrompt, retryTracker: retryTracker);
@@ -1842,6 +1842,14 @@ class _ProxyIsolateHost {
       'proxy_error',
       error.message,
       headers: headers,
+    );
+  }
+
+  Response _sseResponse(Stream<List<int>> stream) {
+    return Response.ok(
+      stream,
+      headers: _sseHeaders(),
+      context: const {'shelf.io.buffer_output': false},
     );
   }
 

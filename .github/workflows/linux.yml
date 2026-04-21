@@ -24,7 +24,8 @@ jobs:
             libsecret-1-dev \
             libjsoncpp-dev \
             liblzma-dev \
-            libcurl4-openssl-dev
+            libcurl4-openssl-dev \
+            libayatana-appindicator3-dev
 
       - name: Create Linux support
         run: flutter create --platforms=linux .

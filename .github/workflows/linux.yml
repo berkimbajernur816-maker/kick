@@ -1,6 +1,6 @@
 name: Build KiCk Linux
 on: 
-  workflow_dispatch: # Позволяет запускать сборку кнопкой вручную
+  workflow_dispatch: 
 
 jobs:
   build:

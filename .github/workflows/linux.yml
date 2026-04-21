@@ -1,20 +1,19 @@
 name: Build KiCk Linux
-on: 
-  workflow_dispatch: 
+on:
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Загружаем код из репозитория
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # 2. Устанавливаем Flutter
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      # 3. Устанавливаем все библиотеки 
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -23,13 +22,12 @@ jobs:
       - name: Create Linux support
         run: flutter create --platforms=linux .
 
-      # 4. Получаем пакеты
-      - run: flutter pub get
+      - name: Get packages
+        run: flutter pub get
 
-      # 5. Собираем проект под Linux
-      - run: flutter build linux --release
+      - name: Build Linux
+        run: flutter build linux --release
 
-      # 6. Сохраняем результат, чтобы его можно было скачать
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
